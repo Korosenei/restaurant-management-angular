@@ -1,0 +1,17 @@
+.form-control, .form-select {
+  font-size: 0.875rem; /* Taille du texte plus petite */
+}
+
+.form-floating label {
+  font-size: 0.875rem; /* Taille du texte des labels plus petite */
+}
+
+.custom-modal-width {
+  max-width: 60%; /* Ou toute autre largeur désirée */
+}
+
+/* Supprimer les bordures de la modal */
+.modal-content {
+  border: none; /* Enlève la bordure de la modal */
+  border-radius: 0; /* Enlève l'arrondi des coins */
+}

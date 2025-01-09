@@ -1,0 +1,106 @@
+<div class="modal-dialog modal-xl">
+  <div class="modal-content">
+    <form [formGroup]="clubForm" novalidate>
+      <div class="modal-header">
+        <h4 class="modal-title">Création ou Modification d'un club</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="Close()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingCode"
+                placeholder="Code"
+                formControlName="code"
+              />
+              <label for="floatingCode">Code du club</label>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingNom"
+                placeholder="Nom"
+                formControlName="nom"
+              />
+              <label for="floatingNom">Nom du club</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingVille"
+                placeholder="Ville"
+                formControlName="ville"
+              />
+              <label for="floatingVille">Ville</label>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingLocalite"
+                placeholder="Localité"
+                formControlName="localite"
+              />
+              <label for="floatingLocalite">Localité</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <select
+                class="form-control"
+                id="floatingGerant"
+                formControlName="gerant"
+              >
+                <option value="" disabled>Choisissez un gerant</option>
+                <option *ngFor="let gerant of listGerants" [value]="gerant.matricule">
+                  {{ gerant.matricule }} ({{ gerant.nom }} {{ gerant.prenom }})
+                </option>
+              </select>
+              <label for="floatingGerant">Gerant du club</label>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <select
+                class="form-control"
+                id="floatingAgence"
+                formControlName="agence"
+              >
+                <option value="" disabled>Choisissez une agence</option>
+                <option *ngFor="let agence of listAgences" [value]="agence.nom">
+                  {{ agence.nom }} ({{ agence.code }})
+                </option>
+              </select>
+              <label for="floatingAgence">Agence</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" (click)="Close()">Annuler</button>
+        <button type="button" class="btn btn-outline-success" (click)="Save()">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>

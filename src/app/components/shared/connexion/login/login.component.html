@@ -1,0 +1,59 @@
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="login-form-title"> Authentification </span>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="Close()"
+      ></button>
+    </div>
+    <br>
+
+    <form action="" class="login-form">
+      <div class="modal-body">
+        <div class="input-container">
+          <div>
+            <label class="label" for="matricule">Matricule</label>
+          </div>
+          <input
+            type="text"
+            id="matricule"
+            name="matricule"
+            formControlName="matricule"
+            placeholder="Entrez votre matricule"
+            required
+          />
+        </div>
+
+        <div class="input-container">
+          <div class="pwd">
+            <label class="label" for="email">Mot de passe</label>
+            <a
+              routerLink="/recover"
+              class="forgot-password"
+              (click)="openRecoveryModal()"
+            >
+              Oublié?
+            </a>
+          </div>
+
+          <input
+            type="email"
+            id="email"
+            name="email"
+            formControlName="email"
+            placeholder="Entrez votre mot de passe"
+            required
+          />
+        </div>
+        <br />
+      </div>
+
+      <div class="modal-footer">
+        <button class="login-btn" type="submit">Connexion</button>
+      </div>
+    </form>
+  </div>
+</div>

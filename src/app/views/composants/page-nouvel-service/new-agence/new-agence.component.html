@@ -1,0 +1,107 @@
+
+<div class="modal-dialog modal-xl">
+  <div class="modal-content">
+    <form [formGroup]="agenceForm" novalidate>
+      <div class="modal-header">
+        <h4 class="modal-title">Création ou Modification d'une agence</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="Close()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingCode"
+                placeholder="Code"
+                formControlName="code"
+              />
+              <label for="floatingCode">Code de l'agence</label>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingNom"
+                placeholder="Nom"
+                formControlName="nom"
+              />
+              <label for="floatingNom">Nom de l'agence</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingSigle"
+                placeholder="Sigle"
+                formControlName="sigle"
+              />
+              <label for="floatingSigle">Sigle</label>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingVille"
+                placeholder="Ville"
+                formControlName="ville"
+              />
+              <label for="floatingVille">Ville</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <select
+              class="form-control"
+              id="floatingResponsable"
+              formControlName="responsable"
+              >
+              <option value="" disabled>Choisissez un responsable </option>
+                <option *ngFor="let employe of listEmployes" [value]="employe.matricule">
+                  {{ employe.matricule }} ({{ employe.nom }} {{ employe.prenom }})
+                </option>
+              </select>
+              <label for="floatingResponsable">Responsable d'agence</label>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <select
+              class="form-control"
+              id="floatingDirection"
+              formControlName="direction"
+              >
+              <option value="" disabled>Choisissez une direction </option>
+                <option *ngFor="let direction of listDirections" [value]="direction.sigle">
+                  {{ direction.sigle }} ({{ direction.nom }})
+                </option>
+              </select>
+              <label for="floatingDirection">Responsable de direction</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" (click)="Close()">Annuler</button>
+        <button type="button" class="btn btn-outline-success" (click)="Save()">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,235 @@
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">Création ou Modification d'un client</h4>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+        (click)="Close()"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="clientForm" novalidate>
+        <div class="row">
+          <!-- Type de Pièce -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <select
+                class="form-select form-select-sm"
+                id="floatingTypePiece"
+                formControlName="typePiece"
+                (change)="onPieceTypeChange($event)"
+              >
+                <option value="">Sélectionnez un type</option>
+                <option *ngFor="let type of pieceTypes" [value]="type.value">
+                  {{ type.label }}
+                </option>
+              </select>
+              <label for="floatingTypePiece">Type de Pièce</label>
+            </div>
+          </div>
+
+          <!-- Numéro Passeport (Affiché si Passeport est sélectionné) -->
+          <div class="col-md-6 mb-3" *ngIf="selectedPieceType === 'PASSEPORT'">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingPassportNumber"
+                placeholder="Numéro Passeport"
+                formControlName="passportNumber"
+              />
+              <label for="floatingPassportNumber">Numéro Passeport</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+
+          <!-- Numéro CNIB (Affiché si CNIB est sélectionné) -->
+          <div class="col-md-6 mb-3" *ngIf="selectedPieceType === 'CNIB'">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingCnibNumber"
+                placeholder="Numéro CNIB"
+                formControlName="cnibNumber"
+              />
+              <label for="floatingCnibNumber">Numéro CNIB</label>
+            </div>
+          </div>
+
+          <!-- NIP CNIB (Affiché si CNIB est sélectionné) -->
+          <div class="col-md-6 mb-3" *ngIf="selectedPieceType === 'CNIB'">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingNipCnib"
+                placeholder="NIP CNIB"
+                formControlName="nipCnib"
+              />
+              <label for="floatingNipCnib">NIP CNIB</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Date établissement pièce -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="date"
+                class="form-control form-control-lg"
+                id="floatingDateEtaPiece"
+                placeholder="Date Etablissement"
+                formControlName="dateEtaPiece"
+              />
+              <label for="floatingDateEtaPiece">Date Etablissement</label>
+            </div>
+          </div>
+
+          <!-- Date expiration pièce -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="date"
+                class="form-control form-control-lg"
+                id="floatingDateExpPiece"
+                placeholder="Date Expiration"
+                formControlName="dateExpPiece"
+              />
+              <label for="floatingDateExpPiece">Date Expiration</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Nom -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingNom"
+                placeholder="Nom"
+                formControlName="nom"
+              />
+              <label for="floatingNom">Nom</label>
+            </div>
+          </div>
+
+          <!-- Prénom -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingPrenom"
+                placeholder="Prénom"
+                formControlName="prenom"
+              />
+              <label for="floatingPrenom">Prénom</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Date naissance -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="date"
+                class="form-control form-control-lg"
+                id="floatingDateNaiss"
+                placeholder="Date Naissance"
+                formControlName="dateNaiss"
+              />
+              <label for="floatingDateNaiss">Date Naissance</label>
+            </div>
+          </div>
+
+          <!-- Genre -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <select
+                class="form-select form-select-lg"
+                id="floatingGenre"
+                formControlName="genre"
+              >
+                <option value="">Sélectionnez une sexe</option>
+                <option *ngFor="let genre of genres" [value]="genre">
+                  {{ genre }}
+                </option>
+              </select>
+              <label for="floatingGenre">Genre</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Email -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="email"
+                class="form-control form-control-lg"
+                id="floatingEmail"
+                placeholder="Email"
+                formControlName="email"
+              />
+              <label for="floatingEmail">Email</label>
+            </div>
+          </div>
+
+          <!-- Téléphone -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingTelephone"
+                placeholder="Téléphone"
+                formControlName="telephone"
+              />
+              <label for="floatingTelephone">Téléphone</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Localité -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingLocalite"
+                placeholder="Localité"
+                formControlName="localite"
+              />
+              <label for="floatingLocalite">Localité</label>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-outline-danger"
+        data-bs-dismiss="modal"
+        (click)="Close()"
+      >
+        Annuler
+      </button>
+      <button type="button" class="btn btn-outline-success" (click)="Save()">
+        Enregistrer
+      </button>
+    </div>
+  </div>
+</div>

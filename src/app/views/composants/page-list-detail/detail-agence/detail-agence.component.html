@@ -1,0 +1,53 @@
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">CODE</th>
+            <th scope="col">NOM</th>
+            <th scope="col">SIGLE</th>
+            <th scope="col">Ville</th>
+            <th scope="col">RESPONSABLE</th>
+            <th scope="col">ACTION</th>
+          </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let item of listAgences; let i = index">
+              <th scope="row">{{ i + 1 }}</th>
+              <td>{{ item.code }}</td>
+              <td>{{ item.nom }}</td>
+              <td>{{ item.sigle }}</td>
+              <td>{{ item.ville }}</td>
+              <td>{{ item.responsable }}</td>
+              <td>
+                <div
+                  class="btn btn-outline-warning me-2"
+                  type="button"
+                  (click)="onEdite(item)"
+                  (keydown)="onKeyDown($event)"
+                  (keypress)="onKeyPress($event)"
+                  (keyup)="onKeyUp($event)"
+                >
+                  <i class="fa-solid fa-pen"></i>
+                </div>
+                <div
+                  class="btn btn-outline-danger"
+                  type="button"
+                  (click)="onDelete(item.id)"
+                  (keydown)="onKeyDown($event)"
+                  (keypress)="onKeyPress($event)"
+                  (keyup)="onKeyUp($event)"
+                >
+                  <i class="fa-solid fa-trash"></i>
+                </div>
+              </td>
+            </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

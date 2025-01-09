@@ -1,0 +1,200 @@
+<div class="modal-dialog">
+  <div class="modal-content">
+    <!-- Formulaire de création de demande -->
+    <form [formGroup]="demandeForm" novalidate>
+      <div class="modal-header">
+        <h4 class="modal-title">Création ou Modification d'une demande</h4>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="Close()"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="container">
+          <div class="row">
+            <!-- Colonne gauche -->
+            <div class="col-md-6">
+              <!-- Date d'établissement -->
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  id="etablisementDate"
+                  class="form-control"
+                  formControlName="etablisementDate"
+                  [disabled]="true"
+                  placeholder="Date d'établissement"
+                />
+                <label for="etablisementDate">Date d'établissement</label>
+              </div>
+
+              <!-- Référence de la demande -->
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  id="reference"
+                  class="form-control"
+                  formControlName="reference"
+                  readonly
+                  placeholder="Référence de la demande"
+                />
+                <label for="reference">Référence de la demande</label>
+              </div>
+
+              <!-- NIP client -->
+              <div class="form-floating mb-3 input-group">
+                <select
+                class="form-control"
+                id="floatingRefClient"
+                formControlName="refClient"
+                (change)="onClientChange($event)"
+              >
+                <option value="" disabled>Choisissez le client</option>
+                <option
+                  *ngFor="let client of listClients"
+                  [value]="client.cnibNumber || client.passportNumber"
+                >
+                  {{ client.cnibNumber || client.passportNumber}} ({{ client.typePiece }})
+                </option>
+              </select>
+                <label for="floatingRefClient">NIP / PASSPORT</label>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-warning"
+                  (click)="openModal()"
+                >
+                  <i class="fa-solid fa-square-plus"></i>
+                </button>
+              </div>
+
+              <!-- Affichage du nom et prénom du client sélectionné -->
+              <div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="nom"
+                        placeholder="Nom"
+                        formControlName="nom"
+                        readonly
+                      />
+                      <label for="nom">Nom</label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="prenom"
+                        placeholder="Prénom"
+                        formControlName="prenom"
+                        readonly
+                      />
+                      <label for="prenom">Prénom</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Statut -->
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  id="status"
+                  class="form-control"
+                  formControlName="status"
+                  [disabled]="true"
+                  placeholder="Statut"
+                />
+                <label for="status">Statut</label>
+              </div>
+            </div>
+
+            <!-- Colonne droite -->
+            <div class="col-md-6" formGroupName="ticketDto">
+              <!-- Produit -->
+              <div class="form-floating mb-3">
+                <select
+                  class="form-select form-select-lg"
+                  id="floatingProduit"
+                  formControlName="produit"
+                >
+                  <option value="">Sélectionnez un produit</option>
+                  <option *ngFor="let produit of produits" [value]="produit">
+                    {{ produit }}
+                  </option>
+                </select>
+                <label for="floatingProduit">Produit</label>
+              </div>
+
+              <!-- Numéro du ticket -->
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  id="numero"
+                  class="form-control"
+                  formControlName="numero"
+                  placeholder="Numéro du ticket"
+                />
+                <label for="numero">Numéro du ticket</label>
+              </div>
+
+              <!-- Montant -->
+              <div class="form-floating mb-3">
+                <input
+                  type="number"
+                  id="montant"
+                  class="form-control"
+                  formControlName="montant"
+                  placeholder="Montant"
+                />
+                <label for="montant">Montant</label>
+              </div>
+
+              <!-- Date de jeu -->
+              <div class="form-floating mb-3">
+                <input
+                  type="date"
+                  id="dateJeu"
+                  class="form-control"
+                  formControlName="dateJeu"
+                  placeholder="Date de jeu"
+                />
+                <label for="dateJeu">Date de jeu</label>
+              </div>
+
+              <!-- Nature -->
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  id="naturePayement"
+                  class="form-control"
+                  formControlName="naturePayement"
+                  [disabled]="true"
+                  placeholder="Nature"
+                />
+                <label for="naturePayement">Nature de payement</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" (click)="Close()">
+          Annuler
+        </button>
+        <button type="button" class="btn btn-outline-success" (click)="Save()">
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
