@@ -40,10 +40,10 @@
           </div>
 
           <input
-            type="email"
-            id="email"
-            name="email"
-            formControlName="email"
+            type="password"
+            id="password"
+            name="password"
+            formControlName="password"
             placeholder="Entrez votre mot de passe"
             required
           />
@@ -52,7 +52,7 @@
       </div>
 
       <div class="modal-footer">
-        <button class="login-btn" type="submit">Connexion</button>
+        <button class="login-btn" type="submit" (click)="onLoginClick()">Connexion</button>
       </div>
     </form>
   </div>

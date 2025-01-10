@@ -30,4 +30,9 @@ throw new Error('Method not implemented.');
   Close(): void {
     this.activeModal.close();
   }
+
+  onLoginClick() {
+    this.activeModal.close();
+    this.router.navigate(['/#']);
+  }
 }

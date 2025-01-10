@@ -1,0 +1,74 @@
+<!--<c-header class="mb-4 d-print-none" position="sticky">-->
+  <ng-container>
+    <c-container [fluid]="true" class="border-bottom px-4">
+      <button
+        [cSidebarToggle]="sidebarId"
+        cHeaderToggler
+        class="btn"
+        toggle="visible"
+        style="margin-inline-start: -14px;"
+        aria-label="Toggle sidebar navigation"
+      >
+        <svg cIcon name="cilMenu" size="lg"></svg>
+      </button>
+      <c-header-nav class="d-none d-md-flex">
+        <c-nav-item>
+          <a cNavLink routerLink="/dashboard" routerLinkActive="active">Tableau de bord | Gestion Tickets / Resto</a>
+        </c-nav-item>
+      </c-header-nav>
+
+      <c-header-nav class="d-none d-md-flex ms-auto ">
+        <a cNavLink routerLink="/autre/notifications">
+          <svg cIcon class="my-1" name="cilBell" size="lg"></svg>
+        </a>
+      </c-header-nav>
+
+      <c-header-nav class="mx-0">
+        <ng-container *ngTemplateOutlet="userDropdown" />
+      </c-header-nav>
+
+    </c-container>
+    <c-container [fluid]="true" class="px-4">
+      <c-breadcrumb-router />
+    </c-container>
+  </ng-container>
+  <!--</c-header>-->
+
+  <ng-template #userDropdown>
+    <c-dropdown [popperOptions]="{ placement: 'bottom-start' }" variant="nav-item">
+      <button [caret]="false" cDropdownToggle class="py-0 pe-0" aria-label="Open user menu">
+        <c-avatar
+          shape="rounded-1"
+          [size]="'md'"
+          src="./assets/images/avatars/user.jpg"
+          status="success"
+          textColor="primary"
+          alt="User avatar"
+        />
+      </button>
+      <ul cDropdownMenu class="pt-0 w-auto">
+        <li>
+          <h6 cDropdownHeader class="bg-body-secondary text-body-secondary fw-semibold py-2">
+            Mon compte
+          </h6>
+        </li>
+        <li></li>
+        <li>
+          <a cDropdownItem routerLink="/autre/compte">
+            <svg cIcon class="me-2" name="cilUser"></svg>
+            Profile
+          </a>
+        </li>
+        <li>
+          <hr cDropdownDivider />
+        </li>
+        <li>
+          <a cDropdownItem routerLink="/landing">
+            <svg cIcon class="me-2" name="cilAccountLogout"></svg>
+            Deconnexion
+          </a>
+        </li>
+      </ul>
+    </c-dropdown>
+  </ng-template>
+

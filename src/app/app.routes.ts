@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { DefaultLayoutComponent } from './layout';
+import { DefaultLayoutComponent } from './components/layout';
 
 export const routes: Routes = [
   {
@@ -16,23 +16,27 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        loadChildren: () => import('./views/dashboard/routes').then((m) => m.routes)
+        loadChildren: () => import('./components/views/dashboard/routes').then((m) => m.routes)
       },
       {
-        path: 'element',
-        loadChildren: () => import('./views/elements/routes').then((m) => m.routes)
+        path: 'elements',
+        loadChildren: () => import('./components/views/elements/routes').then((m) => m.routes)
       },
       {
-        path: 'user',
-        loadChildren: () => import('./views/user/routes').then((m) => m.routes)
+        path: 'restos',
+        loadChildren: () => import('./components/views/restos/routes').then((m) => m.routes)
       },
       {
-        path: 'service',
-        loadChildren: () => import('./views/service/routes').then((m) => m.routes)
+        path: 'users',
+        loadChildren: () => import('./components/views/users/routes').then((m) => m.routes)
+      },
+      {
+        path: 'structures',
+        loadChildren: () => import('./components/views/structures/routes').then((m) => m.routes)
       },
       {
         path: 'autre',
-        loadChildren: () => import('./views/autre/routes').then((m) => m.routes)
+        loadChildren: () => import('./components/views/autre/routes').then((m) => m.routes)
       },
     ]
   },
@@ -45,30 +49,16 @@ export const routes: Routes = [
   },
   {
     path: '404',
-    loadComponent: () => import('./views/pages/page404/page404.component').then(m => m.Page404Component),
+    loadComponent: () => import('./components/shared/exceptions/page404/page404.component').then(m => m.Page404Component),
     data: {
       title: 'Page 404'
     }
   },
   {
     path: '500',
-    loadComponent: () => import('./views/pages/page500/page500.component').then(m => m.Page500Component),
+    loadComponent: () => import('./components/shared/exceptions/page500/page500.component').then(m => m.Page500Component),
     data: {
       title: 'Page 500'
-    }
-  },
-  {
-    path: 'login',
-    loadComponent: () => import('./views/pages/login/login.component').then(m => m.LoginComponent),
-    data: {
-      title: 'Login Page'
-    }
-  },
-  {
-    path: 'recover',
-    loadComponent: () => import('./views/pages/pwd-forgeted/pwd-forgeted.component').then(m => m.PwdForgetedComponent),
-    data: {
-      title: 'Mot de passe oublié'
     }
   },
   { path: '**', redirectTo: 'dashboard' }
