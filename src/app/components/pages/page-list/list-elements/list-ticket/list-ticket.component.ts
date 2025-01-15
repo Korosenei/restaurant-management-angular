@@ -16,7 +16,7 @@ import { TICKET } from '../../../../../models/model-elements/ticket.model';
   styleUrl: './list-ticket.component.scss'
 })
 export class ListTicketComponent implements OnInit {
-  
+
   // Objet TICKET
   ticketObj: TICKET = new TICKET();
   listTickets: TICKET[] = [];
@@ -33,13 +33,13 @@ export class ListTicketComponent implements OnInit {
 
   getTickets() {
     this.http.get<TICKET[]>('http://localhost:3000/tickets').subscribe({
-      next: (res) => {
-        this.listTickets = res;
-      },
-      error: (err) => {
-        console.error("Erreur lors de la récupération des tickets", err);
-      }
-    });
+          next: (res) => {
+            this.listTickets = res;
+          },
+          error: (err) => {
+            console.error("Erreur lors de la récupération des transactions", err);
+          }
+        });
   }
 
   onEdite(data: TICKET) {}

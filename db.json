@@ -1,0 +1,154 @@
+{
+  "transactions": [
+    {
+      "date": "2025-01-15T12:40:43.078Z",
+      "reference": "2025010010001",
+      "refClient": "B9360091",
+      "nom": "Paré",
+      "prenom": "Léandre Bénilde",
+      "nbrTicket": 3,
+      "firstNumTicket": "202501150010001",
+      "lastNumTicket": "202501150010003",
+      "payement": "ESPECE",
+      "montant": 1500,
+      "id": 1
+    },
+    {
+      "date": "2025-01-15T12:40:55.112Z",
+      "reference": "2025010010002",
+      "refClient": "J98727Y",
+      "nom": "Bassolé",
+      "prenom": "Nestor",
+      "nbrTicket": 8,
+      "firstNumTicket": "202501150010004",
+      "lastNumTicket": "202501150010011",
+      "payement": "ESPECE",
+      "montant": 4000,
+      "id": 2
+    }
+  ],
+  "tickets": [
+    [
+      {
+        "id": 0,
+        "refTransaction": "2025010010001",
+        "numero": "202501150010001",
+        "dateValid": "2025-01-15T12:40:53.324Z",
+        "montant": 500,
+        "status": "VALIDE"
+      },
+      {
+        "id": 0,
+        "refTransaction": "2025010010001",
+        "numero": "202501150010002",
+        "dateValid": "2025-01-16T12:40:53.324Z",
+        "montant": 500,
+        "status": "VALIDE"
+      },
+      {
+        "id": 0,
+        "refTransaction": "2025010010001",
+        "numero": "202501150010003",
+        "dateValid": "2025-01-17T12:40:53.324Z",
+        "montant": 500,
+        "status": "VALIDE"
+      }
+    ],
+    [
+      {
+        "id": 0,
+        "refTransaction": "2025010010002",
+        "numero": "202501150010004",
+        "dateValid": "2025-01-15T12:41:06.048Z",
+        "montant": 500,
+        "status": "VALIDE"
+      },
+      {
+        "id": 0,
+        "refTransaction": "2025010010002",
+        "numero": "202501150010005",
+        "dateValid": "2025-01-16T12:41:06.048Z",
+        "montant": 500,
+        "status": "VALIDE"
+      },
+      {
+        "id": 0,
+        "refTransaction": "2025010010002",
+        "numero": "202501150010006",
+        "dateValid": "2025-01-17T12:41:06.048Z",
+        "montant": 500,
+        "status": "VALIDE"
+      },
+      {
+        "id": 0,
+        "refTransaction": "2025010010002",
+        "numero": "202501150010007",
+        "dateValid": "2025-01-18T12:41:06.048Z",
+        "montant": 500,
+        "status": "VALIDE"
+      },
+      {
+        "id": 0,
+        "refTransaction": "2025010010002",
+        "numero": "202501150010008",
+        "dateValid": "2025-01-19T12:41:06.048Z",
+        "montant": 500,
+        "status": "VALIDE"
+      },
+      {
+        "id": 0,
+        "refTransaction": "2025010010002",
+        "numero": "202501150010009",
+        "dateValid": "2025-01-20T12:41:06.048Z",
+        "montant": 500,
+        "status": "VALIDE"
+      },
+      {
+        "id": 0,
+        "refTransaction": "2025010010002",
+        "numero": "202501150010010",
+        "dateValid": "2025-01-21T12:41:06.048Z",
+        "montant": 500,
+        "status": "VALIDE"
+      },
+      {
+        "id": 0,
+        "refTransaction": "2025010010002",
+        "numero": "202501150010011",
+        "dateValid": "2025-01-22T12:41:06.048Z",
+        "montant": 500,
+        "status": "VALIDE"
+      }
+    ]
+  ],
+  "employes": [
+    {
+      "id": 1,
+      "matricule": "B173918",
+      "typePiece": "CNIB",
+      "numCnib": "B9360091",
+      "nipCnib": "098765432112345678990",
+      "numPassport": "AZERTYUIOP",
+      "nom": "Paré",
+      "prenom": "Léandre Bénilde",
+      "genre": "HOMME",
+      "email": "leandre@gmail.com",
+      "telephone": "71882020",
+      "agence": "Cité An III",
+      "role": "ADMIN"
+    },
+    {
+      "id": 2,
+      "matricule": "B173918",
+      "typePiece": "PASSPORT",
+      "numPassport": "J98727Y",
+      "nom": "Bassolé",
+      "prenom": "Nestor",
+      "genre": "HOMME",
+      "email": "ujkzgmail.com",
+      "telephone": "71882020",
+      "agence": "Quelque part",
+      "role": "USER"
+    }
+  ]
+}

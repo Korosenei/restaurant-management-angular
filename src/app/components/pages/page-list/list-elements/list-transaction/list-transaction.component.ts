@@ -3,7 +3,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { TRANSACTION } from 'src/app/models/model-elements/transaction.model';
+import { TRANSACTION } from '../../../../../models/model-elements/transaction.model';
 
 @Component({
   selector: 'app-list-transaction',
@@ -16,7 +16,7 @@ import { TRANSACTION } from 'src/app/models/model-elements/transaction.model';
   styleUrl: './list-transaction.component.scss'
 })
 export class ListTransactionComponent implements OnInit {
-  
+
   // Objet TRANSACTION
   ticketObj: TRANSACTION = new TRANSACTION();
   listTransactions: TRANSACTION[] = [];
@@ -32,7 +32,7 @@ export class ListTransactionComponent implements OnInit {
   }
 
   getTransactions() {
-    this.http.get<TRANSACTION[]>('http://localhost:3000/Transactions').subscribe({
+    this.http.get<TRANSACTION[]>('http://localhost:3000/transactions').subscribe({
       next: (res) => {
         this.listTransactions = res;
       },

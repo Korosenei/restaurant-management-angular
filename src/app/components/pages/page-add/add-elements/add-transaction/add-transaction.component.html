@@ -33,19 +33,21 @@
               <!-- NIP client -->
               <div class="form-floating mb-3 input-group">
                 <select
-                class="form-control"
-                id="floatingRefClient"
-                formControlName="refClient"
-                (change)="onClientChange($event)"
-              >
-                <option value="" disabled>Choisissez le client</option>
-                <option
-                  *ngFor="let client of listClients"
-                  [value]="client.numCnib || client.numPassport"
+                  class="form-control"
+                  id="floatingRefClient"
+                  formControlName="refClient"
+                  (change)="onClientChange($event)"
                 >
-                  {{ client.numCnib || client.numPassport}} ({{ client.typePiece }})
-                </option>
-              </select>
+                  <option value="" disabled>Choisissez le client</option>
+                  <option
+                    *ngFor="let client of listClients"
+                    [value]="client.numCnib || client.numPassport"
+                  >
+                    {{ client.numCnib || client.numPassport }} ({{
+                      client.typePiece
+                    }})
+                  </option>
+                </select>
                 <label for="floatingRefClient">NIP / PASSPORT</label>
 
                 <button
@@ -106,15 +108,15 @@
 
             <!-- Colonne droite -->
             <div class="col-md-6">
-              <!-- Référence de la demande -->
+              <!-- Référence de la transaction -->
               <div class="form-floating mb-3">
                 <input
                   type="text"
                   id="reference"
                   class="form-control"
                   formControlName="reference"
-                  readonly
-                  placeholder="Référence de la demande"
+                  placeholder="Référence"
+                  (input)="generateTransactionReference()"
                 />
                 <label for="reference">Référence</label>
               </div>
@@ -122,11 +124,13 @@
               <!-- Nombre de ticket -->
               <div class="form-floating mb-3">
                 <input
-                  type="number"
                   id="nbrTicket"
+                  type="number"
                   class="form-control"
                   formControlName="nbrTicket"
-                  placeholder="Nombre de ticket"
+                  (input)="generateTicketNumbers()"
+                  [min]="1"
+                  [max]="20"
                 />
                 <label for="nbrTicket">Quantité de ticket</label>
               </div>
@@ -137,12 +141,11 @@
                   <div class="col-md-6">
                     <div class="form-floating mb-3">
                       <input
+                        id="firstNumTicket"
                         type="text"
                         class="form-control"
-                        id="firstNumTicket"
-                        placeholder="Nom"
                         formControlName="firstNumTicket"
-                        readonly
+                        [value]="transactionForm.get('firstNumTicket')?.value"
                       />
                       <label for="firstNumTicket">Premier Numero</label>
                     </div>
@@ -156,7 +159,7 @@
                         id="lastNumTicket"
                         placeholder="Dernier Numero"
                         formControlName="lastNumTicket"
-                        readonly
+                        [value]="transactionForm.get('lastNumTicket')?.value"
                       />
                       <label for="lastNumTicket">Dernier Numero</label>
                     </div>
