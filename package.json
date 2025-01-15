@@ -39,6 +39,7 @@
     "@ng-select/ng-select": "^13.7.0",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.3",
+    "coreui-free-angular-admin-template": "file:",
     "json-server": "^1.0.0-beta.1",
     "lodash-es": "^4.17.21",
     "ngx-scrollbar": "^13.0.3",

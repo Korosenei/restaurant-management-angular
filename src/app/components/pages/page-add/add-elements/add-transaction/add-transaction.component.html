@@ -1,1 +1,193 @@
-<p>add-transaction works!</p>
+<div class="modal-dialog">
+  <div class="modal-content">
+    <!-- Formulaire de création de demande -->
+    <form [formGroup]="transactionForm" novalidate>
+      <div class="modal-header">
+        <h4 class="modal-title">Operation de vente de ticket</h4>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="Close()"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="container">
+          <div class="row">
+            <!-- Colonne gauche -->
+            <div class="col-md-6">
+              <!-- Date de transaction -->
+              <div class="form-floating mb-3">
+                <input
+                  type="datetime"
+                  id="date"
+                  class="form-control"
+                  formControlName="date"
+                  [disabled]="true"
+                  placeholder="Date de transaction"
+                />
+                <label for="date">Date de transaction</label>
+              </div>
+
+              <!-- NIP client -->
+              <div class="form-floating mb-3 input-group">
+                <select
+                class="form-control"
+                id="floatingRefClient"
+                formControlName="refClient"
+                (change)="onClientChange($event)"
+              >
+                <option value="" disabled>Choisissez le client</option>
+                <option
+                  *ngFor="let client of listClients"
+                  [value]="client.numCnib || client.numPassport"
+                >
+                  {{ client.numCnib || client.numPassport}} ({{ client.typePiece }})
+                </option>
+              </select>
+                <label for="floatingRefClient">NIP / PASSPORT</label>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-warning"
+                  (click)="openModal()"
+                >
+                  <i class="fa-solid fa-square-plus"></i>
+                </button>
+              </div>
+
+              <!-- Affichage du nom et prénom du client sélectionné -->
+              <div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="nom"
+                        placeholder="Nom"
+                        formControlName="nom"
+                        readonly
+                      />
+                      <label for="nom">Nom</label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="prenom"
+                        placeholder="Prénom"
+                        formControlName="prenom"
+                        readonly
+                      />
+                      <label for="prenom">Prénom</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nature -->
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  id="payement"
+                  class="form-control"
+                  formControlName="payement"
+                  [disabled]="true"
+                  placeholder="Payement"
+                />
+                <label for="payement">Payement</label>
+              </div>
+            </div>
+
+            <!-- Colonne droite -->
+            <div class="col-md-6">
+              <!-- Référence de la demande -->
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  id="reference"
+                  class="form-control"
+                  formControlName="reference"
+                  readonly
+                  placeholder="Référence de la demande"
+                />
+                <label for="reference">Référence</label>
+              </div>
+
+              <!-- Nombre de ticket -->
+              <div class="form-floating mb-3">
+                <input
+                  type="number"
+                  id="nbrTicket"
+                  class="form-control"
+                  formControlName="nbrTicket"
+                  placeholder="Nombre de ticket"
+                />
+                <label for="nbrTicket">Quantité de ticket</label>
+              </div>
+
+              <!-- Affichage du premier num et du dernier num du lot -->
+              <div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="firstNumTicket"
+                        placeholder="Nom"
+                        formControlName="firstNumTicket"
+                        readonly
+                      />
+                      <label for="firstNumTicket">Premier Numero</label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="lastNumTicket"
+                        placeholder="Dernier Numero"
+                        formControlName="lastNumTicket"
+                        readonly
+                      />
+                      <label for="lastNumTicket">Dernier Numero</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Montant -->
+              <div class="form-floating mb-3">
+                <input
+                  type="number"
+                  id="montant"
+                  class="form-control"
+                  formControlName="montant"
+                  placeholder="Montant"
+                />
+                <label for="montant">Montant</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" (click)="Close()">
+          Annuler
+        </button>
+        <button type="button" class="btn btn-outline-success" (click)="Save()">
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
