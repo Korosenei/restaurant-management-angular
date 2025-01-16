@@ -29,12 +29,12 @@ export const navItems: INavData[] = [
   {
     name: 'Restaurants',
     url: '/restos/restaurants',
-    iconComponent: { name: 'cil-list' }
+    iconComponent: { name: 'cil-restaurant' }
   },
   {
     name: 'Menu du Jour',
     url: '/restos/menus',
-    iconComponent: { name: 'cilFile' }
+    iconComponent: { name: 'cil-list' }
   },
   {
     name: 'Réservations',
@@ -57,9 +57,9 @@ export const navItems: INavData[] = [
     iconComponent: { name: 'cil-user-female' }
   },
   {
-    name: 'Super Admin',
+    name: 'Role',
     url: '/users/admin',
-    iconComponent: { name: 'cil-shield-alt' }
+    iconComponent: { name: 'cil-lock-locked' }
   },
 
 

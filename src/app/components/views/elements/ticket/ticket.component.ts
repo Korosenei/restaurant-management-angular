@@ -23,7 +23,6 @@ import { TRANSACTION } from '../../../../models/model-elements/transaction.model
 })
 export class TicketComponent {
   constructor(
-    private http: HttpClient,
     private modalService: NgbModal,
     private router: Router
   ) {}

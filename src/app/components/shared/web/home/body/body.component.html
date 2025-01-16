@@ -1,22 +1,4 @@
 
-<!-- Hero Start -->
-<section>
-  <div class="sectionOne">
-    <video autoplay muted loop class="bg-video">
-      <source src="assets/videos/resto.mp4" type="video/mp4" />
-    </video>
-    <h1>Savourez notre délicieux repas</h1>
-    <p>
-      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Praesentium
-      iusto necessitatibus fugiat, repellat sint iure laboriosam sit
-      consequuntur facere ratione assumenda adipisci dolore dolor enim. Quasi
-      reprehenderit quos molestiae consequuntur.
-    </p>
-  </div>
-</section>
-
-
-<!-- Hero Start -->
 <section>
   <div class="sectionOne">
     <video autoplay muted loop class="bg-video">
@@ -67,7 +49,7 @@
             <div class="carousel-inner">
               <div class="carousel-item active rounded">
                 <img
-                  src="img/hero-img-1.png"
+                  src="assets/images/img/hero-img-1.png"
                   class="img-fluid w-100 h-100 bg-secondary rounded"
                   alt="First slide"
                 />
@@ -75,7 +57,7 @@
               </div>
               <div class="carousel-item rounded">
                 <img
-                  src="img/hero-img-2.jpg"
+                  src="assets/images/img/hero-img-2.jpg"
                   class="img-fluid w-100 h-100 rounded"
                   alt="Second slide"
                 />
@@ -115,3 +97,226 @@
   </div>
 </section>
 
+<section class="about section bd-container" id="about">
+  <div class="container py-5">
+    <!-- Section de filtre -->
+    <div class="row mb-5">
+      <div class="col-md-6 offset-md-3">
+        <h3 class="text-center">Filtrer par Ville</h3>
+        <select class="form-select" id="cityFilter">
+          <option value="all">Toutes les villes</option>
+          <option value="paris">Ouagadougou</option>
+          <option value="lyon">Kaya</option>
+          <option value="marseille">Bobo</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Section Our Story -->
+    <div class="row align-items-center our-story" data-city="paris">
+      <div class="col-md-6">
+        <h2 class="text-uppercase">Our Story</h2>
+        <h1 class="display-4">Nom du Restaurant - Paris</h1>
+        <p class="lead">Chaque saveur raconte une histoire</p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel
+          lacus vitae nisi euismod dapibus.
+        </p>
+        <div class="mt-4">
+          <p><strong>Adresse :</strong> 123 Rue de la Gastronomie, Paris</p>
+          <p><strong>Téléphone :</strong> +33 (0)1 23 45 67 89</p>
+          <p><strong>Manager :</strong> Jean Dupont</p>
+        </div>
+        <a href="#" class="btn btn-primary mt-3">En savoir plus</a>
+      </div>
+      <div class="col-md-6 text-center">
+        <img
+          src="assets/images/img/about-banner.jpg"
+          alt="Image du Restaurant"
+          class="img-fluid rounded shadow"
+        />
+        <div class="mt-3">
+          <h3 class="text-warning">⭐⭐⭐⭐⭐</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Carrousel des menus -->
+  <div class="py-5">
+    <h2 class="text-center mb-4">Menus du Jour</h2>
+    <div class="row mb-4">
+      <div class="col-md-4 offset-md-4">
+        <select class="form-select" id="dayFilter">
+          <option value="all">Tous les jours</option>
+          <option value="monday">Lundi</option>
+          <option value="tuesday">Mardi</option>
+          <option value="wednesday">Mercredi</option>
+        </select>
+      </div>
+    </div>
+    <div id="menuCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active" data-day="monday" data-city="paris">
+          <div class="text-center">
+            <img
+              src="assets/images/img/food1.png"
+              class="d-block w-50 mx-auto"
+              alt="Menu 1"
+            />
+            <h3>Menu Gourmet</h3>
+            <p>Une sélection raffinée de plats locaux.</p>
+            <p><strong>Pas Restants :</strong> 120</p>
+          </div>
+        </div>
+        <div class="carousel-item" data-day="tuesday" data-city="lyon">
+          <div class="text-center">
+            <img
+              src="assets/images/img/food2.png"
+              class="d-block w-50 mx-auto"
+              alt="Menu 2"
+            />
+            <h3>Menu de la Mer</h3>
+            <p>Des fruits de mer frais et savoureux.</p>
+            <p><strong>Pas Restants :</strong> 90</p>
+          </div>
+        </div>
+      </div>
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#menuCarousel"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#menuCarousel"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container-fluid testimonial py-5">
+    <div class="container py-5">
+      <div class="testimonial-header text-center">
+        <h1 class="text-primary">Nos restaurants</h1>
+      </div>
+      <div class="owl-carousel testimonial-carousel">
+        <div class="testimonial-item img-border-radius bg-light rounded p-4">
+          <div class="position-relative">
+            <i
+              class="fa fa-quote-right fa-2x text-secondary position-absolute"
+              style="bottom: 30px; right: 0"
+            ></i>
+            <div class="mb-4 pb-4 border-bottom border-secondary">
+              <p class="mb-0">
+                Lorem Ipsum is simply dummy text of the printing Ipsum has been
+                the industry's standard dummy text ever since the 1500s,
+              </p>
+            </div>
+            <div class="d-flex align-items-center flex-nowrap">
+              <div class="bg-secondary rounded">
+                <img
+                  src="assets/images/img/about-banner.jpg"
+                  class="img-fluid rounded"
+                  style="width: 100px; height: 100px"
+                  alt=""
+                />
+              </div>
+              <div class="ms-4 d-block">
+                <h4 class="text-dark">Resto Name</h4>
+                <p class="m-0 pb-3">Profession</p>
+                <div class="d-flex pe-5">
+                  <i class="fas fa-star text-primary"></i>
+                  <i class="fas fa-star text-primary"></i>
+                  <i class="fas fa-star text-primary"></i>
+                  <i class="fas fa-star text-primary"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-item img-border-radius bg-light rounded p-4">
+          <div class="position-relative">
+            <i
+              class="fa fa-quote-right fa-2x text-secondary position-absolute"
+              style="bottom: 30px; right: 0"
+            ></i>
+            <div class="mb-4 pb-4 border-bottom border-secondary">
+              <p class="mb-0">
+                Lorem Ipsum is simply dummy text of the printing Ipsum has been
+                the industry's standard dummy text ever since the 1500s,
+              </p>
+            </div>
+            <div class="d-flex align-items-center flex-nowrap">
+              <div class="bg-secondary rounded">
+                <img
+                  src="assets/images/img/about-banner.jpg"
+                  class="img-fluid rounded"
+                  style="width: 100px; height: 100px"
+                  alt=""
+                />
+              </div>
+              <div class="ms-4 d-block">
+                <h4 class="text-dark">Resto Name</h4>
+                <p class="m-0 pb-3">Profession</p>
+                <div class="d-flex pe-5">
+                  <i class="fas fa-star text-primary"></i>
+                  <i class="fas fa-star text-primary"></i>
+                  <i class="fas fa-star text-primary"></i>
+                  <i class="fas fa-star text-primary"></i>
+                  <i class="fas fa-star text-primary"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-item img-border-radius bg-light rounded p-4">
+          <div class="position-relative">
+            <i
+              class="fa fa-quote-right fa-2x text-secondary position-absolute"
+              style="bottom: 30px; right: 0"
+            ></i>
+            <div class="mb-4 pb-4 border-bottom border-secondary">
+              <p class="mb-0">
+                Lorem Ipsum is simply dummy text of the printing Ipsum has been
+                the industry's standard dummy text ever since the 1500s,
+              </p>
+            </div>
+            <div class="d-flex align-items-center flex-nowrap">
+              <div class="bg-secondary rounded">
+                <img
+                  src="assets/images/img/about-banner.jpg"
+                  class="img-fluid rounded"
+                  style="width: 100px; height: 100px"
+                  alt=""
+                />
+              </div>
+              <div class="ms-4 d-block">
+                <h4 class="text-dark">Resto Name</h4>
+                <p class="m-0 pb-3">Profession</p>
+                <div class="d-flex pe-5">
+                  <i class="fas fa-star text-primary"></i>
+                  <i class="fas fa-star text-primary"></i>
+                  <i class="fas fa-star text-primary"></i>
+                  <i class="fas fa-star text-primary"></i>
+                  <i class="fas fa-star text-primary"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
