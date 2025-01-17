@@ -25,6 +25,19 @@
       "payement": "ESPECE",
       "montant": 4000,
       "id": 2
+    },
+    {
+      "date": "2025-01-17T16:21:07.362Z",
+      "reference": "2025010010003",
+      "refClient": "J98727Y",
+      "nom": "Bassolé",
+      "prenom": "Nestor",
+      "nbrTicket": 20,
+      "firstNumTicket": "202501170010012",
+      "lastNumTicket": "202501170010031",
+      "payement": "ESPECE",
+      "montant": 10000,
+      "id": 3
     }
   ],
   "tickets": [

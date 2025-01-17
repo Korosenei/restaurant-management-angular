@@ -1,116 +1,27 @@
-
-<section>
-  <div class="sectionOne">
-    <video autoplay muted loop class="bg-video">
-      <source src="assets/videos/resto.mp4" type="video/mp4" />
-    </video>
-    <h1>Savourez notre délicieux repas</h1>
-    <p>
-      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Praesentium
-      iusto necessitatibus fugiat, repellat sint iure laboriosam sit
-      consequuntur facere ratione assumenda adipisci dolore dolor enim. Quasi
-      reprehenderit quos molestiae consequuntur.
-    </p>
-  </div>
-</section>
-
-<section>
-  <div class="container-fluid py-5 mb-5 hero-header">
-    <div class="container py-5">
-      <div class="row g-5 align-items-center">
-        <div class="col-md-12 col-lg-7">
-          <h4 class="mb-3 text-secondary">
-            Profitez de repas subventionnés à 75% par MUTRALO
-          </h4>
-          <h1 class="mb-5 display-3 text-success">
-            Servis par les meilleurs restaurants
-          </h1>
-          <div class="position-relative mx-auto">
-            <input
-              class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill"
-              type="number"
-              placeholder="Search"
-            />
-            <button
-              type="submit"
-              class="btn btn-success border-2 border-secondary py-3 px-4 position-absolute rounded-pill text-white h-100"
-              style="top: 0; right: 25%"
-            >
-              Submit Now
-            </button>
-          </div>
-        </div>
-        <div class="col-md-12 col-lg-5">
-          <div
-            id="carouselId"
-            class="carousel slide position-relative"
-            data-bs-ride="carousel"
-          >
-            <div class="carousel-inner">
-              <div class="carousel-item active rounded">
-                <img
-                  src="assets/images/img/hero-img-1.png"
-                  class="img-fluid w-100 h-100 bg-secondary rounded"
-                  alt="First slide"
-                />
-                <a href="#" class="btn px-4 py-2 text-white rounded">Fruites</a>
-              </div>
-              <div class="carousel-item rounded">
-                <img
-                  src="assets/images/img/hero-img-2.jpg"
-                  class="img-fluid w-100 h-100 rounded"
-                  alt="Second slide"
-                />
-                <a href="#" class="btn px-4 py-2 text-white rounded"
-                  >Vesitables</a
-                >
-              </div>
-            </div>
-            <button
-              class="carousel-control-prev"
-              type="button"
-              data-bs-target="#carouselId"
-              data-bs-slide="prev"
-            >
-              <span
-                class="carousel-control-prev-icon"
-                aria-hidden="true"
-              ></span>
-              <span class="visually-hidden">Previous</span>
-            </button>
-            <button
-              class="carousel-control-next"
-              type="button"
-              data-bs-target="#carouselId"
-              data-bs-slide="next"
-            >
-              <span
-                class="carousel-control-next-icon"
-                aria-hidden="true"
-              ></span>
-              <span class="visually-hidden">Next</span>
-            </button>
-          </div>
-        </div>
+<section class="grid">
+  <div class="content">
+    <div class="content-left">
+      <div class="info">
+        <h2>
+          Order Your Best <br />
+          Food anytime
+        </h2>
+        <p>
+          Hey, Our delicious food is waiting for you <br />
+          We are always near to you with fresh item of food
+        </p>
       </div>
+      <button>Explore food</button>
+    </div>
+
+    <div class="content-right">
+      <img src="assets/images/img/food2.png" alt="" />
     </div>
   </div>
 </section>
 
 <section class="about section bd-container" id="about">
   <div class="container py-5">
-    <!-- Section de filtre -->
-    <div class="row mb-5">
-      <div class="col-md-6 offset-md-3">
-        <h3 class="text-center">Filtrer par Ville</h3>
-        <select class="form-select" id="cityFilter">
-          <option value="all">Toutes les villes</option>
-          <option value="paris">Ouagadougou</option>
-          <option value="lyon">Kaya</option>
-          <option value="marseille">Bobo</option>
-        </select>
-      </div>
-    </div>
 
     <!-- Section Our Story -->
     <div class="row align-items-center our-story" data-city="paris">
@@ -141,66 +52,46 @@
       </div>
     </div>
   </div>
+</section>
 
-  <!-- Section Carrousel des menus -->
-  <div class="py-5">
-    <h2 class="text-center mb-4">Menus du Jour</h2>
-    <div class="row mb-4">
-      <div class="col-md-4 offset-md-4">
-        <select class="form-select" id="dayFilter">
-          <option value="all">Tous les jours</option>
-          <option value="monday">Lundi</option>
-          <option value="tuesday">Mardi</option>
-          <option value="wednesday">Mercredi</option>
-        </select>
-      </div>
-    </div>
-    <div id="menuCarousel" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-inner">
-        <div class="carousel-item active" data-day="monday" data-city="paris">
-          <div class="text-center">
-            <img
-              src="assets/images/img/food1.png"
-              class="d-block w-50 mx-auto"
-              alt="Menu 1"
-            />
-            <h3>Menu Gourmet</h3>
-            <p>Une sélection raffinée de plats locaux.</p>
-            <p><strong>Pas Restants :</strong> 120</p>
-          </div>
-        </div>
-        <div class="carousel-item" data-day="tuesday" data-city="lyon">
-          <div class="text-center">
-            <img
-              src="assets/images/img/food2.png"
-              class="d-block w-50 mx-auto"
-              alt="Menu 2"
-            />
-            <h3>Menu de la Mer</h3>
-            <p>Des fruits de mer frais et savoureux.</p>
-            <p><strong>Pas Restants :</strong> 90</p>
-          </div>
-        </div>
-      </div>
-      <button
-        class="carousel-control-prev"
-        type="button"
-        data-bs-target="#menuCarousel"
-        data-bs-slide="prev"
-      >
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button
-        class="carousel-control-next"
-        type="button"
-        data-bs-target="#menuCarousel"
-        data-bs-slide="next"
-      >
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
+
+
+<section class="features">
+  <div class="feature-card">
+    <img src="assets/images/img/food1.png" alt="Food Icon" />
+    <h3>Fresh Food</h3>
+    <p>Quality ingredients daily</p>
+    <a href="#" class="cta-button">Order Now</a>
+  </div>
+  <div class="feature-card">
+    <img src="assets/images/img/food2.png" alt="Food Icon" />
+    <h3>Fast Delivery</h3>
+    <p>Quick to your door</p>
+    <a href="#" class="cta-button">Order Now</a>
+  </div>
+  <div class="feature-card">
+    <img src="assets/images/img/food3.png" alt="Food Icon" />
+    <h3>Quality Food</h3>
+    <p>Expert chefs</p>
+    <a href="#" class="cta-button">Order Now</a>
+  </div>
+  <div class="feature-card">
+    <img src="assets/images/img/food1.png" alt="Food Icon" />
+    <h3>Fresh Food</h3>
+    <p>Quality ingredients daily</p>
+    <a href="#" class="cta-button">Order Now</a>
+  </div>
+  <div class="feature-card">
+    <img src="assets/images/img/food2.png" alt="Food Icon" />
+    <h3>Fast Delivery</h3>
+    <p>Quick to your door</p>
+    <a href="#" class="cta-button">Order Now</a>
+  </div>
+  <div class="feature-card">
+    <img src="assets/images/img/food3.png" alt="Food Icon" />
+    <h3>Quality Food</h3>
+    <p>Expert chefs</p>
+    <a href="#" class="cta-button">Order Now</a>
   </div>
 </section>
 

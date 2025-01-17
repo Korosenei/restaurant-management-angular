@@ -54,7 +54,7 @@ export class AddTransactionComponent implements OnInit {
       refClient: [''],
       nom: [''],
       prenom: [''],
-      nbrTicket: [1, [Validators.required, Validators.min(1)]],
+      nbrTicket: [20, [Validators.required, Validators.min(20)]],
       firstNumTicket: [''],
       lastNumTicket: [''],
       payement: [{ value: Payement.ESPECE, disabled: true }],

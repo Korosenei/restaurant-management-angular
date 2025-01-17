@@ -1,16 +1,30 @@
 /*** Footer Start ***/
-.footer .footer-item .btn-link {
-  line-height: 35px;
-  color: rgba(255, 255, 255, .5);
-  transition: 0.5s;
+.newsletter {
+  padding: 2rem 5%;
+  background-color: #ff6b3d;
+  color: white;
+  text-align: center;
 }
 
-.footer .footer-item .btn-link:hover {
-  color: var(--bs-secondary) !important;
+.newsletter form {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
-.footer .footer-item p.mb-4 {
-  line-height: 35px;
+.newsletter input {
+  padding: 0.8rem;
+  border: none;
+  border-radius: 5px;
+  width: 300px;
+}
+
+footer {
+  padding: 2rem 5%;
+  text-align: center;
+  background-color: #333;
+  color: white;
 }
 /*** Footer End ***/
 

@@ -18,7 +18,7 @@
           @for (item of listTransactions; track $index) {
             <tr>
               <th scope="row">{{ $index + 1 }}</th>
-              <td>{{ item.date }}</td>
+              <td>{{ item.date | date: 'dd/MM/yyyy'}}</td>
               <td>{{ item.reference }}</td>
               <td>{{ item.refClient }}</td>
               <td>{{ item.nbrTicket }}</td>

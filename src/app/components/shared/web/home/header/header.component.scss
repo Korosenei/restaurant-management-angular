@@ -9,6 +9,7 @@
 .topbar {
   padding: 20px;
   border-radius: 230px 100px;
+  background-color: #FF511C;
 }
 
 .topbar .top-info {
@@ -54,22 +55,6 @@
   border-bottom: 1px solid rgba(255, 255, 255, .1);
 }
 
-.navbar .navbar-nav .nav-link:hover,
-.navbar .navbar-nav .nav-link.active,
-.fixed-top.bg-white .navbar .navbar-nav .nav-link:hover,
-.fixed-top.bg-white .navbar .navbar-nav .nav-link.active {
-  color: var(--bs-primary);
-}
-
-.navbar .dropdown-toggle::after {
-  border: none;
-  content: "\f107";
-  font-family: "Font Awesome 5 Free";
-  font-weight: 700;
-  vertical-align: middle;
-  margin-left: 8px;
-}
-
 @media (min-width: 1200px) {
   .navbar .nav-item .dropdown-menu {
       display: block;
@@ -83,38 +68,74 @@
   }
 }
 
-.dropdown .dropdown-menu a:hover {
-  background: var(--bs-secondary);
-  color: var(--bs-primary);
-}
-
-.navbar .nav-item:hover .dropdown-menu {
-  transform: rotateX(0deg);
-  visibility: visible;
-  background: var(--bs-light) !important;
-  border-radius: 10px !important;
-  transition: .5s;
-  opacity: 1;
-}
-
-.my-auto{
-  border: none;
-  cursor: pointer;
-}
-
-/*** Navbar End ***/
-.login-form-title {
+.nav{
   width: 100%;
-  display: block;
-  font-family: Montserrat-Medium;
-  text-transform: uppercase;
-  font-size: 25px;
-  color: #333333;
-  line-height: 1.2;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 0;
 }
 
-.modal-body{
-  align-items: center;
-  text-align: center;
+.nav .logo h1{
+  font-weight: 600;
+  font-family: sans-serif;
+  color: #000000;
+}
+
+.nav .logo b{
+  color: #FF511C;
+}
+
+.nav ul{
+  display: flex;
+  list-style: none;
+}
+
+.nav ul li{
+  margin-right: 30px;
+}
+
+.nav ul li a{
+  text-decoration: none;
+  color: #000000;
+  font-weight: 500;
+  font-family: sans-serif;
+  font-size: 17px;
+}
+
+.nav ul .active::after{
+  content: "";
+  width: 50px;
+  height: 3px;
+  background-color: #FF511C;
+  display: flex;
+  position: relative;
+}
+
+input{
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.signIn{
+  background: transparent;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+}
+
+.signIn:hover{
+  background-color: #FF511C;
+  color: #FFFFFF;
+}
+
+.menu {
+  position: sticky;
+  padding: 20px 0; /* Rembourrage pour rendre le menu plus élégant */
+}
+
+
+body {
+  margin-top: 120px; /* Ajustez en fonction de la hauteur de votre menu */
 }
