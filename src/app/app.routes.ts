@@ -48,6 +48,13 @@ export const routes: Routes = [
     }
   },
   {
+    path: 'header',
+    loadComponent: () => import('./components/shared/web/home/header/header.component').then(m => m.HeaderComponent),
+    data: {
+      title: 'Header'
+    }
+  },
+  {
     path: '404',
     loadComponent: () => import('./components/shared/exceptions/page404/page404.component').then(m => m.Page404Component),
     data: {

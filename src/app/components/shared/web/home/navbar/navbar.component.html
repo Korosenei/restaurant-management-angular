@@ -1,0 +1,65 @@
+
+<!-- Navbar start -->
+<div class="container-fluid fixed-top">
+  <div class="container topbar d-none d-lg-block">
+    <div class="d-flex justify-content-between">
+      <div class="top-info ps-2">
+        <small class="me-3"
+            ><i class="fas fa-map-marker-alt me-2 text-success"></i>
+            <a href="#" class="text-white"
+              >01 BP 68 Ouaga 01. 436 rue du grand marché</a
+            ></small
+          >
+          <small class="me-3"
+            ><i class="fas fa-envelope me-2 text-success"></i
+            ><a href="#" class="text-white">lonab.mutralo.bf</a></small
+          >
+        </div>
+        <div class="top-link pe-2">
+          <a href="#" class="text-white"
+            ><small class="text-white mx-2">Privacy Policy</small>/</a
+          >
+          <a href="#" class="text-white"
+            ><small class="text-white mx-2">Terms of Use</small>/</a
+          >
+          <a href="#" class="text-white"
+            ><small class="text-white ms-2">Sales and Refunds</small></a
+          >
+      </div>
+    </div>
+  </div>
+  <div class="container px-0">
+    <nav class="navbar navbar-light bg-white navbar-expand-xl">
+      <a (click)="onHomeClick()" class="navbar-brand"
+        ><h1 class="display-6">Mutralo<b>Resto</b></h1></a
+      >
+      <button
+        class="navbar-toggler py-2 px-3"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarCollapse"
+      >
+        <span class="fa fa-bars"></span>
+      </button>
+      <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
+        <div class="navbar-nav mx-auto">
+          <a  class="nav-item nav-link active" (click)="onHomeClick()">Home</a>
+          <a class="nav-item nav-link" (click)="onMenuClick()">Menu</a>
+          <a class="nav-item nav-link" (click)="onRestoClick()">Service</a>
+          <a class="nav-item nav-link" (click)="onContactClick()">About us</a>
+          <a class="nav-item nav-link" (click)="onGalleryClick()">Gallery</a>
+        </div>
+        <div class="d-flex m-3 me-0">
+          <input
+              class="signIn"
+              type="submit"
+              value="Sign In"
+              name="signIn"
+              (click)="openLoginModal()"
+            />
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>
+<!-- Navbar End -->
