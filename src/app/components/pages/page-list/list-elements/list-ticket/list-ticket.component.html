@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="listTickets && listTickets.length > 0; else noTickets">
   <div class="row">
     <div class="col-sm-12">
       <table class="table table-hover">
@@ -7,6 +7,7 @@
             <th scope="col">ID</th>
             <th scope="col">REF TRANS</th>
             <th scope="col">NUMERO</th>
+            <th scope="col">CLIENT</th>
             <th scope="col">VALIDITE</th>
             <th scope="col">STATUT</th>
             <th scope="col">ACTION</th>
@@ -17,9 +18,10 @@
           @for (item of listTickets; track $index) {
             <tr>
               <th scope="row">{{ $index + 1 }}</th>
-              <td>{{ item.transactionDto.reference }}</td>
+              <td>{{ item.transactionDto?.reference }}</td>
               <td>{{ item.numero }}</td>
-              <td>{{ item.dateValid }}</td>
+              <td>{{ item.transactionDto?.nom}} {{item.transactionDto?.prenom}}</td>
+              <td>{{ item.dateValid | date: 'dd/MM/yyyy'}}</td>
               <td>{{ item.status }}</td>
               <td>
                 <div
@@ -48,3 +50,8 @@
     </div>
   </div>
 </div>
+
+
+<ng-template #noTickets>
+  <p>Aucun ticket trouvé.</p>
+</ng-template>

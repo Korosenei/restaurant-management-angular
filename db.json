@@ -1,9 +1,6 @@
 {
-  "transactions": [
-
-  ],
-  "tickets": [
-  ],
+  "transactions": [],
+  "tickets": [],
   "employes": [
     {
       "id": 1,

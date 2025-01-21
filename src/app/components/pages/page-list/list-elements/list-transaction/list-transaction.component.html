@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="listTransactions && listTransactions.length > 0; else noTransactions">
   <div class="row">
     <div class="col-sm-12">
       <table class="table table-hover">
@@ -50,3 +50,8 @@
     </div>
   </div>
 </div>
+
+
+<ng-template #noTransactions>
+  <p>Aucune transaction trouvé.</p>
+</ng-template>

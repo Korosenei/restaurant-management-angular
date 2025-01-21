@@ -11,12 +11,14 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { EMPLOYE } from '../../../../../models/model-users/employe.model';
-import { AddEmployeComponent } from '../../add-users/add-employe/add-employe.component';
 import {
   Payement,
   TRANSACTION,
 } from '../../../../../models/model-elements/transaction.model';
-import { Status, TICKET } from '../../../../../models/model-elements/ticket.model';
+import {
+  Status,
+  TICKET,
+} from '../../../../../models/model-elements/ticket.model';
 
 @Component({
   selector: 'app-add-transaction',
@@ -26,7 +28,6 @@ import { Status, TICKET } from '../../../../../models/model-elements/ticket.mode
   styleUrl: './add-transaction.component.scss',
 })
 export class AddTransactionComponent implements OnInit {
-  
   transactionForm!: FormGroup;
   transactionObj!: TRANSACTION;
   listClients: EMPLOYE[] = [];
@@ -36,7 +37,6 @@ export class AddTransactionComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private formBuilder: FormBuilder,
     private http: HttpClient,
-    private modalService: NgbModal,
     private router: Router
   ) {}
 
@@ -55,9 +55,9 @@ export class AddTransactionComponent implements OnInit {
       refClient: ['', Validators.required],
       nom: [''],
       prenom: [''],
-      nbrTicket: [20, [Validators.required, Validators.min(20)]],
+      nbrTicket: [1, [Validators.required, Validators.max(25)]],
       ticketDto: this.formBuilder.group({
-        numero: ['', Validators.required],
+        numero: [''],
         dateValid: [new Date()],
         status: [Status.VALIDE],
       }),
@@ -81,7 +81,9 @@ export class AddTransactionComponent implements OnInit {
     const agencyNumber = '001';
 
     this.http
-      .get<TRANSACTION[]>(`http://localhost:3000/transactions?year=${year}&month=${month}&agency=${agencyNumber}`)
+      .get<TRANSACTION[]>(
+        `http://localhost:3000/transactions?year=${year}&month=${month}&agency=${agencyNumber}`
+      )
       .subscribe({
         next: (transactions) => {
           const lastTransaction = transactions.sort((a, b) => {
@@ -90,11 +92,15 @@ export class AddTransactionComponent implements OnInit {
             return refB - refA;
           })[0];
 
-          const lastNumber = lastTransaction ? parseInt(lastTransaction.reference.slice(-4)) : 0;
+          const lastNumber = lastTransaction
+            ? parseInt(lastTransaction.reference.slice(-4))
+            : 0;
           const newNumber = (lastNumber + 1).toString().padStart(4, '0');
 
           this.generatedReference = `${year}${month}${agencyNumber}${newNumber}`;
-          this.transactionForm.get('reference')?.setValue(this.generatedReference);
+          this.transactionForm
+            .get('reference')
+            ?.setValue(this.generatedReference);
         },
         error: (err) => {
           console.error('Erreur lors de la récupération des transactions', err);
@@ -111,19 +117,29 @@ export class AddTransactionComponent implements OnInit {
     const agencyNumber = '001';
 
     this.http
-      .get<TRANSACTION[]>(`http://localhost:3000/transactions?year=${year}&agency=${agencyNumber}`)
+      .get<TRANSACTION[]>(
+        `http://localhost:3000/transactions?year=${year}&agency=${agencyNumber}`
+      )
       .subscribe({
         next: (transactions) => {
           const tickets = transactions.flatMap((transaction) => {
             const firstNum = parseInt(transaction.firstNumTicket.slice(-4));
             const lastNum = parseInt(transaction.lastNumTicket.slice(-4));
-            return Array.from({ length: lastNum - firstNum + 1 }, (_, i) => firstNum + i);
+            return Array.from(
+              { length: lastNum - firstNum + 1 },
+              (_, i) => firstNum + i
+            );
           });
 
           const lastTicketNumber = Math.max(...tickets, 0);
-          const ticketsCount = this.transactionForm.get('nbrTicket')?.value || 1;
-          const firstTicketNumber = (lastTicketNumber + 1).toString().padStart(4, '0');
-          const lastTicketNumberInLot = (lastTicketNumber + ticketsCount).toString().padStart(4, '0');
+          const ticketsCount =
+            this.transactionForm.get('nbrTicket')?.value || 1;
+          const firstTicketNumber = (lastTicketNumber + 1)
+            .toString()
+            .padStart(4, '0');
+          const lastTicketNumberInLot = (lastTicketNumber + ticketsCount)
+            .toString()
+            .padStart(4, '0');
 
           const firstTicket = `${year}${month}${agencyNumber}${firstTicketNumber}`;
           const lastTicket = `${year}${month}${agencyNumber}${lastTicketNumberInLot}`;
@@ -155,9 +171,31 @@ export class AddTransactionComponent implements OnInit {
    * Récupère les clients depuis l'API.
    */
   private getClients(): void {
+    const year = new Date().getFullYear().toString();
+    const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+
     this.http.get<EMPLOYE[]>('http://localhost:3000/employes').subscribe({
       next: (clients) => {
-        this.listClients = clients;
+        this.http
+          .get<TRANSACTION[]>(
+            `http://localhost:3000/transactions?year=${year}&month=${month}`
+          )
+          .subscribe({
+            next: (transactions) => {
+              const usedClientRefs = new Set(
+                transactions.map((transaction) => transaction.refClient)
+              );
+              this.listClients = clients.filter(
+                (client) => !usedClientRefs.has(client.numCnib)
+              );
+            },
+            error: (err) => {
+              console.error(
+                'Erreur lors de la récupération des transactions',
+                err
+              );
+            },
+          });
       },
       error: (err) => {
         console.error('Erreur lors de la récupération des clients', err);
@@ -170,7 +208,10 @@ export class AddTransactionComponent implements OnInit {
    */
   onClientChange(event: any): void {
     const refClient = event.target.value;
-    const selectedClient = this.listClients.find((client) => client.numCnib === refClient);
+    const selectedClient = this.listClients.find(
+      (client) =>
+        client.numCnib === refClient || client.numPassport === refClient
+    );
 
     if (selectedClient) {
       this.transactionForm.patchValue({
@@ -181,20 +222,35 @@ export class AddTransactionComponent implements OnInit {
   }
 
   /**
-   * Sauvegarde la transaction.
+   * Sauvegarde la transaction et génère les tickets associés.
    */
   Save(): void {
     if (this.transactionForm.valid) {
-      this.transactionObj = { ...this.transactionObj, ...this.transactionForm.getRawValue() };
+      const transactionData = {
+        ...this.transactionForm.getRawValue(),
+        ticketDto: { ...this.transactionForm.value.ticketDto },
+      };
+      this.transactionObj = new TRANSACTION(transactionData);
 
       const request$ = this.transactionObj.id
-        ? this.http.put<TRANSACTION>(`http://localhost:3000/transactions/${this.transactionObj.id}`, this.transactionObj)
-        : this.http.post<TRANSACTION>('http://localhost:3000/transactions', this.transactionObj);
+        ? this.http.put<TRANSACTION>(
+            `http://localhost:3000/transactions/${this.transactionObj.id}`,
+            this.transactionObj
+          )
+        : this.http.post<TRANSACTION>(
+            'http://localhost:3000/transactions',
+            this.transactionObj
+          );
 
       request$.subscribe({
-        next: (res: TRANSACTION) => {
-          console.log('Transaction sauvegardée avec succès :', res);
-          this.activeModal.close('saved');
+        next: (savedTransaction) => {
+          console.log(
+            `Transaction ${
+              this.transactionObj.id ? 'mise à jour' : 'sauvegardée'
+            } avec succès`,
+            savedTransaction
+          );
+          this.generateAndSaveTickets(savedTransaction);
         },
         error: (err) => {
           console.error('Erreur lors de la sauvegarde de la transaction', err);
@@ -203,6 +259,75 @@ export class AddTransactionComponent implements OnInit {
     } else {
       alert('Veuillez remplir tous les champs requis.');
     }
+  }
+
+  /**
+   * Génère et sauvegarde les tickets associés à une transaction.
+   */
+  generateAndSaveTickets(transaction: TRANSACTION): void {
+    const firstTicketNumber = parseInt(transaction.firstNumTicket.slice(-4));
+    const lastTicketNumber = parseInt(transaction.lastNumTicket.slice(-4));
+    const year = new Date().getFullYear().toString();
+    const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
+    const agencyNumber = '001';
+
+    const tickets: TICKET[] = [];
+    for (let i = firstTicketNumber; i <= lastTicketNumber; i++) {
+      const ticketNumber = `${year}${month}${agencyNumber}${i
+        .toString()
+        .padStart(4, '0')}`;
+      const dateValid = new Date();
+      dateValid.setDate(new Date().getDate() + (i - firstTicketNumber));
+
+      const ticket: TICKET = new TICKET({
+        numero: ticketNumber,
+        dateValid: dateValid,
+        status: Status.VALIDE,
+        transactionDto: {
+          id: transaction.id,
+          reference: transaction.reference,
+        } as TRANSACTION,
+        employeDto: transaction.employeDto
+          ? { id: transaction.employeDto.id } as EMPLOYE
+          : null,
+      });
+
+      tickets.push(ticket);
+    }
+
+    // Sauvegarder les tickets
+    tickets.forEach((ticket) => {
+      this.http.post<TICKET>('http://localhost:3000/tickets', ticket).subscribe({
+        next: (savedTicket: TICKET) => {
+          console.log('Ticket sauvegardé avec succès :', savedTicket);
+        },
+        error: (err) => {
+          console.error('Erreur lors de la sauvegarde du ticket', err);
+        },
+      });
+    });
+
+    // Mettre à jour la transaction avec les informations du premier ticket
+    transaction.ticketDto = tickets[0]; // Ajouter le premier ticket dans la transaction
+    this.http
+      .put<TRANSACTION>(
+        `http://localhost:3000/transactions/${transaction.id}`,
+        transaction
+      )
+      .subscribe({
+        next: (updatedTransaction) => {
+          console.log(
+            'Transaction mise à jour avec succès :',
+            updatedTransaction
+          );
+          this.activeModal.close('saved');
+        },
+        error: (err) => {
+          console.error('Erreur lors de la mise à jour de la transaction', err);
+        },
+      });
+
+    this.activeModal.close('saved');
   }
 
   /**
