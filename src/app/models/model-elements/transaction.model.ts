@@ -1,3 +1,5 @@
+import { EMPLOYE } from "../model-users/employe.model";
+import { TICKET } from "./ticket.model";
 
 export class TRANSACTION {
   public id: number;
@@ -11,6 +13,8 @@ export class TRANSACTION {
   public lastNumTicket: string;
   public payement: Payement.ESPECE;
   public montant: number;
+  public ticketDto: TICKET;
+  public employeDto: EMPLOYE;
 
   constructor(
     transaction : TRANSACTION = {} as TRANSACTION
@@ -26,6 +30,8 @@ export class TRANSACTION {
     this.lastNumTicket = transaction.lastNumTicket;
     this.payement = Payement.ESPECE;
     this.montant = transaction.montant;
+    this.ticketDto = transaction.ticketDto ?? new TICKET();;
+    this.employeDto = transaction.employeDto;
   }
 }
 

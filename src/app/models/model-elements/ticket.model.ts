@@ -1,18 +1,24 @@
-export class TICKET {
-  id: number;
-  refTransaction: string;
-  numero: string;
-  dateValid: Date;
-  montant: number;
-  status: Status;
+import { TRANSACTION } from "./transaction.model";
+import { EMPLOYE } from "../model-users/employe.model";
 
-  constructor() {
+export class TICKET {
+  public id: number;
+  /* public refTransaction: string; */
+  public numero: string;
+  public dateValid: Date;
+  public status: Status;
+  public transactionDto: TRANSACTION;
+  public employeDto: EMPLOYE;
+
+  constructor(
+    ticket : TICKET = {} as TICKET
+  ) {
     this.id = 0;
-    this.refTransaction = '';
     this.numero = '';
     this.dateValid = new Date();
-    this.montant = 0;
     this.status = Status.VALIDE;
+    this.transactionDto = ticket.transactionDto;
+    this.employeDto = ticket.employeDto;
   }
 }
 

@@ -1,18 +1,18 @@
 
 export class EMPLOYE{
 
-  id: number;
-  matricule: string;
-  typePiece: string;
-  numCnib: string;
-  nipCnib: string;
-  numPassport: string;
-  nom: string;
-  prenom: string;
-  genre: Genre;
-  email: string;
-  telephone: string;
-  role: Role;
+  public id: number;
+  public matricule: string;
+  public typePiece: string;
+  public numCnib: string;
+  public nipCnib: string;
+  public numPassport: string;
+  public nom: string;
+  public prenom: string;
+  public genre: Genre;
+  public email: string;
+  public telephone: string;
+  public role: Role;
 
   constructor() {
     this.id = 0;
