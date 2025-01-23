@@ -13,21 +13,20 @@ import { PaginationComponent } from '../../../pages/pagination/pagination.compon
     ButtonActionComponent,
     AddTransactionComponent,
     ListTransactionComponent,
-    PaginationComponent
+    PaginationComponent,
   ],
   templateUrl: './transaction.component.html',
-  styleUrl: './transaction.component.scss'
+  styleUrl: './transaction.component.scss',
 })
 export class TransactionComponent {
-  constructor(
-        private router: Router,
-        private modalService: NgbModal
-      ){}
 
-      openModal(){
-        this.modalService.open(AddTransactionComponent, { size: 'lg',
-          backdrop: 'static', // Désactive la fermeture en cliquant en dehors
-          keyboard: false    // Désactive la fermeture avec la touche 'Échap'
-        });
-      }
+  constructor(private router: Router, private modalService: NgbModal) {}
+
+  openModal() {
+    this.modalService.open(AddTransactionComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+    });
+  }
 }

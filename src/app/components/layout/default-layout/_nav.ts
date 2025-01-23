@@ -39,6 +39,28 @@ export const navItems: INavData[] = [
   {
     name: 'Réservations',
     url: '/restos/reservations',
+    iconComponent: { name: 'cil-calendar' },
+    children: [
+      {
+        name: 'Accordion',
+        url: '/base/accordion',
+        icon: 'nav-icon-bullet'
+      },
+      {
+        name: 'Breadcrumbs',
+        url: '/base/breadcrumbs',
+        icon: 'nav-icon-bullet'
+      },
+      {
+        name: 'Collapse',
+        url: '/base/collapse',
+        icon: 'nav-icon-bullet'
+      }
+    ]
+  },
+  {
+    name: 'Consommations',
+    url: '/restos/consommations',
     iconComponent: { name: 'cil-calendar' }
   },
 

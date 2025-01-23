@@ -1,6 +1,54 @@
 {
-  "transactions": [],
-  "tickets": [],
+  "transactions": [
+    {
+      "id": 1,
+      "date": "2025-01-22T00:53:09.700Z",
+      "reference": "2025010010001",
+      "refClient": "B9360091",
+      "nom": "Paré",
+      "prenom": "Léandre Bénilde",
+      "nbrTicket": 2,
+      "firstNumTicket": "2025010010001",
+      "lastNumTicket": "2025010010002",
+      "payement": "ESPECE",
+      "montant": 1000,
+      "ticketDto": {
+        "id": 0,
+        "numero": "2025010010001",
+        "dateValid": "2025-01-22T00:53:19.330Z",
+        "status": "VALIDE",
+        "transactionDto": {
+          "id": 1,
+          "reference": "2025010010001"
+        },
+        "employeDto": null
+      }
+    }
+  ],
+  "tickets": [
+    {
+      "id": 1,
+      "numero": "2025010010001",
+      "dateValid": "2025-01-22T00:53:19.330Z",
+      "status": "VALIDE",
+      "transactionDto": {
+        "id": 1,
+        "reference": "2025010010001"
+      },
+      "employeDto": null
+    },
+    {
+      "id": 2,
+      "numero": "2025010010002",
+      "dateValid": "2025-01-23T00:53:19.330Z",
+      "status": "VALIDE",
+      "transactionDto": {
+        "id": 1,
+        "reference": "2025010010001"
+      },
+      "employeDto": null
+    }
+  ],
   "employes": [
     {
       "id": 1,
