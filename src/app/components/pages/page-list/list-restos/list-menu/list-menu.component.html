@@ -1,1 +1,8 @@
-<p>list-menu works!</p>
+<div class="container" *ngIf="listMenus && listMenus.length > 0; else noMenus">
+
+</div>
+
+
+<ng-template #noMenus>
+    <p>Aucun menu trouvé.</p>
+  </ng-template>

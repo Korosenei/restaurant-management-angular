@@ -38,8 +38,8 @@ export class NavbarComponent {
 
   openLoginModal(){
     this.modalService.open(LoginComponent, {size: 'lg',
-      backdrop: 'static', // Désactive la fermeture en cliquant en dehors
-      keyboard: false    // Désactive la fermeture avec la touche 'Échap'
+      backdrop: 'static',
+      keyboard: false
     });
   }
 

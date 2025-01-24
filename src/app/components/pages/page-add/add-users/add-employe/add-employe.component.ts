@@ -1,26 +1,30 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormModule } from '@coreui/angular';
-import { EMPLOYE, Genre, Role, TypePiece } from '../../../../../models/model-users/employe.model';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
+import { FormModule } from '@coreui/angular';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import {
+  EMPLOYE,
+  Genre,
+  Role,
+  TypePiece,
+} from '../../../../../models/model-users/employe.model';
 
 @Component({
   selector: 'app-add-employe',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    FormModule
-  ],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, FormModule],
   templateUrl: './add-employe.component.html',
-  styleUrl: './add-employe.component.scss'
+  styleUrl: './add-employe.component.scss',
 })
 export class AddEmployeComponent implements OnInit {
-
   listEmployes: EMPLOYE[] = [];
   employeeForm!: FormGroup;
   employeeObj: EMPLOYE = new EMPLOYE();
@@ -49,8 +53,8 @@ export class AddEmployeComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private formBuilder: FormBuilder,
-    private http:HttpClient,
-    private router:Router
+    private http: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -80,7 +84,9 @@ export class AddEmployeComponent implements OnInit {
       this.employeeForm.get('numCnib')?.setValidators([Validators.required]);
       this.employeeForm.get('numPassport')?.clearValidators();
     } else if (this.selectedPieceType === TypePiece.PASSPORT) {
-      this.employeeForm.get('numPassport')?.setValidators([Validators.required]);
+      this.employeeForm
+        .get('numPassport')
+        ?.setValidators([Validators.required]);
       this.employeeForm.get('numCnib')?.clearValidators();
     }
 
@@ -89,7 +95,42 @@ export class AddEmployeComponent implements OnInit {
   }
 
   Save() {
-  throw new Error('Method not implemented.');
-  }
+    if (this.employeeForm.valid) {
+      const employeObj: EMPLOYE = this.employeeForm.value;
 
+      if (employeObj.typePiece === TypePiece.CNIB) {
+        employeObj.numPassport = '';
+      } else if (employeObj.typePiece === TypePiece.PASSPORT) {
+        employeObj.numCnib = '';
+        employeObj.nipCnib = '';
+      }
+
+      const request$ = employeObj.id
+        ? this.http.put<EMPLOYE>(
+            `http://localhost:3000/employes/${employeObj.id}`,
+            employeObj
+          )
+        : this.http.post<EMPLOYE>('http://localhost:3000/employes', employeObj);
+
+      request$.subscribe({
+        next: (res) => {
+          console.log(
+            `Employe ${employeObj.id ? 'mise à jour' : 'créé'} avec succès`,
+            res
+          );
+          this.activeModal.close(employeObj.id ? 'updated' : 'created');
+        },
+        error: (err) => {
+          console.error("Erreur lors de l'opération", err);
+          alert(
+            `Erreur lors de l'opération: ${
+              err.message || 'Veuillez réessayer plus tard'
+            }`
+          );
+        },
+      });
+    } else {
+      alert('Veuillez remplir tous les champs requis.');
+    }
+  }
 }

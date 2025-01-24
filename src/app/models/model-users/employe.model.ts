@@ -3,7 +3,7 @@ export class EMPLOYE{
 
   public id: number;
   public matricule: string;
-  public typePiece: string;
+  public typePiece: TypePiece;
   public numCnib: string;
   public nipCnib: string;
   public numPassport: string;
@@ -17,7 +17,7 @@ export class EMPLOYE{
   constructor() {
     this.id = 0;
     this.matricule = '';
-    this.typePiece = '';
+    this.typePiece = TypePiece.CNIB;
     this.numCnib = '';
     this.nipCnib = '';
     this.numPassport = '';

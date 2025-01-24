@@ -13,7 +13,7 @@ import { PaginationComponent } from '../../../pages/pagination/pagination.compon
     ButtonActionComponent,
     AddManagerComponent,
     ListManagerComponent,
-    PaginationComponent,
+    PaginationComponent
   ],
   templateUrl: './manager.component.html',
   styleUrl: './manager.component.scss',

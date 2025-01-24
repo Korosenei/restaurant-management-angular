@@ -13,45 +13,43 @@
             <th scope="col">ACTION</th>
           </tr>
         </thead>
-
         <tbody>
-          @for (item of listTickets; track $index) {
-            <tr>
-              <th scope="row">{{ $index + 1 }}</th>
-              <td>{{ item.transactionDto?.reference }}</td>
-              <td>{{ item.numero }}</td>
-              <td>{{ item.transactionDto?.nom}} {{item.transactionDto?.prenom}}</td>
-              <td>{{ item.dateValid | date: 'dd/MM/yyyy'}}</td>
-              <td>{{ item.status }}</td>
-              <td>
-                <div
-                  class="btn btn-outline-warning me-2"
-                  type="button"
-                  (keydown)="onKeyDown($event)"
-                  (keypress)="onKeyPress($event)"
-                  (keyup)="onKeyUp($event)"
-                >
-                  <i class="fa-solid fa-pen"></i>
-                </div>
-                <div
-                  class="btn btn-outline-danger"
-                  type="button"
-                  (keydown)="onKeyDown($event)"
-                  (keypress)="onKeyPress($event)"
-                  (keyup)="onKeyUp($event)"
-                >
-                  <i class="fa-solid fa-trash"></i>
-                </div>
-              </td>
-            </tr>
-          }
+          <tr *ngFor="let item of listTickets; let i = index">
+            <th scope="row">{{ i + 1 }}</th>
+            <td>{{ item.transactionDto?.reference }}</td>
+            <td>{{ item.numero }}</td>
+            <td>{{ item.transactionDto?.nom }} {{ item.transactionDto?.prenom }}</td>
+            <td>{{ item.dateValid | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ item.status }}</td>
+            <td>
+              <div class="btn btn-outline-info me-2" type="button" (click)="generateQRCode(item, qrCodeModal)">
+                <i class="fa-solid fa-qrcode"></i> Générer QR Code
+              </div>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
 </div>
 
-
 <ng-template #noTickets>
   <p>Aucun ticket trouvé.</p>
 </ng-template>
+
+
+  <!-- Modale avec le QR Code -->
+  <ng-template #qrCodeModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">QR Code du Ticket</h4>
+      <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body d-flex justify-content-center align-items-center">
+      <!-- Utilisation de ViewChild pour accéder au canvas -->
+      <canvas #qrcodeCanvas id="qrcode" class="qr-code-canvas"></canvas> <!-- Le QR Code sera affiché ici -->
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-warning" (click)="downloadQRCode()">Télécharger</button>
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Fermer</button>
+    </div>
+  </ng-template>

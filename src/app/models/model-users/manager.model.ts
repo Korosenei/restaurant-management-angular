@@ -1,7 +1,7 @@
 export class MANAGER {
   public id: number;
   public matricule: string;
-  public typePiece: string;
+  public typePiece: TypePiece;
   public numCnib: string;
   public nipCnib: string;
   public numPassport: string;
@@ -14,7 +14,7 @@ export class MANAGER {
   constructor() {
     this.id = 0;
     this.matricule = '';
-    this.typePiece = '';
+    this.typePiece = TypePiece.CNIB;
     this.numCnib = '';
     this.nipCnib = '';
     this.numPassport = '';
@@ -29,4 +29,9 @@ export class MANAGER {
 export enum Genre {
   HOMME = 'HOMME',
   FEMME = 'FEMME',
+}
+
+export enum TypePiece {
+  CNIB = 'CNIB',
+  PASSPORT = 'PASSPORT',
 }

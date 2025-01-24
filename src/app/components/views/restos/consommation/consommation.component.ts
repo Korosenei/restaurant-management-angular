@@ -1,57 +1,96 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { QrCodeService } from '../../../../services/qr-code/qr-code.service';
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import jsQR from 'jsqr';
 
 @Component({
   selector: 'app-consommation',
   standalone: true,
   imports: [
-    CommonModule
+    CommonModule,
+    HttpClientModule
   ],
   templateUrl: './consommation.component.html',
   styleUrl: './consommation.component.scss'
 })
 export class ConsommationComponent {
 
-  qrCode: string | null = null;
-  manualCode: string = '';
-  scanResult: any = null;
+  // Variables pour afficher les résultats
+  transactionNumber: string | null = null;
+  ticketNumber: string | null = null;
+  clientName: string | null = null;
+  purchaseDate: Date | null = null;
+  status: string | null = null;
+  ticketValid: boolean = false;  // Indicateur de validité du ticket
+  qrCodeImageUrl: string | null = null;  // URL de l'image QR Code téléchargée
+  file: File | null = null;  // Fichier téléchargé
 
-  constructor(private qrCodeService: QrCodeService) {}
+  // Constructeur
+  constructor(private http: HttpClient) {}
 
-  async onFileSelected(event: Event): Promise<void> {
-    const fileInput = event.target as HTMLInputElement;
+  // Méthode pour traiter l'image téléchargée
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.file = file;
+      const reader = new FileReader();
 
-    if (fileInput.files && fileInput.files.length > 0) {
-      const file = fileInput.files[0];
+      reader.onload = (e: any) => {
+        const imageDataUrl = e.target.result;
+        this.qrCodeImageUrl = imageDataUrl;
 
-      this.qrCode = await this.qrCodeService.decodeImage(file);
+        // Décodez l'image QR à partir de l'URL de données
+        this.decodeQRCode(imageDataUrl);
+      };
 
-      if (this.qrCode) {
-        this.scanResult = {
-          transactionNumber: 'TXN123456',
-          ticketNumber: 'TKT987654',
-          client: 'Jean Dupont',
-          purchaseDate: new Date(),
-          status: 'VALIDE',
-        };
-      } else {
-        alert('Impossible de lire le QR code.');
+      reader.readAsDataURL(file);
+    }
+  }
+
+  // Méthode pour décoder le QR code à partir de l'image
+  decodeQRCode(imageDataUrl: string): void {
+    const img = new Image();
+    img.src = imageDataUrl;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (ctx) {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+        if (qrCode) {
+          this.processQRCode(qrCode.data);
+        } else {
+          this.ticketValid = false;
+        }
       }
-    }
+    };
   }
 
-  approve(): void {
-    if (this.qrCode) {
-      console.log('Ticket approuvé :', this.scanResult);
-      alert('Ticket approuvé avec succès');
-    }
-  }
-
-  reject(): void {
-    if (this.qrCode) {
-      console.log('Ticket rejeté :', this.scanResult);
-      alert('Ticket rejeté');
-    }
+  // Traitement des données extraites du QR code
+  processQRCode(data: string): void {
+    this.http.get<any>(`http://localhost:3000/qrCodes`).subscribe(qrCodes => {
+      const qrCode = qrCodes.find((code: any) => code.uniqueCode === data);
+      if (qrCode) {
+        // Si le QR Code est valide, remplissez les résultats
+        this.transactionNumber = qrCode.transactionNumber;
+        this.ticketNumber = qrCode.ticketNumber;
+        this.clientName = qrCode.clientName;
+        this.purchaseDate = new Date(qrCode.purchaseDate);
+        this.status = qrCode.status;
+        this.ticketValid = true; // Indique que le ticket est valide
+      } else {
+        // QR Code invalide
+        this.ticketValid = false;
+      }
+    }, error => {
+      console.error('Erreur lors de la récupération des QR Codes:', error);
+      this.ticketValid = false;
+    });
   }
 }

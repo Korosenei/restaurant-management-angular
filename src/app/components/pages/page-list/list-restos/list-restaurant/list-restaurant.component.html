@@ -1,1 +1,8 @@
-<p>list-restaurant works!</p>
+<div class="container" *ngIf="listRestaurants && listRestaurants.length > 0; else noRestaurants">
+
+</div>
+
+
+<ng-template #noRestaurants>
+  <p>Aucun restaurant trouvé.</p>
+</ng-template>

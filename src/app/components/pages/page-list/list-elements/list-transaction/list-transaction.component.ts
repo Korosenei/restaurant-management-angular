@@ -3,22 +3,19 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AddTransactionComponent } from '../../../page-add/add-elements/add-transaction/add-transaction.component';
+import { DetailTransactionComponent } from '../../../page-detail/detail-elements/detail-transaction/detail-transaction.component';
 import { TRANSACTION } from '../../../../../models/model-elements/transaction.model';
 
 @Component({
   selector: 'app-list-transaction',
   standalone: true,
-  imports: [
-    CommonModule,
-    HttpClientModule
-  ],
+  imports: [CommonModule, HttpClientModule],
   templateUrl: './list-transaction.component.html',
-  styleUrl: './list-transaction.component.scss'
+  styleUrl: './list-transaction.component.scss',
 })
 export class ListTransactionComponent implements OnInit {
-
-  // Objet TRANSACTION
-  ticketObj: TRANSACTION = new TRANSACTION();
+  transactionObj: TRANSACTION = new TRANSACTION();
   listTransactions: TRANSACTION[] = [];
 
   constructor(
@@ -32,41 +29,83 @@ export class ListTransactionComponent implements OnInit {
   }
 
   getTransactions() {
-    this.http.get<TRANSACTION[]>('http://localhost:3000/transactions').subscribe({
-      next: (res) => {
-        this.listTransactions = res;
-      },
-      error: (err) => {
-        console.error("Erreur lors de la récupération des transactions", err);
-      }
-    });
+    this.http
+      .get<TRANSACTION[]>('http://localhost:3000/transactions')
+      .subscribe({
+        next: (res) => {
+          this.listTransactions = res;
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération des transactions', err);
+        },
+      });
   }
+    
+      onDetail(transaction: TRANSACTION) {
+        const modalRef = this.modalService.open(DetailTransactionComponent, {
+          backdrop: 'static',
+          keyboard: false
+        });
+        modalRef.componentInstance.transaction = transaction;
+    
+        modalRef.result.then(
+          (result) => {
+            console.log('Modal fermé avec:', result);
+          },
+          (reason) => {
+            console.log('Modal dismissed:', reason);
+          }
+        );
+      }
 
-  onEdite(data: TRANSACTION) {}
+  onEdite(data: TRANSACTION) {
+    const modalRef = this.modalService.open(AddTransactionComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+    });
+    modalRef.componentInstance.menuObj = { ...data };
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'updated') {
+          this.getTransactions();
+        }
+      },
+      (reason) => {
+        console.log('Modal dismissed: ' + reason);
+      }
+    );
+  }
 
   onDelete(id: number) {
     const isDelete = confirm(
       'Cette transaction sera supprimée après confirmation !!! '
     );
     if (isDelete) {
-      // Récupérer de la transaction à supprimer
-      const transactionToDelete = this.listTransactions.find((ticket) => ticket.id === id);
+      const transactionToDelete = this.listTransactions.find(
+        (transaction) => transaction.id === id
+      );
 
       if (transactionToDelete) {
-        // Ajouter de la transaction à la collection deletedTicket
         this.http
-          .post<TRANSACTION>('http://localhost:3000/deleteTransaction', transactionToDelete)
+          .post<TRANSACTION>(
+            'http://localhost:3000/deleteTransaction',
+            transactionToDelete
+          )
           .subscribe({
             next: (res) => {
-              // Supprimer la transaction de la liste active
-              this.listTransactions = this.listTransactions.filter((ticket) => ticket.id !== id);
+              this.listTransactions = this.listTransactions.filter(
+                (transaction) => transaction.id !== id
+              );
 
-              // Optionnel : Vous pouvez supprimer la transaction de la collection originale si vous le souhaitez
               this.http
                 .delete<TRANSACTION>(`http://localhost:3000/transactions/${id}`)
                 .subscribe({
                   next: () => {
-                    alert('TRANSACTION supprimée de la liste active avec succès');
+                    alert(
+                      'TRANSACTION supprimée de la liste active avec succès'
+                    );
                   },
                   error: (err) => {
                     console.error(
@@ -102,5 +141,4 @@ export class ListTransactionComponent implements OnInit {
   onKeyUp(event: KeyboardEvent) {
     console.log('Key up', event.key);
   }
-
 }

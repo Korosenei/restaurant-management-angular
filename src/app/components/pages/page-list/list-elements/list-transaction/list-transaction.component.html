@@ -25,6 +25,16 @@
               <td>{{ item.montant | number }} FCFA</td>
               <td>
                 <div
+                  class="btn btn-outline-info me-2"
+                  type="button"
+                  (click)="onDetail(item)"
+                  (keydown)="onKeyDown($event)"
+                  (keypress)="onKeyPress($event)"
+                  (keyup)="onKeyUp($event)"
+                >
+                  <i class="fa-solid fa-circle-info"></i>
+                </div>
+                <div
                   class="btn btn-outline-warning me-2"
                   type="button"
                   (keydown)="onKeyDown($event)"

@@ -286,6 +286,8 @@ export class AddTransactionComponent implements OnInit {
         transactionDto: {
           id: transaction.id,
           reference: transaction.reference,
+          nom: transaction.nom,
+          prenom: transaction.prenom
         } as TRANSACTION,
         employeDto: transaction.employeDto
           ? { id: transaction.employeDto.id } as EMPLOYE
