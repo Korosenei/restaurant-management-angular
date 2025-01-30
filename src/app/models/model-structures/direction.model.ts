@@ -1,20 +1,21 @@
-export class DIRECTION{
+import { EMPLOYE } from "../model-users/employe.model";
+import { AGENCE } from "./agence.model";
 
-  id: number;
-  code: string;
-  nom : string;
-  sigle:  string;
-  region:  string;
-  ville:  string;
-  responsable:  string;
+export class DIRECTION {
+  id: number = 0;
+  code: string = '';
+  nom: string = '';
+  sigle: string = '';
+  region: string = '';
+  ville: string = '';
+  userId: string ='';
+  responsable: EMPLOYE | null = null
+  agenceDtos: string = '';
+  creationDate: Date = new Date();
+  modifiedDate: Date = new Date();
+  deleted: boolean = false;
 
-  constructor(){
-    this.id = 0;
-    this.code = '';
-    this.nom = '';
-    this.sigle = '';
-    this.region = '';
-    this.ville = '';
-    this.responsable = '';
+  constructor(init?: Partial<DIRECTION>) {
+    Object.assign(this, init);
   }
 }

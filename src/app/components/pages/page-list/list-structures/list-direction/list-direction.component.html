@@ -24,28 +24,22 @@
             <td>{{ item.nom }}</td>
             <td>{{ item.sigle }}</td>
             <td>{{ item.ville }}</td>
-            <td>{{ item.responsable }}</td>
+            <td>{{ item.userId }}</td>
             <td>
-              <div
+              <button
                 class="btn btn-outline-warning me-2"
                 type="button"
                 (click)="onEdite(item)"
-                (keydown)="onKeyDown($event)"
-                (keypress)="onKeyPress($event)"
-                (keyup)="onKeyUp($event)"
               >
                 <i class="fa-solid fa-pen"></i>
-              </div>
-              <div
+              </button>
+              <button
                 class="btn btn-outline-danger"
                 type="button"
                 (click)="onDelete(item.id)"
-                (keydown)="onKeyDown($event)"
-                (keypress)="onKeyPress($event)"
-                (keyup)="onKeyUp($event)"
               >
                 <i class="fa-solid fa-trash"></i>
-              </div>
+              </button>
             </td>
           </tr>
         </tbody>

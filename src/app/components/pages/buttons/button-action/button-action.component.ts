@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ButtonDirective } from '@coreui/angular';
 
 @Component({
   selector: 'app-button-action',
   standalone: true,
-  imports: [ButtonDirective, CommonModule],
+  imports: [CommonModule],
   templateUrl: './button-action.component.html',
   styleUrl: './button-action.component.scss'
 })

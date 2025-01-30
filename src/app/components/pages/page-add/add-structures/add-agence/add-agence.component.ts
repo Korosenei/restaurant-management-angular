@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import {
@@ -22,9 +22,9 @@ import { EMPLOYE } from '../../../../../models/model-users/employe.model';
   styleUrl: './add-agence.component.scss',
 })
 export class AddAgenceComponent implements OnInit {
-  listAgences: AGENCE[] = [];
   agenceForm!: FormGroup;
   agenceObj: AGENCE = new AGENCE();
+  generatedAgenceCode: string = '';
 
   listDirections: DIRECTION[] = [];
   listEmployes: EMPLOYE[] = [];
@@ -32,8 +32,7 @@ export class AddAgenceComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private formBuilder: FormBuilder,
-    private http: HttpClient,
-    private router: Router
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -44,12 +43,55 @@ export class AddAgenceComponent implements OnInit {
 
   initializeForm(): void {
     this.agenceForm = this.formBuilder.group({
-      code: [this.agenceObj.code, Validators.required],
-      nom: [this.agenceObj.nom, Validators.required],
-      sigle: [this.agenceObj.sigle, Validators.required],
-      ville: [this.agenceObj.ville, Validators.required],
-      responsable: [this.agenceObj.responsable, Validators.required],
-      direction: [this.agenceObj.direction, Validators.required],
+      code: [{ value: '', disabled: true }],
+      nom: [
+        this.agenceObj.nom || '',
+        [Validators.required, Validators.minLength(3)],
+      ],
+      sigle: [this.agenceObj.sigle || '', Validators.required],
+      ville: [this.agenceObj.ville || '', Validators.required],
+      directionDto: [this.agenceObj.directionDto || [], Validators.required],
+      passageDtos: [this.agenceObj.passageDtos || []],
+      userId: [this.agenceObj.userId, Validators.required],
+      responsable: [this.agenceObj.responsable || null, Validators.required],
+      creationDate: [this.agenceObj.creationDate || new Date()],
+      modifiedDate: [this.agenceObj.modifiedDate || new Date()],
+      deleted: [this.agenceObj.deleted || false],
+    });
+
+    this.generateAgenceCode();
+  }
+
+  generateAgenceCode(): void {
+    this.http.get<AGENCE[]>('http://localhost:2025/agences/all').subscribe({
+      next: (agences: AGENCE[]) => {
+        if (agences.length > 0) {
+          const lastAgence = agences.sort((a, b) => {
+            const codeA = parseInt(a.code.replace('AGE-', ''), 10);
+            const codeB = parseInt(b.code.replace('AGE-', ''), 10);
+            return codeB - codeA;
+          })[0];
+
+          const lastCodeNumber = parseInt(
+            lastAgence.code.replace('AGE-', ''),
+            10
+          );
+          const newCodeNumber = (lastCodeNumber + 1)
+            .toString()
+            .padStart(4, '0');
+          this.generatedAgenceCode = `AGE-${newCodeNumber}`;
+        } else {
+          // Si aucune agence n'existe, commencer à 'AGE-0001'
+          this.generatedAgenceCode = 'AGE-0001';
+        }
+
+        // Mettre à jour le champ du formulaire avec le code généré
+        this.agenceForm.get('code')?.setValue(this.generatedAgenceCode);
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération des agences', err);
+        alert('Erreur lors de la génération du code agence.');
+      },
     });
   }
 
@@ -65,57 +107,73 @@ export class AddAgenceComponent implements OnInit {
   }
 
   getDirections() {
-    this.http.get<DIRECTION[]>('http://localhost:3000/directions').subscribe({
-      next: (res) => {
-        this.listDirections = res;
-      },
-      error: (err) => {
-        console.error('Erreur lors de la récupération des directions', err);
-      },
-    });
+    this.http
+      .get<DIRECTION[]>('http://localhost:2025/directions/all')
+      .subscribe({
+        next: (res) => {
+          this.listDirections = res;
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération des directions', err);
+        },
+      });
   }
 
-  Close(): void {
-    this.activeModal.close();
+  onEmployeChange(event: any): void {
+    const userId = event.target.value;
+    const selectedEmploye = this.listEmployes.find(
+      (employe) => employe.matricule === userId
+    );
+
+    if (selectedEmploye) {
+      const fullName = `${selectedEmploye.nom} ${selectedEmploye.prenom}`;
+
+      this.agenceForm.patchValue({
+        responsable: fullName,
+      });
+    }
+  }
+
+  onDirectionChange(event: any): void {
+    const directionId = event.target.value;
+    const selectedDirection = this.listDirections.find(
+      (direction) => direction.id == directionId
+    );
+
+    if (selectedDirection) {
+      this.agenceForm.patchValue({
+        directionDto: selectedDirection,
+      });
+    }
   }
 
   Save() {
     if (this.agenceForm.valid) {
-      this.agenceObj = { ...this.agenceObj, ...this.agenceForm.value };
+      const newAgence: AGENCE = {
+        ...this.agenceForm.getRawValue(),
+        code: this.generatedAgenceCode,
+        directionDto: this.agenceForm.value.directionDto,
+      };
 
-      let request$;
-
-      if (this.agenceObj.id) {
-        request$ = this.http.put<AGENCE>(
-          `http://localhost:3000/agences/${this.agenceObj.id}`,
-          this.agenceObj
-        );
-      } else {
-        request$ = this.http.post<AGENCE>(
-          'http://localhost:3000/agences',
-          this.agenceObj
-        );
-      }
-
-      request$.subscribe({
-        next: (res) => {
-          console.log(
-            `ticket ${this.agenceObj.id ? 'mise à jour' : 'créée'} avec succès`,
-            res
-          );
-          this.activeModal.close(this.agenceObj.id ? 'updated' : 'created');
-        },
-        error: (err) => {
-          console.error("Erreur lors de l'opération", err);
-          alert(
-            `Erreur lors de l'opération: ${
-              err.message || 'Veuillez réessayer plus tard'
-            }`
-          );
-        },
-      });
+      this.http
+        .post('http://localhost:2025/agences/create', newAgence)
+        .subscribe({
+          next: () => {
+            alert('Agence ajoutée avec succès !');
+            this.agenceForm.reset();
+          },
+          error: (err) => {
+            console.error("Erreur lors de l’ajout de l'agence", err);
+            alert('Une erreur est survenue.');
+          },
+        });
     } else {
       alert('Veuillez remplir tous les champs requis.');
     }
+    this.activeModal.close();
+  }
+
+  Close(): void {
+    this.activeModal.close();
   }
 }

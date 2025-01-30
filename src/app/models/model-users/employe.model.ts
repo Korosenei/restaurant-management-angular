@@ -1,48 +1,36 @@
+export class EMPLOYE {
+  id: number = 0;
+  matricule: string = '';
+  typePiece: TypePiece = TypePiece.CNIB;
+  numCnib: string = '';
+  nipCnib: string = '';
+  numPassport: string = '';
+  nom: string = '';
+  prenom: string = '';
+  genre: Genre = Genre.HOMME;
+  email: string = '';
+  telephone: string = '';
+  role: Role = Role.USER;
+  creationDate: Date = new Date();
+  modifiedDate: Date = new Date();
+  deleted: boolean = false;
 
-export class EMPLOYE{
-
-  public id: number;
-  public matricule: string;
-  public typePiece: TypePiece;
-  public numCnib: string;
-  public nipCnib: string;
-  public numPassport: string;
-  public nom: string;
-  public prenom: string;
-  public genre: Genre;
-  public email: string;
-  public telephone: string;
-  public role: Role;
-
-  constructor() {
-    this.id = 0;
-    this.matricule = '';
-    this.typePiece = TypePiece.CNIB;
-    this.numCnib = '';
-    this.nipCnib = '';
-    this.numPassport = '';
-    this.nom = '';
-    this.prenom = '';
-    this.genre = Genre.HOMME;
-    this.email = '';
-    this.telephone = '';
-    this.role = Role.USER;
+  constructor(init?: Partial<EMPLOYE>) {
+    Object.assign(this, init);
   }
 }
 
 export enum TypePiece {
   CNIB = 'CNIB',
-  PASSPORT = 'PASSPORT'
+  PASSPORT = 'PASSPORT',
 }
 
 export enum Genre {
   HOMME = 'HOMME',
-  FEMME = 'FEMME'
+  FEMME = 'FEMME',
 }
 
 export enum Role {
   ADMIN = 'ADMIN',
-  USER = 'USER'
+  USER = 'USER',
 }
-
-

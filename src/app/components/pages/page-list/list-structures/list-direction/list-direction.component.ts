@@ -28,7 +28,7 @@ export class ListDirectionComponent implements OnInit {
   }
 
   getDirections() {
-    this.http.get<DIRECTION[]>('http://localhost:3000/directions').subscribe({
+    this.http.get<DIRECTION[]>('http://localhost:2025/directions/all').subscribe({
       next: (res) => {
         this.listDirections = res;
       },
@@ -106,17 +106,5 @@ export class ListDirectionComponent implements OnInit {
     } else {
       alert('La suppression de la direction est annulée.');
     }
-  }
-
-  onKeyDown(event: KeyboardEvent) {
-    console.log('Key down', event.key);
-  }
-
-  onKeyPress(event: KeyboardEvent) {
-    console.log('Key pressed', event.key);
-  }
-
-  onKeyUp(event: KeyboardEvent) {
-    console.log('Key up', event.key);
   }
 }

@@ -17,14 +17,15 @@ import { EMPLOYE } from '../../../../../models/model-users/employe.model';
 @Component({
   selector: 'app-add-direction',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, FormModule],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
   templateUrl: './add-direction.component.html',
-  styleUrl: './add-direction.component.scss'
+  styleUrl: './add-direction.component.scss',
 })
 export class AddDirectionComponent implements OnInit {
   listDirections: DIRECTION[] = [];
   directionForm!: FormGroup;
   directionObj: DIRECTION = new DIRECTION();
+  generatedDirectionCode: string = '';
 
   listEmployes: EMPLOYE[] = [];
 
@@ -42,13 +43,58 @@ export class AddDirectionComponent implements OnInit {
 
   initializeForm(): void {
     this.directionForm = this.formBuilder.group({
-      code: [this.directionObj.code, Validators.required],
-      nom: [this.directionObj.nom, Validators.required],
-      sigle: [this.directionObj.sigle, Validators.required],
+      code: [{ value: '', disabled: true }],
+      nom: [
+        this.directionObj.nom || '',
+        [Validators.required, Validators.minLength(3)],
+      ],
+      sigle: [this.directionObj.sigle || '', Validators.required],
       region: [this.directionObj.region, Validators.required],
       ville: [this.directionObj.ville, Validators.required],
-      responsable: [this.directionObj.responsable, Validators.required],
+      agenceDto: [this.directionObj.agenceDtos || null],
+      userId: [this.directionObj.userId, Validators.required],
+      responsable: [this.directionObj.responsable || null, Validators.required],
+      creationDate: [this.directionObj.creationDate || new Date()],
+      modifiedDate: [this.directionObj.modifiedDate || new Date()],
+      deleted: [this.directionObj.deleted || false],
     });
+
+    this.generateDirectionCode();
+  }
+
+  generateDirectionCode(): void {
+    this.http
+      .get<DIRECTION[]>('http://localhost:2025/directions/all')
+      .subscribe({
+        next: (directions: DIRECTION[]) => {
+          if (directions.length > 0) {
+            const lastDirection = directions.sort((a, b) => {
+              const codeA = parseInt(a.code.replace('DIR-', ''), 10);
+              const codeB = parseInt(b.code.replace('DIR-', ''), 10);
+              return codeB - codeA;
+            })[0];
+
+            const lastCodeNumber = parseInt(
+              lastDirection.code.replace('DIR-', ''),
+              10
+            );
+            const newCodeNumber = (lastCodeNumber + 1)
+              .toString()
+              .padStart(3, '0');
+            this.generatedDirectionCode = `DIR-${newCodeNumber}`;
+          } else {
+            // Si aucune direction n'existe, commencer à 'DIR-001'
+            this.generatedDirectionCode = 'DIR-001';
+          }
+
+          // Mettre à jour le champ du formulaire avec le code généré
+          this.directionForm.get('code')?.setValue(this.generatedDirectionCode);
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération des directions', err);
+          alert('Erreur lors de la génération du code direction.');
+        },
+      });
   }
 
   getEmployes() {
@@ -62,49 +108,47 @@ export class AddDirectionComponent implements OnInit {
     });
   }
 
-  Close(): void {
-    this.activeModal.close();
+  onEmployeChange(event: any): void {
+    const userId = event.target.value;
+    const selectedEmploye = this.listEmployes.find(
+      (employe) => employe.matricule === userId
+    );
+
+    if (selectedEmploye) {
+      const fullName = `${selectedEmploye.nom} ${selectedEmploye.prenom}`;
+
+      this.directionForm.patchValue({
+        responsable: fullName,
+      });
+    }
   }
 
   Save() {
     if (this.directionForm.valid) {
-      this.directionObj = { ...this.directionObj, ...this.directionForm.value };
+      const newDirection: DIRECTION = {
+        ...this.directionForm.getRawValue(),
+        code: this.generatedDirectionCode,
+      };
 
-      let request$;
-
-      if (this.directionObj.id) {
-        request$ = this.http.put<DIRECTION>(
-          `http://localhost:3000/directions/${this.directionObj.id}`,
-          this.directionObj
-        );
-      } else {
-        request$ = this.http.post<DIRECTION>(
-          'http://localhost:3000/directions',
-          this.directionObj
-        );
-      }
-
-      request$.subscribe({
-        next: (res) => {
-          console.log(
-            `direction ${
-              this.directionObj.id ? 'mise à jour' : 'créée'
-            } avec succès`,
-            res
-          );
-          this.activeModal.close(this.directionObj.id ? 'updated' : 'created');
-        },
-        error: (err) => {
-          console.error("Erreur lors de l'opération", err);
-          alert(
-            `Erreur lors de l'opération: ${
-              err.message || 'Veuillez réessayer plus tard'
-            }`
-          );
-        },
-      });
+      this.http
+        .post('http://localhost:2025/directions/create', newDirection)
+        .subscribe({
+          next: () => {
+            alert('Direction ajoutée avec succès !');
+            this.directionForm.reset();
+          },
+          error: (err) => {
+            console.error('Erreur lors de l’ajout de la direction', err);
+            alert('Une erreur est survenue.');
+          },
+        });
     } else {
       alert('Veuillez remplir tous les champs requis.');
     }
+    this.activeModal.close();
+  }
+
+  Close(): void {
+    this.activeModal.close();
   }
 }

@@ -28,7 +28,7 @@ export class ListAgenceComponent implements OnInit {
   }
 
   getAgences() {
-    this.http.get<AGENCE[]>('http://localhost:3000/agences').subscribe({
+    this.http.get<AGENCE[]>('http://localhost:2025/agences/all').subscribe({
       next: (res) => {
         this.listAgences = res;
       },
@@ -45,6 +45,7 @@ export class ListAgenceComponent implements OnInit {
       keyboard: false,
     });
     modalRef.componentInstance.agenceObj = { ...data };
+    modalRef.componentInstance.listAgences = this.listAgences;
 
     modalRef.result.then(
       (result) => {
@@ -101,17 +102,5 @@ export class ListAgenceComponent implements OnInit {
     } else {
       alert('La suppression de la banque est annulée.');
     }
-  }
-
-  onKeyDown(event: KeyboardEvent) {
-    console.log('Key down', event.key);
-  }
-
-  onKeyPress(event: KeyboardEvent) {
-    console.log('Key pressed', event.key);
-  }
-
-  onKeyUp(event: KeyboardEvent) {
-    console.log('Key up', event.key);
   }
 }
