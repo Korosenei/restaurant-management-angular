@@ -10,17 +10,23 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class ButtonActionComponent {
 
-  @Input()
-  isNouveauVisible = true;
-  @Input()
-  isExporterVisible = true;
-  @Input()
-  isImporterVisible = true;
+  @Input() isNouveauVisible = true;
+  @Input() isExporterVisible = true;
+  @Input() isImporterVisible = true;
 
-  @Output()
-  addClicked = new EventEmitter<void>();
+  @Output() addClicked = new EventEmitter<void>();
+  @Output() exportClicked = new EventEmitter<void>();
+  @Output() importClicked = new EventEmitter<void>();
 
-  onAdd(){
+  onAdd() {
     this.addClicked.emit();
+  }
+
+  onExport() {
+    this.exportClicked.emit();
+  }
+
+  onImport() {
+    this.importClicked.emit();
   }
 }

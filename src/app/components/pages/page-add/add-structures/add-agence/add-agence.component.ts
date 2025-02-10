@@ -96,7 +96,7 @@ export class AddAgenceComponent implements OnInit {
   }
 
   getEmployes() {
-    this.http.get<EMPLOYE[]>('http://localhost:3000/employes').subscribe({
+    this.http.get<EMPLOYE[]>('http://localhost:2028/users/all').subscribe({
       next: (res) => {
         this.listEmployes = res;
       },
@@ -177,3 +177,4 @@ export class AddAgenceComponent implements OnInit {
     this.activeModal.close();
   }
 }
+

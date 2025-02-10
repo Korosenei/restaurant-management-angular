@@ -77,36 +77,7 @@
   "menus": [],
   "updateMenu": [],
   "deleteMenu": [],
-  "employes": [
-    {
-      "id": 1,
-      "matricule": "B173918",
-      "typePiece": "CNIB",
-      "numCnib": "B9360091",
-      "nipCnib": "098765432112345678990",
-      "numPassport": "AZERTYUIOP",
-      "nom": "Paré",
-      "prenom": "Léandre Bénilde",
-      "genre": "HOMME",
-      "email": "leandre@gmail.com",
-      "telephone": "71882020",
-      "agence": "Cité An III",
-      "role": "ADMIN"
-    },
-    {
-      "id": 2,
-      "matricule": "B302023",
-      "typePiece": "PASSPORT",
-      "numPassport": "J98727Y",
-      "nom": "Bassolé",
-      "prenom": "Nestor",
-      "genre": "HOMME",
-      "email": "ujkzgmail.com",
-      "telephone": "71882020",
-      "agence": "Quelque part",
-      "role": "USER"
-    }
-  ],
+  "employes": [],
   "updateEmploye": [],
   "deleteEmploye": [],
   "managers": [],

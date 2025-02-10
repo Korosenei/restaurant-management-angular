@@ -41,11 +41,9 @@
                   <option value="" disabled>Choisissez le client</option>
                   <option
                     *ngFor="let client of listClients"
-                    [value]="client.numCnib || client.numPassport"
+                    [value]="client.numPiece "
                   >
-                    {{ client.numCnib || client.numPassport }} ({{
-                      client.typePiece
-                    }})
+                    {{ client.numPiece}} ({{client.piece}})
                   </option>
                 </select>
                 <label for="floatingRefClient">NIP / PASSPORT</label>

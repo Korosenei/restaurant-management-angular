@@ -1,16 +1,22 @@
+import { ROLE } from "./role.model";
+
 export class EMPLOYE {
   id: number = 0;
   matricule: string = '';
-  typePiece: TypePiece = TypePiece.CNIB;
-  numCnib: string = '';
-  nipCnib: string = '';
-  numPassport: string = '';
   nom: string = '';
   prenom: string = '';
-  genre: Genre = Genre.HOMME;
+  civilite: Civilite = Civilite.M;
+  piece: Piece = Piece.CNIB;
+  numPiece: string = '';
+  nip: string = '';
+  telephone: number = 0;
   email: string = '';
-  telephone: string = '';
-  role: Role = Role.USER;
+  motDePasse: string = '';
+  agenceId: string = '';
+  restoId: string = '';
+  enabled: boolean = false;
+  accountLocked: boolean = false;
+  role: ROLE| null = null;
   creationDate: Date = new Date();
   modifiedDate: Date = new Date();
   deleted: boolean = false;
@@ -20,17 +26,12 @@ export class EMPLOYE {
   }
 }
 
-export enum TypePiece {
+export enum Piece {
   CNIB = 'CNIB',
   PASSPORT = 'PASSPORT',
 }
 
-export enum Genre {
-  HOMME = 'HOMME',
-  FEMME = 'FEMME',
-}
-
-export enum Role {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
+export enum Civilite {
+  M = 'Monsieur',
+  MME = 'Madame',
 }

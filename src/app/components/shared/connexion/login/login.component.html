@@ -5,7 +5,7 @@
       <button type="button" class="btn-close text-white" aria-label="Close" (click)="Close()"></button>
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()" class="p-4 bg-light">
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="p-4 bg-light">
       <div class="modal-body">
         <!-- Matricule -->
         <div class="mb-4">
@@ -25,32 +25,21 @@
 
         <!-- Mot de passe -->
         <div class="mb-4">
-          <label for="password" class="form-label text-muted-custom d-flex justify-content-between">
+          <label for="motDePasse" class="form-label text-muted-custom d-flex justify-content-between">
             <span>Mot de passe</span>
             <a routerLink="/recover" class="text-accent small" (click)="openRecoveryModal()">Mot de passe oublié?</a>
           </label>
           <input
-            type="password"
-            id="password"
-            formControlName="password"
+            type="motDePasse"
+            id="motDePasse"
+            formControlName="motDePasse"
             class="custom-input"
             placeholder="Entrez votre mot de passe"
             required
           />
-          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="form-text text-danger">
+          <div *ngIf="loginForm.get('motDePasse')?.invalid && loginForm.get('motDePasse')?.touched" class="form-text text-danger">
             Veuillez saisir un mot de passe valide.
           </div>
-        </div>
-
-        <!-- Checkbox "Se souvenir de moi" -->
-        <div class="form-check mb-4">
-          <input
-            type="checkbox"
-            id="rememberMe"
-            formControlName="rememberMe"
-            class="form-check-input"
-          />
-          <label for="rememberMe" class="form-check-label text-muted-custom">Se souvenir de moi</label>
         </div>
       </div>
 

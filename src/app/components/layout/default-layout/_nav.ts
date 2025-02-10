@@ -80,7 +80,7 @@ export const navItems: INavData[] = [
   },
   {
     name: 'Role',
-    url: '/users/admin',
+    url: '/users/roles',
     iconComponent: { name: 'cil-lock-locked' }
   },
 

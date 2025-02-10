@@ -32,6 +32,13 @@ export const routes: Routes = [
         data: {
           title: 'Super-Admin'
         }
+      },
+      {
+        path: 'roles',
+        loadComponent: () => import('./role/role.component').then(m => m.RoleComponent),
+        data: {
+          title: 'Roles'
+        }
       }
     ]
   }

@@ -2,11 +2,11 @@
 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
 
   <div class="btn-group">
-    <div class="btn btn-outline-danger" type="button" *ngIf="isImporterVisible">
-      <i class="fa-duotone fa-solid fa-file-pdf"></i>
+    <div class="btn btn-outline-danger" type="button" *ngIf="isImporterVisible" (click)="onImport()">
+      <i class="fa-solid fa-file-pdf"></i>
     </div>
-    <div type="button" class="btn btn-outline-success" *ngIf="isExporterVisible">
-      <i class="fa-duotone fa-solid fa-file-excel"></i>
+    <div type="button" class="btn btn-outline-success" *ngIf="isExporterVisible" (click)="onExport()">
+      <i class="fa-solid fa-file-excel"></i>
     </div>
   </div>
 

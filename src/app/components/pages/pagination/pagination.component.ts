@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -10,5 +10,15 @@ import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 })
 export class PaginationComponent {
 
-  page = 1;
+  @Input() collectionSize: number = 0; // Nombre total d'éléments
+  @Input() pageSize: number = 5; // Nombre d'éléments par page
+  @Input() page: number = 1; // Page actuelle
+
+  @Output() pageChange = new EventEmitter<number>();
+
+  onPageChange(pageNumber: number) {
+    this.page = pageNumber;
+    this.pageChange.emit(this.page);
+  }
+
 }

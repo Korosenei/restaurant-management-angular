@@ -1,0 +1,65 @@
+<div class="row m-3">
+  <div class="card">
+    <div class="card-header">Recherche</div>
+    <div class="card-body">
+      <form class="row g-3 align-items-center" (ngSubmit)="onSearch()">
+        
+        <!-- 🔍 Champ de recherche -->
+        <div class="col-md-4">
+          <div class="form-floating">
+            <input
+              type="text"
+              class="form-control"
+              id="generalSearch"
+              [placeholder]="searchPlaceholder"
+              [(ngModel)]="searchTerm"
+              name="searchTerm"
+            />
+            <label for="generalSearch">{{ searchPlaceholder }}</label>
+          </div>
+        </div>
+
+        <!-- 📅 Filtres de date (affichés uniquement si showDateFilters est true) -->
+        <ng-container *ngIf="showDateFilters">
+          <div class="col-md-3">
+            <div class="form-floating">
+              <input
+                type="date"
+                class="form-control"
+                id="startDate"
+                placeholder="Début"
+                [(ngModel)]="startDate"
+                name="startDate"
+                (change)="onDateFilter()"
+              />
+              <label for="startDate">Début</label>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="form-floating">
+              <input
+                type="date"
+                class="form-control"
+                id="endDate"
+                placeholder="Fin"
+                [(ngModel)]="endDate"
+                name="endDate"
+                (change)="onDateFilter()"
+              />
+              <label for="endDate">Fin</label>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- 🔎 Bouton de recherche -->
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-outline-primary">
+            <i class="fa-solid fa-magnifying-glass"></i> Rechercher
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

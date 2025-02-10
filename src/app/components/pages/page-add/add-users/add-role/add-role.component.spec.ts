@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ListDirectionComponent } from './list-direction.component';
+import { AddRoleComponent } from './add-role.component';
 
-describe('ListDirectionComponent', () => {
-  let component: ListDirectionComponent;
-  let fixture: ComponentFixture<ListDirectionComponent>;
+describe('AddRoleComponent', () => {
+  let component: AddRoleComponent;
+  let fixture: ComponentFixture<AddRoleComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ListDirectionComponent]
+      imports: [AddRoleComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ListDirectionComponent);
+    fixture = TestBed.createComponent(AddRoleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

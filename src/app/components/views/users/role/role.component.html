@@ -1,7 +1,7 @@
 <div class="container">
   <div class="row my-3">
     <div class="col-md-8">
-      <h3>Gestion des Agences</h3>
+      <h3>Gestion des Roles</h3>
     </div>
 
     <!-- Composant des boutons -->
@@ -17,62 +17,46 @@
 
   <!-- Composant de recherche -->
   <app-search
-    searchPlaceholder="Agence..."
+    searchPlaceholder="Rechercher un rôle..."
     [showDateFilters]="true"
     (search)="onSearch($event)"
     (filterByDate)="onDateFilter($event)"
   >
   </app-search>
 
-  <div
-    class="body"
-    *ngIf="listAgences && listAgences.length > 0; else noAgences"
-  >
+
+  <div class="body" *ngIf="listRoles && listRoles.length > 0; else noRoles">
     <div class="row">
       <div class="col-sm-12">
         <table class="table table-bordered table-hover">
           <thead class="thead-light">
             <tr>
               <th scope="col">ID</th>
-              <th scope="col">CODE</th>
               <th scope="col">NOM</th>
-              <th scope="col">SIGLE</th>
-              <th scope="col">VILLE</th>
-              <th scope="col">DIRECTION</th>
-              <th scope="col">RESPONSABLE</th>
+              <th scope="col">LIBELLE</th>
+              <th scope="col">DATE CREATION</th>
               <th scope="col">ACTION</th>
             </tr>
           </thead>
-
+  
           <tbody>
-            <tr *ngFor="let item of listAgences; let i = index">
-              <th scope="row">{{ i + 1 }}</th>
-              <td>{{ item.code }}</td>
-              <td>{{ item.nom }}</td>
-              <td>{{ item.sigle }}</td>
-              <td>{{ item.ville }}</td>
-              <td>{{ item.directionDto?.sigle }}</td>
-              <td>{{ item.userId }}</td>
+            <tr *ngFor="let item of displayedRoles; let i = index">
+              <th scope="row">{{ (page - 1) * pageSize + i + 1 }}</th>
+              <td>{{ item.name }}</td>
+              <td>{{ item.label }}</td>
+              <td>{{ item.creationDate | date: 'yyyy-MM-dd' }}</td>
               <td>
-                <button
-                  class="btn btn-outline-warning me-2"
-                  type="button"
-                  (click)="onEdite(item)"
-                >
+                <button class="btn btn-outline-warning me-2" type="button" (click)="onEdite(item)">
                   <i class="fa-solid fa-pen"></i>
                 </button>
-                <button
-                  class="btn btn-outline-danger"
-                  type="button"
-                  (click)="onDelete(item.id)"
-                >
+                <button class="btn btn-outline-danger" type="button" (click)="onDelete(item.id)">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
-
+  
         <!-- Pagination Component -->
         <app-pagination
           [collectionSize]="totalItems"
@@ -83,8 +67,8 @@
       </div>
     </div>
   </div>
-
-  <ng-template #noAgences>
-    <p>Aucune agence trouvé.</p>
+  
+  <ng-template #noRoles>
+    <p>Aucun rôle trouvé.</p>
   </ng-template>
 </div>

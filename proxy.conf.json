@@ -1,0 +1,7 @@
+{
+  "/user-management-service": {
+    "target": "http://localhost:2020",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

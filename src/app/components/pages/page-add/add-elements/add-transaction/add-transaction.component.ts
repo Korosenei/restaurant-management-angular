@@ -186,7 +186,7 @@ export class AddTransactionComponent implements OnInit {
                 transactions.map((transaction) => transaction.refClient)
               );
               this.listClients = clients.filter(
-                (client) => !usedClientRefs.has(client.numCnib)
+                (client) => !usedClientRefs.has(client.numPiece)
               );
             },
             error: (err) => {
@@ -210,7 +210,7 @@ export class AddTransactionComponent implements OnInit {
     const refClient = event.target.value;
     const selectedClient = this.listClients.find(
       (client) =>
-        client.numCnib === refClient || client.numPassport === refClient
+        client.numPiece === refClient
     );
 
     if (selectedClient) {

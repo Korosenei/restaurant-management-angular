@@ -34,15 +34,15 @@
                 class="form-select form-select-lg"
                 class="form-select form-select-sm"
                 id="floatingTypePiece"
-                formControlName="typePiece"
+                formControlName="piece"
                 (change)="onPieceTypeChange($event)"
               >
-                <option value="">Sélectionnez un type</option>
-                <option *ngFor="let type of pieceTypes" [value]="type.value">
-                  {{ type.label }}
+                <option value="" disabled>Sélectionnez la pièce</option>
+                <option *ngFor="let piece of pieces" [value]="piece.value">
+                  {{ piece.label }}
                 </option>
               </select>
-              <label for="floatingTypePiece">Type de Pièce</label>
+              <label for="floatingTypePiece">Pièce</label>
             </div>
           </div>
         </div>
@@ -54,11 +54,11 @@
               <input
                 type="text"
                 class="form-control form-control-lg"
-                id="floatingCnibNumber"
+                id="floatingNumPiece"
                 placeholder="Numéro CNIB"
-                formControlName="cnibNumber"
+                formControlName="numPiece"
               />
-              <label for="floatingCnibNumber">Numéro CNIB</label>
+              <label for="floatingNumPiece">Numéro CNIB</label>
             </div>
           </div>
 
@@ -68,11 +68,11 @@
               <input
                 type="text"
                 class="form-control form-control-lg"
-                id="floatingNipCnib"
+                id="floatingNip"
                 placeholder="NIP CNIB"
-                formControlName="nipCnib"
+                formControlName="nip"
               />
-              <label for="floatingNipCnib">NIP CNIB</label>
+              <label for="floatingNip">NIP CNIB</label>
             </div>
           </div>
 
@@ -82,11 +82,11 @@
               <input
                 type="text"
                 class="form-control form-control-lg"
-                id="floatingPassportNumber"
+                id="floatingNumPiece"
                 placeholder="Numéro Passeport"
-                formControlName="passportNumber"
+                formControlName="numPiece"
               />
-              <label for="floatingPassportNumber">Numéro Passeport</label>
+              <label for="floatingNumPiece">Numéro Passeport</label>
             </div>
           </div>
         </div>
@@ -127,15 +127,15 @@
             <div class="form-floating">
               <select
                 class="form-select form-select-lg"
-                id="floatingGenre"
-                formControlName="genre"
+                id="floatingCivilite"
+                formControlName="civilite"
               >
-                <option value="">Sélectionnez une sexe</option>
-                <option *ngFor="let genre of genres" [value]="genre">
-                  {{ genre }}
+                <option value="" disabled>Sélectionnez la civilité</option>
+                <option *ngFor="let civilite of civilites" [value]="civilite.value">
+                  {{ civilite.label }}
                 </option>
               </select>
-              <label for="floatingGenre">Genre</label>
+              <label for="floatingCivilite">Civilité</label>
             </div>
           </div>
 
@@ -169,39 +169,21 @@
             </div>
           </div>
 
-          <!-- Agence -->
-          <div class="col-md-6 mb-3">
-            <div class="form-floating">
-              <select
-                class="form-select form-select-lg"
-                id="floatingAgence"
-                formControlName="agence"
-              >
-                <option value="">Sélectionnez une agence</option>
-                <option *ngFor="let agence of agences" [value]="agence.value">
-                  {{ agence.label }}
-                </option>
-              </select>
-              <label for="floatingAgence">Agence</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
           <!-- Rôle -->
           <div class="col-md-6 mb-3">
-            <div class="form-floating">
+            <div class="form-floating w-100">
               <select
-                class="form-select form-select-lg"
+                class="form-control"
                 id="floatingRole"
                 formControlName="role"
+                (change)="onRoleChange($event)"
               >
-                <option value="">Sélectionnez un rôle</option>
-                <option *ngFor="let role of roles" [value]="role">
-                  {{ role }}
+                <option value="" disabled>Choisissez un role</option>
+                <option *ngFor="let role of listRoles" [value]="role.id">
+                  {{ role.name }}
                 </option>
               </select>
-              <label for="floatingRole">Rôle</label>
+              <label for="floatingRole">Role</label>
             </div>
           </div>
         </div>

@@ -12,10 +12,10 @@ import { FormModule } from '@coreui/angular';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import {
   EMPLOYE,
-  Genre,
-  Role,
-  TypePiece,
+  Civilite,
+  Piece,
 } from '../../../../../models/model-users/employe.model';
+import { ROLE } from '../../../../../models/model-users/role.model';
 
 @Component({
   selector: 'app-add-employe',
@@ -25,29 +25,21 @@ import {
   styleUrl: './add-employe.component.scss',
 })
 export class AddEmployeComponent implements OnInit {
+
   listEmployes: EMPLOYE[] = [];
+  listRoles: ROLE[] = [];
   employeeForm!: FormGroup;
   employeeObj: EMPLOYE = new EMPLOYE();
   selectedPieceType: string = '';
 
-  // Liste des types de pièces
-  readonly typePieces = Object.values(TypePiece);
-
-  // Liste des genres
-  readonly genres = Object.values(Genre);
-
-  // Liste des roles
-  readonly roles = Object.values(Role);
-
-  agences = [
-    { value: 'Grand marché', label: 'Grand marché' },
-    { value: 'Cité An III', label: 'Cité An III' },
-  ];
-
-  // Listes pour les options de sélection
-  pieceTypes = [
+  // Liste des types de pièces et genres
+  pieces = [
     { value: 'CNIB', label: 'CNIB' },
     { value: 'PASSEPORT', label: 'PASSEPORT' },
+  ];
+  civilites = [
+    { value: 'M', label: 'Monsieur' },
+    { value: 'MME', label: 'Madame' },
   ];
 
   constructor(
@@ -58,79 +50,119 @@ export class AddEmployeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initializeForm();
+    this.getRoles();
+  }
+
+  initializeForm(): void{
     this.employeeForm = this.formBuilder.group({
-      matricule: ['', Validators.required],
-      typePiece: ['', Validators.required],
-      numCnib: [''],
-      nipCnib: [''],
-      numPassport: [''],
-      nom: ['', Validators.required],
-      prenom: ['', Validators.required],
-      genre: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      telephone: ['', Validators.required],
-      role: ['', Validators.required],
+      matricule: [this.employeeObj.matricule || '', Validators.required],
+      piece: [this.employeeObj.piece || '', Validators.required],
+      numPiece: [this.employeeObj.numPiece || '', Validators.required],
+      nip: [this.employeeObj.nip || ''],
+      nom: [this.employeeObj.nom || '', Validators.required],
+      prenom: [this.employeeObj.prenom || '', Validators.required],
+      civilite: [this.employeeObj.civilite || '', Validators.required],
+      email: [this.employeeObj.email, [Validators.required, Validators.email]],
+      telephone: [this.employeeObj.telephone, Validators.required],
+      role: [this.employeeObj.role || [], Validators.required],
+      creationDate: [this.employeeObj.creationDate || new Date()],
+      modifiedDate: [this.employeeObj.modifiedDate || new Date()],
+      deleted: [this.employeeObj.deleted || false],
+    });
+  }
+
+  onPieceTypeChange(event: any) {
+    this.selectedPieceType = event.target.value;
+    const numPieceControl = this.employeeForm.get('numPiece');
+  
+    if (this.selectedPieceType === Piece.CNIB) {
+      numPieceControl?.setValidators([Validators.required]);
+      this.employeeForm.get('nip')?.setValidators([Validators.required]);
+    } else if (this.selectedPieceType === Piece.PASSPORT) {
+      numPieceControl?.setValidators([Validators.required]);
+      this.employeeForm.get('nip')?.clearValidators();
+    } else {
+      // Si ce n'est ni CNIB ni PASSEPORT, on enlève les validateurs
+      numPieceControl?.clearValidators();
+      this.employeeForm.get('nip')?.clearValidators();
+    }
+  
+    // Mettre à jour la validation après modification
+    numPieceControl?.updateValueAndValidity();
+    this.employeeForm.get('nip')?.updateValueAndValidity();
+  }
+
+  onRoleChange(event: any): void {
+    const roleId = event.target.value;
+    this.employeeForm.patchValue({
+      role: roleId,
+    });
+  }
+
+  getRoles() {
+    this.http.get<ROLE[]>('http://localhost:2028/roles/all').subscribe({
+      next: (res) => {
+        this.listRoles = res;
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération des roles', err);
+      },
+    });
+  }
+
+  Save(): void {
+    if (this.employeeForm.invalid) {
+      alert('Veuillez remplir tous les champs requis.');
+      return;
+    }
+  
+    const newEmploye: EMPLOYE = { ...this.employeeForm.getRawValue() };
+
+    console.log("Données envoyées au backend :", newEmploye);
+  
+    if (newEmploye.piece === Piece.CNIB && (!newEmploye.numPiece || !newEmploye.nip)) {
+      alert('Le CNIB nécessite un numPiece et un nip.');
+      return;
+    } else if (newEmploye.piece === Piece.PASSPORT) {
+      newEmploye.nip = '';
+    }
+  
+    if (this.employeeObj.id) {
+      this.updateEmploye(newEmploye);
+    } else {
+      this.createEmploye(newEmploye);
+    }
+  }
+
+  createEmploye(employe: EMPLOYE) {
+    this.http.post('http://localhost:2028/users/create', employe).subscribe({
+      next: () => {
+        alert('Employé ajouté avec succès !');
+        this.activeModal.close('updated');
+      },
+      error: (err) => {
+        console.error("Erreur lors de l’ajout de l'employé", err);
+        alert('Une erreur est survenue.');
+      },
+    });
+  }
+  
+  updateEmploye(employe: EMPLOYE) {
+    this.http.put(`http://localhost:2028/users/update/${this.employeeObj.id}`, employe).subscribe({
+      next: () => {
+        alert('Employé mis à jour avec succès !');
+        this.activeModal.close('updated');
+      },
+      error: (err) => {
+        console.error("Erreur lors de la mise à jour de l'employé", err);
+        alert('Une erreur est survenue.');
+      },
     });
   }
 
   Close(): void {
     this.activeModal.close();
   }
-
-  onPieceTypeChange(event: any) {
-    this.selectedPieceType = event.target.value;
-
-    if (this.selectedPieceType === TypePiece.CNIB) {
-      this.employeeForm.get('numCnib')?.setValidators([Validators.required]);
-      this.employeeForm.get('numPassport')?.clearValidators();
-    } else if (this.selectedPieceType === TypePiece.PASSPORT) {
-      this.employeeForm
-        .get('numPassport')
-        ?.setValidators([Validators.required]);
-      this.employeeForm.get('numCnib')?.clearValidators();
-    }
-
-    this.employeeForm.get('numCnib')?.updateValueAndValidity();
-    this.employeeForm.get('numPassport')?.updateValueAndValidity();
-  }
-
-  Save() {
-    if (this.employeeForm.valid) {
-      const employeObj: EMPLOYE = this.employeeForm.value;
-
-      if (employeObj.typePiece === TypePiece.CNIB) {
-        employeObj.numPassport = '';
-      } else if (employeObj.typePiece === TypePiece.PASSPORT) {
-        employeObj.numCnib = '';
-        employeObj.nipCnib = '';
-      }
-
-      const request$ = employeObj.id
-        ? this.http.put<EMPLOYE>(
-            `http://localhost:3000/employes/${employeObj.id}`,
-            employeObj
-          )
-        : this.http.post<EMPLOYE>('http://localhost:3000/employes', employeObj);
-
-      request$.subscribe({
-        next: (res) => {
-          console.log(
-            `Employe ${employeObj.id ? 'mise à jour' : 'créé'} avec succès`,
-            res
-          );
-          this.activeModal.close(employeObj.id ? 'updated' : 'created');
-        },
-        error: (err) => {
-          console.error("Erreur lors de l'opération", err);
-          alert(
-            `Erreur lors de l'opération: ${
-              err.message || 'Veuillez réessayer plus tard'
-            }`
-          );
-        },
-      });
-    } else {
-      alert('Veuillez remplir tous les champs requis.');
-    }
-  }
 }
+

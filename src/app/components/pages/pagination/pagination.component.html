@@ -1,9 +1,11 @@
 <hr />
 
 <ngb-pagination
-  [collectionSize]="70"
+  [collectionSize]="collectionSize"
+  [pageSize]="pageSize"
   [(page)]="page"
   [maxSize]="3"
   [boundaryLinks]="true"
+  (pageChange)="onPageChange($event)"
   class="pagination-right"
-/>
+></ngb-pagination>

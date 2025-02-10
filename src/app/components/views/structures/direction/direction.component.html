@@ -1,63 +1,90 @@
+<div class="container">
+  <div class="col">
+    <div class="row m-1">
+      <div class="col-md-8 p-0">
+        <h3>Gestion des directions</h3>
+      </div>
 
-<div class="col">
-  <div class="row m-1">
-    <div class="col-md-8 p-0">
-      <h3>Gestion des directions</h3>
-    </div>
-
-    <div class="col-md-4 d-grid gap-2 d-md-flex justify-content-md-end">
-      <app-button-action (addClicked)="openModal()"></app-button-action>
-    </div>
-  </div>
-</div>
-
-
-<div class="row m-3">
-  <div class="card">
-    <div class="card-header">
-      Recherche direction
-    </div>
-    <div class="card-body">
-      <form class="row g-3 align-items-center">
-        <!-- Recherche générale -->
-        <div class="col-md-3">
-          <div class="form-floating">
-            <input type="text" class="form-control" id="generalSearch" placeholder="Entrez un terme de recherche">
-            <label for="generalSearch">Recherche générale</label>
-          </div>
-        </div>
-
-        <!-- Date de début -->
-        <div class="col-md-3">
-          <div class="form-floating">
-            <input type="date" class="form-control" id="startDate" placeholder="Début">
-            <label for="startDate">Début</label>
-          </div>
-        </div>
-
-        <!-- Date de fin -->
-        <div class="col-md-3">
-          <div class="form-floating">
-            <input type="date" class="form-control" id="endDate" placeholder="Fin">
-            <label for="endDate">Fin</label>
-          </div>
-        </div>
-
-        <!-- Bouton de recherche -->
-        <div class="col-md-3">
-          <button type="button" class="btn btn-outline-warning">
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </button>
-        </div>
-      </form>
+      <!-- Composant des boutons -->
+      <div class="col-md-4 d-flex justify-content-end">
+        <app-button-action
+          (addClicked)="openModal()"
+          (exportClicked)="exportToExcel()"
+          (importClicked)="exportToPDF()"
+        >
+        </app-button-action>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="row m-3">
-  <app-list-direction></app-list-direction>
-</div>
+  <!-- Composant de recherche -->
+  <app-search
+    searchPlaceholder="Direction..."
+    [showDateFilters]="true"
+    (search)="onSearch($event)"
+    (filterByDate)="onDateFilter($event)"
+  >
+  </app-search>
 
-<div class="row text-center mb-3">
-  <app-pagination></app-pagination>
+  <div
+    class="body"
+    *ngIf="listDirections && listDirections.length > 0; else noDirections"
+  >
+    <div class="row">
+      <div class="col-sm-12">
+        <table class="table table-bordered table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">CODE</th>
+              <th scope="col">NOM</th>
+              <th scope="col">SIGLE</th>
+              <th scope="col">VILLE</th>
+              <th scope="col">RESPONSABLE</th>
+              <th scope="col">ACTION</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let item of listDirections; let i = index">
+              <th scope="row">{{ i + 1 }}</th>
+              <td>{{ item.code }}</td>
+              <td>{{ item.nom }}</td>
+              <td>{{ item.sigle }}</td>
+              <td>{{ item.ville }}</td>
+              <td>{{ item.userId }}</td>
+              <td>
+                <button
+                  class="btn btn-outline-warning me-2"
+                  type="button"
+                  (click)="onEdite(item)"
+                >
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button
+                  class="btn btn-outline-danger"
+                  type="button"
+                  (click)="onDelete(item.id)"
+                >
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+  
+        <!-- Pagination Component -->
+        <app-pagination
+          [collectionSize]="totalItems"
+          [pageSize]="pageSize"
+          [page]="page"
+          (pageChange)="onPageChange($event)"
+        ></app-pagination>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noDirections>
+    <p>Aucune direction trouvé.</p>
+  </ng-template>
 </div>
