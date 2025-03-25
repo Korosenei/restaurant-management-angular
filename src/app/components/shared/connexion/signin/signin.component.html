@@ -1,0 +1,46 @@
+<div class="main">
+  <div class="box effect7">
+    <h2>MUTRALO RESTO</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+      <input
+        type="text"
+        formControlName="matricule"
+        placeholder="Matricule"
+        required
+      />
+      <div
+        *ngIf="
+          loginForm.get('matricule')?.invalid &&
+          loginForm.get('matricule')?.touched
+        "
+        class="form-text text-danger"
+      >
+        Veuillez saisir un matricule valide.
+      </div>
+
+      <input
+        type="password"
+        formControlName="motDePasse"
+        placeholder="Mot de passe"
+        required
+      />
+      <div
+        *ngIf="
+          loginForm.get('motDePasse')?.invalid &&
+          loginForm.get('motDePasse')?.touched
+        "
+        class="form-text text-danger"
+      >
+        Veuillez saisir un mot de passe valide.
+      </div>
+      <span class="forget"
+        ><a class="link"
+          >Mot de passe oublié</a
+        ></span
+      >
+      <button type="submit" class="butt" [disabled]="loginForm.invalid">
+        Connexion
+      </button>
+    </form>
+  </div>
+</div>

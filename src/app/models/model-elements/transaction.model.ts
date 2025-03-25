@@ -1,37 +1,26 @@
-import { EMPLOYE } from "../model-users/employe.model";
+import { USER } from "../model-users/user.model";
 import { TICKET } from "./ticket.model";
 
 export class TRANSACTION {
-  public id: number;
-  public date: Date;
-  public refClient: string;
-  public nom: string;
-  public prenom: string;
-  public reference: string;
-  public nbrTicket: number;
-  public firstNumTicket: string;
-  public lastNumTicket: string;
-  public payement: Payement.ESPECE;
-  public montant: number;
-  public ticketDto: TICKET;
-  public employeDto: EMPLOYE;
+  id: number = 0;
+  date: Date = new Date();
+  reference: string = '';
+  userId: number = 0;
+  nom: string = '';
+  prenom: string = '';
+  nbrTicket: number = 1;
+  firstNumTicket: string = '';
+  lastNumTicket: string = '';
+  payement: Payement = Payement.ESPECE;
+  montant: number = 500;
+  ticketDto: TICKET | null = null
+  userDto: USER | null = null
+  creationDate: Date = new Date();
+  modifiedDate: Date = new Date();
+  deleted: boolean = false;
 
-  constructor(
-    transaction : TRANSACTION = {} as TRANSACTION
-  ) {
-    this.id = transaction.id ?? 0;
-    this.date = transaction.date ?? new Date('');
-    this.reference = transaction.reference || '';
-    this.refClient = transaction.refClient;
-    this.nom = transaction.nom;
-    this.prenom = transaction.prenom;
-    this.nbrTicket = transaction.nbrTicket;
-    this.firstNumTicket = transaction.firstNumTicket;
-    this.lastNumTicket = transaction.lastNumTicket;
-    this.payement = Payement.ESPECE;
-    this.montant = transaction.montant;
-    this.ticketDto = transaction.ticketDto ?? new TICKET();;
-    this.employeDto = transaction.employeDto;
+  constructor(init?: Partial<TRANSACTION>) {
+    Object.assign(this, init);
   }
 }
 

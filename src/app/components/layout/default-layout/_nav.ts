@@ -69,19 +69,24 @@ export const navItems: INavData[] = [
     name: 'Utilisateurs'
   },
   {
+    name: 'All Users',
+    url: '/users/allUsers',
+    iconComponent: { name: 'cil-user' }
+  },
+  {
     name: 'Employés',
     url: '/users/employes',
     iconComponent: { name: 'cil-user' }
   },
   {
-    name: 'Restaurants Managers',
-    url: '/users/managers',
-    iconComponent: { name: 'cil-user-female' }
+    name: 'Caissiers',
+    url: '/users/caissiers',
+    iconComponent: { name: 'cil-user' }
   },
   {
-    name: 'Role',
-    url: '/users/roles',
-    iconComponent: { name: 'cil-lock-locked' }
+    name: 'Managers',
+    url: '/users/managers',
+    iconComponent: { name: 'cil-user-female' }
   },
 
 

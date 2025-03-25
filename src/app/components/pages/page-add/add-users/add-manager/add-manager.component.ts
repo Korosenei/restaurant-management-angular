@@ -29,12 +29,14 @@ export class AddManagerComponent implements OnInit {
   managerObj: MANAGER = new MANAGER();
   selectedPieceType: string = '';
 
-  readonly typePieces = Object.values(TypePiece);
-  readonly genres = Object.values(Genre);
-
-  pieceTypes = [
+  // Liste des types de pièces et genres
+  pieces = [
     { value: 'CNIB', label: 'CNIB' },
     { value: 'PASSEPORT', label: 'PASSEPORT' },
+  ];
+  civilites = [
+    { value: 'M', label: 'Monsieur' },
+    { value: 'MME', label: 'Madame' },
   ];
 
   constructor(

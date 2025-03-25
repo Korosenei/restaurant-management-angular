@@ -1,11 +1,21 @@
 import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './components/layout';
+import { ActivationComponent } from './components/shared/activation/activation.component';
+import { SigninComponent } from './components/shared/connexion/signin/signin.component';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'signin',
     pathMatch: 'full'
+  },
+  {
+    path: 'activate/:token',
+    component: ActivationComponent,
+  },
+  {
+    path: 'signin',
+    component: SigninComponent,
   },
   {
     path: '',
@@ -48,10 +58,10 @@ export const routes: Routes = [
     }
   },
   {
-    path: 'header',
-    loadComponent: () => import('./components/shared/web/home/header/header.component').then(m => m.HeaderComponent),
+    path: 'activate/:token',
+    loadComponent: () => import('./components/shared/activation/activation.component').then(m => m.ActivationComponent),
     data: {
-      title: 'Header'
+      title: 'Activation'
     }
   },
   {

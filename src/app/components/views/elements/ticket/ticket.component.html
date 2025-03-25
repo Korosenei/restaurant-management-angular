@@ -1,63 +1,112 @@
-
-<div class="col">
-  <div class="row m-1">
-    <div class="col-md-8 p-0">
-      <h3>Gestion des tickets</h3>
+<div class="container">
+  <div class="row my-3">
+    <div class="col-md-8">
+      <h3>Gestion des Tickets</h3>
     </div>
 
-    <div class="col-md-4 d-grid gap-2 d-md-flex justify-content-md-end">
-      <app-button-action [isNouveauVisible]="false"></app-button-action>
-    </div>
-  </div>
-</div>
-
-
-<div class="row m-3">
-  <div class="card">
-    <div class="card-header">
-      Recherche de ticket
-    </div>
-    <div class="card-body">
-      <form class="row g-3 align-items-center">
-        <!-- Recherche générale -->
-        <div class="col-md-3">
-          <div class="form-floating">
-            <input type="text" class="form-control" id="generalSearch" placeholder="Entrez un terme de recherche">
-            <label for="generalSearch">Recherche générale</label>
-          </div>
-        </div>
-
-        <!-- Date de début -->
-        <div class="col-md-3">
-          <div class="form-floating">
-            <input type="date" class="form-control" id="startDate" placeholder="Début">
-            <label for="startDate">Début</label>
-          </div>
-        </div>
-
-        <!-- Date de fin -->
-        <div class="col-md-3">
-          <div class="form-floating">
-            <input type="date" class="form-control" id="endDate" placeholder="Fin">
-            <label for="endDate">Fin</label>
-          </div>
-        </div>
-
-        <!-- Bouton de recherche -->
-        <div class="col-md-3">
-          <button type="button" class="btn btn-outline-warning">
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </button>
-        </div>
-      </form>
+    <!-- Composant des boutons -->
+    <div class="col-md-4 d-flex justify-content-end">
+      <app-button-action
+        [isNouveauVisible]="false"
+        (exportClicked)="exportToExcel()"
+        (importClicked)="exportToPDF()"
+      >
+      </app-button-action>
     </div>
   </div>
+
+  <!-- Composant de recherche -->
+  <app-search
+    searchPlaceholder="Tickets..."
+    [showDateFilters]="true"
+    (search)="onSearch($event)"
+    (filterByDate)="onDateFilter($event)"
+  >
+  </app-search>
+
+  <div
+    class="body"
+    *ngIf="listTickets && listTickets.length > 0; else noTickets"
+  >
+    <div class="row">
+      <div class="col-sm-12">
+        <table class="table table-bordered table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">REFERENCE</th>
+              <th scope="col">NUMERO</th>
+              <th scope="col">CLIENT</th>
+              <th scope="col">ACTION</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let item of displayedTickets; let i = index">
+              <th scope="row">{{ (page - 1) * pageSize + i + 1 }}</th>
+              <td>{{ item.transactionDto?.reference }}</td>
+              <td>{{ item.numero }}</td>
+              <td>
+                {{ item.transactionDto?.userDto?.nom }}
+                {{ item.transactionDto?.userDto?.prenom }}
+              </td>
+              <td>
+                <button
+                  class="btn btn-outline-warning me-2"
+                  type="button"
+                  (click)="onDetail(item)"
+                >
+                  <i class="fa-solid fa-circle-info"></i>
+                </button>
+                <button
+                  class="btn btn-outline-secondary me-2"
+                  type="button"
+                  (click)="generateQRCode(item, qrCodeModal)"
+                >
+                  <i class="fa-solid fa-qrcode"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination Component -->
+        <app-pagination
+          [collectionSize]="totalItems"
+          [pageSize]="pageSize"
+          [page]="page"
+          (pageChange)="onPageChange($event)"
+        ></app-pagination>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noTickets>
+    <p>Aucun ticket trouvé.</p>
+  </ng-template>
 </div>
 
-<div class="row m-3">
-  <app-list-ticket></app-list-ticket>
-</div>
-
-<div class="row text-center mb-3">
-  <app-pagination></app-pagination>
-</div>
+<!-- Modale avec le QR Code -->
+<ng-template #qrCodeModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">QR Code du Ticket</h4>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body d-flex justify-content-center align-items-center">
+    <!-- Utilisation de ViewChild pour accéder au canvas -->
+    <canvas #qrcodeCanvas id="qrcode" class="qr-code-canvas"></canvas>
+    <!-- Le QR Code sera affiché ici -->
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-outline-success"
+      (click)="downloadQRCode()"
+    >
+      Télécharger
+    </button>
+    <button type="button" class="btn btn-danger" (click)="modal.dismiss()">
+      Fermer
+    </button>
+  </div>
+</ng-template>

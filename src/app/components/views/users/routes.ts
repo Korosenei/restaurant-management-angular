@@ -9,8 +9,15 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'employes',
+        redirectTo: 'allUsers',
         pathMatch: 'full'
+      },
+      {
+        path: 'allUsers',
+        loadComponent: () => import('./utilisateur/utilisateur.component').then(m => m.UtilisateurComponent),
+        data: {
+          title: 'All Users'
+        }
       },
       {
         path: 'employes',
@@ -20,26 +27,19 @@ export const routes: Routes = [
         }
       },
       {
+        path: 'caissiers',
+        loadComponent: () => import('./caissier/caissier.component').then(m => m.CaissierComponent),
+        data: {
+          title: 'Caissiers'
+        }
+      },
+      {
         path: 'managers',
         loadComponent: () => import('./manager/manager.component').then(m => m.ManagerComponent),
         data: {
           title: 'Managers'
         }
       },
-      {
-        path: 'admin',
-        loadComponent: () => import('./admin/admin.component').then(m => m.AdminComponent),
-        data: {
-          title: 'Super-Admin'
-        }
-      },
-      {
-        path: 'roles',
-        loadComponent: () => import('./role/role.component').then(m => m.RoleComponent),
-        data: {
-          title: 'Roles'
-        }
-      }
     ]
   }
 ];

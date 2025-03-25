@@ -57,9 +57,11 @@ export class DirectionComponent implements OnInit {
       keyboard: false,
     });
   }
-  
-    getDirections() {
-      this.http.get<DIRECTION[]>('http://localhost:2025/directions/all').subscribe({
+
+  getDirections() {
+    this.http
+      .get<DIRECTION[]>('http://localhost:2025/directions/all')
+      .subscribe({
         next: (res) => {
           this.listDirections = res;
           this.filteredDirections = [...res];
@@ -70,132 +72,140 @@ export class DirectionComponent implements OnInit {
           console.error('Erreur lors de la récupération des directions', err);
         },
       });
-    }
-  
-    applyFilters() {
-      let filtered = [...this.listDirections];
-  
-      if (this.searchTerm) {
-        filtered = filtered.filter((direction) =>
+  }
+
+  applyFilters() {
+    let filtered = [...this.listDirections];
+
+    if (this.searchTerm) {
+      filtered = filtered.filter(
+        (direction) =>
           direction.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
           direction.ville.toLowerCase().includes(this.searchTerm.toLowerCase())
-        );
-      }
-  
-      if (this.selectedStartDate && this.selectedEndDate) {
-        filtered = filtered.filter((direction) => {
-          const directionDate = new Date(direction.creationDate);
-          return (
-            directionDate >= new Date(this.selectedStartDate) &&
-            directionDate <= new Date(this.selectedEndDate)
-          );
-        });
-      }
-  
-      this.filteredDirections = filtered;
-      this.totalItems = filtered.length;
-      this.updateDisplayedRoles();
-    }
-  
-    updateDisplayedRoles() {
-      const startIndex = (this.page - 1) * this.pageSize;
-      this.displayedDirections = this.filteredDirections.slice(
-        startIndex,
-        startIndex + this.pageSize
       );
     }
-  
-    onPageChange(pageNumber: number) {
-      this.page = pageNumber;
-      this.updateDisplayedRoles();
-    }
-  
-    onSearch(searchTerm: string) {
-      this.searchTerm = searchTerm;
-      this.page = 1;
-      this.applyFilters();
-    }
-  
-    onDateFilter(dateRange: { startDate: string; endDate: string }): void {
-      this.selectedStartDate = dateRange.startDate;
-      this.selectedEndDate = dateRange.endDate;
-      this.applyFilters();
-    }
-    
-      onEdite(data: DIRECTION) {
-        const modalRef = this.modalService.open(AddDirectionComponent, {
-          size: 'lg',
-          backdrop: 'static',
-          keyboard: false,
-        });
-        modalRef.componentInstance.directionObj = { ...data };
-        modalRef.componentInstance.listDirections = this.listDirections;
-    
-        modalRef.result.then(
-          (result) => {
-            if (result === 'updated') {
-              this.getDirections();
-            }
-          },
-          (reason) => {
-            console.log('Modal dismissed: ' + reason);
-          }
+
+    if (this.selectedStartDate && this.selectedEndDate) {
+      filtered = filtered.filter((direction) => {
+        const directionDate = new Date(direction.creationDate);
+        return (
+          directionDate >= new Date(this.selectedStartDate) &&
+          directionDate <= new Date(this.selectedEndDate)
         );
+      });
+    }
+
+    this.filteredDirections = filtered;
+    this.totalItems = filtered.length;
+    this.updateDisplayedRoles();
+  }
+
+  updateDisplayedRoles() {
+    const startIndex = (this.page - 1) * this.pageSize;
+    this.displayedDirections = this.filteredDirections.slice(
+      startIndex,
+      startIndex + this.pageSize
+    );
+  }
+
+  onPageChange(pageNumber: number) {
+    this.page = pageNumber;
+    this.updateDisplayedRoles();
+  }
+
+  onSearch(searchTerm: string) {
+    this.searchTerm = searchTerm;
+    this.page = 1;
+    this.applyFilters();
+  }
+
+  onDateFilter(dateRange: { startDate: string; endDate: string }): void {
+    this.selectedStartDate = dateRange.startDate;
+    this.selectedEndDate = dateRange.endDate;
+    this.applyFilters();
+  }
+
+  onEdite(data: DIRECTION) {
+    const modalRef = this.modalService.open(AddDirectionComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+    });
+    modalRef.componentInstance.directionObj = { ...data };
+    modalRef.componentInstance.listDirections = this.listDirections;
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'updated') {
+          this.getDirections();
+        }
+      },
+      (reason) => {
+        console.log('Modal dismissed: ' + reason);
       }
-    
-      onDelete(id: number) {
-        if (confirm('Voulez-vous vraiment supprimer cette direction ?')) {
-          this.http.delete(`http://localhost:2025/directions/delete/${id}`).subscribe({
-            next: () => {
-              alert('Direction supprimée avec succès !');
-              this.getDirections();
-            },
-            error: (err) => {
-              console.error('Erreur lors de la suppression de la direction', err);
-              alert('Impossible de supprimer cette direction.');
-            },
-          });
-        }
-      }
-    
-      // Méthode pour l'export PDF
-      exportToPDF() {
-        if (!this.filteredDirections || this.filteredDirections.length === 0) {
-          alert("Aucune direction à exporter.");
-          return;
-        }
-      
-        if (confirm("Voulez-vous vraiment exporter les directions en PDF ?")) {
-          const doc = new jsPDF();
-          doc.text('Liste des directions', 10, 10);
-      
-          const headers = [['ID', 'Sigle', 'Region', 'Ville', 'Responsable']];
-          const data = this.filteredDirections.map(
-            direction => [direction.id, direction.sigle, direction.region, direction.ville, direction.userId]);
-      
-          (doc as any).autoTable({
-            startY: 20,
-            head: headers,
-            body: data,
-            theme: 'grid',
-          });
-      
-          doc.save('directions.pdf');
-        }
-      }
-    
-      // Exporter en Excel
-      exportToExcel() {
-        if (!this.listDirections || this.listDirections.length === 0) {
-          alert("Aucune direction à exporter.");
-          return;
-        }
-      
-        if (confirm("Voulez-vous vraiment exporter les directions en Excel ?")) {
-          const worksheet = XLSX.utils.json_to_sheet(this.listDirections);
-          const workbook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(workbook, worksheet, 'Directions');
-          XLSX.writeFile(workbook, 'directions.xlsx');
-        }
-      }
+    );
+  }
+
+  onDelete(id: number) {
+    if (confirm('Voulez-vous vraiment supprimer cette direction ?')) {
+      this.http
+        .delete(`http://localhost:2025/directions/delete/${id}`)
+        .subscribe({
+          next: () => {
+            alert('Direction supprimée avec succès !');
+            this.getDirections();
+          },
+          error: (err) => {
+            console.error('Erreur lors de la suppression de la direction', err);
+            alert('Impossible de supprimer cette direction.');
+          },
+        });
+    }
+  }
+
+  // Méthode pour l'export PDF
+  exportToPDF() {
+    if (!this.filteredDirections || this.filteredDirections.length === 0) {
+      alert('Aucune direction à exporter.');
+      return;
+    }
+
+    if (confirm('Voulez-vous vraiment exporter les directions en PDF ?')) {
+      const doc = new jsPDF();
+      doc.text('Liste des directions', 10, 10);
+
+      const headers = [['ID', 'Sigle', 'Region', 'Ville', 'Responsable']];
+      const data = this.filteredDirections.map((direction) => [
+        direction.id,
+        direction.sigle,
+        direction.region,
+        direction.ville,
+        direction.userId,
+      ]);
+
+      (doc as any).autoTable({
+        startY: 20,
+        head: headers,
+        body: data,
+        theme: 'grid',
+      });
+
+      doc.save('directions.pdf');
+    }
+  }
+
+  // Exporter en Excel
+  exportToExcel() {
+    if (!this.listDirections || this.listDirections.length === 0) {
+      alert('Aucune direction à exporter.');
+      return;
+    }
+
+    if (confirm('Voulez-vous vraiment exporter les directions en Excel ?')) {
+      const worksheet = XLSX.utils.json_to_sheet(this.listDirections);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Directions');
+      XLSX.writeFile(workbook, 'directions.xlsx');
+    }
+  }
 }

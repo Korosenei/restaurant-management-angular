@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ListTransactionComponent } from './list-transaction.component';
+import { CaissierComponent } from './caissier.component';
 
-describe('ListTransactionComponent', () => {
-  let component: ListTransactionComponent;
-  let fixture: ComponentFixture<ListTransactionComponent>;
+describe('CaissierComponent', () => {
+  let component: CaissierComponent;
+  let fixture: ComponentFixture<CaissierComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ListTransactionComponent]
+      imports: [CaissierComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ListTransactionComponent);
+    fixture = TestBed.createComponent(CaissierComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

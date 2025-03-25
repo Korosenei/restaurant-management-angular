@@ -2,7 +2,7 @@
   <div class="col">
     <div class="row m-1">
       <div class="col-md-8 p-0">
-        <h3>Gestion des employés</h3>
+        <h3>Gestion des caissiers</h3>
       </div>
 
       <!-- Composant des boutons -->
@@ -19,17 +19,14 @@
 
   <!-- Composant de recherche -->
   <app-search
-    searchPlaceholder="Employé..."
+    searchPlaceholder="Caissier..."
     [showDateFilters]="true"
     (search)="onSearch($event)"
     (filterByDate)="onDateFilter($event)"
   >
   </app-search>
 
-  <div
-    class="body"
-    *ngIf="listEmployes && listEmployes.length > 0; else noEmployes"
-  >
+  <div class="body" *ngIf="listCaissiers && listCaissiers.length > 0; else noCaissiers">
     <div class="row">
       <div class="col-sm-12">
         <table class="table">
@@ -46,7 +43,7 @@
           </thead>
 
           <tbody>
-            @for (item of listEmployes; track $index) {
+            @for (item of listCaissiers; track $index) {
             <tr>
               <th scope="row">{{ $index + 1 }}</th>
               <td>{{ item.matricule }}</td>
@@ -93,7 +90,7 @@
     </div>
   </div>
 
-  <ng-template #noEmployes>
-    <p>Aucun employé trouvé.</p>
+  <ng-template #noCaissiers>
+    <p>Aucun Caissier trouvé.</p>
   </ng-template>
 </div>

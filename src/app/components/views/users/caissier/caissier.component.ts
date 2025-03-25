@@ -14,7 +14,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 @Component({
-  selector: 'app-manager',
+  selector: 'app-caissier',
   standalone: true,
   imports: [
     HttpClientModule,
@@ -23,15 +23,15 @@ import 'jspdf-autotable';
     PaginationComponent,
     SearchComponent,
   ],
-  templateUrl: './manager.component.html',
-  styleUrl: './manager.component.scss',
+  templateUrl: './caissier.component.html',
+  styleUrl: './caissier.component.scss',
 })
-export class ManagerComponent implements OnInit {
-  managerObj: USER = new USER();
+export class CaissierComponent implements OnInit {
+  caissierObj: USER = new USER();
 
-  listManagers: USER[] = [];
-  filteredManagers: USER[] = [];
-  displayedManagers: USER[] = [];
+  listCaissiers: USER[] = [];
+  filteredCaissiers: USER[] = [];
+  displayedCaissiers: USER[] = [];
 
   page = 1;
   pageSize = 5;
@@ -49,59 +49,61 @@ export class ManagerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getManagers();
+    this.getCaissiers();
   }
 
-  getManagers() {
-    this.http.get<USER[]>('http://localhost:2028/users/filter/role/MANAGER').subscribe({
+  getCaissiers() {
+    this.http.get<USER[]>('http://localhost:2028/users/filter/role/CAISSIER').subscribe({
       next: (res) => {
-        this.listManagers = res;
-        this.filteredManagers = [...res];
+        this.listCaissiers = res;
+        this.filteredCaissiers = [...res];
         this.totalItems = res.length;
         this.applyFilters();
       },
       error: (err) => {
-        console.error('Erreur lors de la récupération des managers', err);
+        console.error('Erreur lors de la récupération des caissiers', err);
       },
     });
   }
 
   applyFilters() {
-    let filtered = [...this.listManagers];
+    let filtered = [...this.listCaissiers];
 
     if (this.searchTerm) {
       filtered = filtered.filter(
-        (manager) =>
-          manager.matricule
+        (caissier) =>
+          caissier.matricule
             .toLowerCase()
             .includes(this.searchTerm.toLowerCase()) ||
-          manager.piece.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          manager.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          manager.prenom
+          caissier.piece
             .toLowerCase()
             .includes(this.searchTerm.toLowerCase()) ||
-          manager.email.toLowerCase().includes(this.searchTerm.toLowerCase())
+          caissier.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          caissier.prenom
+            .toLowerCase()
+            .includes(this.searchTerm.toLowerCase()) ||
+          caissier.email.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     }
 
     if (this.selectedStartDate && this.selectedEndDate) {
-      filtered = filtered.filter((manager) => {
-        const managerDate = new Date(manager.creationDate);
+      filtered = filtered.filter((caissier) => {
+        const caissierDate = new Date(caissier.creationDate);
         return (
-          managerDate >= new Date(this.selectedStartDate) &&
-          managerDate <= new Date(this.selectedEndDate)
+          caissierDate >= new Date(this.selectedStartDate) &&
+          caissierDate <= new Date(this.selectedEndDate)
         );
       });
     }
 
-    this.filteredManagers = filtered;
+    this.filteredCaissiers = filtered;
     this.totalItems = filtered.length;
     this.updateDisplayedRoles();
   }
 
   updateDisplayedRoles() {
     const startIndex = (this.page - 1) * this.pageSize;
-    this.displayedManagers = this.filteredManagers.slice(
+    this.displayedCaissiers = this.filteredCaissiers.slice(
       startIndex,
       startIndex + this.pageSize
     );
@@ -147,13 +149,13 @@ export class ManagerComponent implements OnInit {
       backdrop: 'static',
       keyboard: false,
     });
-    modalRef.componentInstance.managerObj = { ...data };
-    modalRef.componentInstance.listManagers = this.listManagers;
+    modalRef.componentInstance.caissierObj = { ...data };
+    modalRef.componentInstance.listCaissiers = this.listCaissiers;
 
     modalRef.result.then(
       (result) => {
         if (result === 'updated') {
-          this.getManagers();
+          this.getCaissiers();
         }
       },
       (reason) => {
@@ -163,15 +165,15 @@ export class ManagerComponent implements OnInit {
   }
 
   onDelete(id: number) {
-    if (confirm('Voulez-vous vraiment supprimer ce manager ?')) {
+    if (confirm('Voulez-vous vraiment supprimer ce caissier ?')) {
       this.http.delete(`http://localhost:2028/users/delete/${id}`).subscribe({
         next: () => {
-          alert('Utilisateur supprimé avec succès !');
-          this.getManagers();
+          alert('Caissier supprimé avec succès !');
+          this.getCaissiers();
         },
         error: (err) => {
-          console.error('Erreur lors de la suppression du manager', err);
-          alert('Impossible de supprimer ce manager.');
+          console.error('Erreur lors de la suppression du caissier', err);
+          alert('Impossible de supprimer ce caissier.');
         },
       });
     }
@@ -179,22 +181,22 @@ export class ManagerComponent implements OnInit {
 
   // Méthode pour l'export PDF
   exportToPDF() {
-    if (!this.filteredManagers || this.filteredManagers.length === 0) {
-      alert('Aucun manager à exporter.');
+    if (!this.filteredCaissiers || this.filteredCaissiers.length === 0) {
+      alert('Aucun caissier à exporter.');
       return;
     }
 
-    if (confirm('Voulez-vous vraiment exporter les managers en PDF ?')) {
+    if (confirm('Voulez-vous vraiment exporter les caissiers en PDF ?')) {
       const doc = new jsPDF();
-      doc.text('Liste des managers', 10, 10);
+      doc.text('Liste des caissiers', 10, 10);
 
       const headers = [['ID', 'Matricule', 'Client', 'Téléphone', 'Email']];
-      const data = this.filteredManagers.map((manager) => [
-        manager.id,
-        manager.matricule,
-        manager.nom && manager.prenom,
-        manager.telephone,
-        manager.email,
+      const data = this.filteredCaissiers.map((caissier) => [
+        caissier.id,
+        caissier.matricule,
+        caissier.nom && caissier.prenom,
+        caissier.telephone,
+        caissier.email,
       ]);
 
       (doc as any).autoTable({
@@ -204,22 +206,22 @@ export class ManagerComponent implements OnInit {
         theme: 'grid',
       });
 
-      doc.save('manager.pdf');
+      doc.save('caissiers.pdf');
     }
   }
 
   // Exporter en Excel
   exportToExcel() {
-    if (!this.listManagers || this.listManagers.length === 0) {
-      alert('Aucun manager à exporter.');
+    if (!this.listCaissiers || this.listCaissiers.length === 0) {
+      alert('Aucun employé à exporter.');
       return;
     }
 
-    if (confirm('Voulez-vous vraiment exporter les managers en Excel ?')) {
-      const worksheet = XLSX.utils.json_to_sheet(this.listManagers);
+    if (confirm('Voulez-vous vraiment exporter les caissiers en Excel ?')) {
+      const worksheet = XLSX.utils.json_to_sheet(this.listCaissiers);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Managers');
-      XLSX.writeFile(workbook, 'managers.xlsx');
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'caissiers');
+      XLSX.writeFile(workbook, 'caissiers.xlsx');
     }
   }
 }

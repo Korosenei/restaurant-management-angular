@@ -1,7 +1,7 @@
 <div class="modal-dialog modal-lg">
   <div class="modal-content">
     <div class="modal-header">
-      <h4 class="modal-title">Création ou Modification d'un employé</h4>
+      <h4 class="modal-title">Création ou Modification d'un utilisateur</h4>
       <button
         type="button"
         class="btn-close"
@@ -11,7 +11,7 @@
       ></button>
     </div>
     <div class="modal-body">
-      <form [formGroup]="employeeForm" novalidate>
+      <form [formGroup]="userForm" novalidate>
         <div class="row">
           <!-- Matricule -->
           <div class="col-md-6 mb-3">
@@ -76,8 +76,8 @@
             </div>
           </div>
 
-          <!-- Numéro Passeport (Affiché si Passeport est sélectionné) -->
-          <div class="col-md-6 mb-3" *ngIf="selectedPieceType === 'PASSEPORT'">
+          <!-- Numéro Passeport (Affiché si Passport est sélectionné) -->
+          <div class="col-md-6 mb-3" *ngIf="selectedPieceType === 'PASSPORT'">
             <div class="form-floating">
               <input
                 type="text"
@@ -184,7 +184,7 @@
                 <option
                   *ngFor="let role of roles"
                   [value]="role.value"
-                  [selected]="role.value === employeeForm.value"
+                  [selected]="role.value === userForm.value"
                 >
                   {{ role.value }}
                 </option>

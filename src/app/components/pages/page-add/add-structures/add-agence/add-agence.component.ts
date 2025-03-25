@@ -12,7 +12,7 @@ import { FormModule } from '@coreui/angular';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DIRECTION } from '../../../../../models/model-structures/direction.model';
 import { AGENCE } from '../../../../../models/model-structures/agence.model';
-import { EMPLOYE } from '../../../../../models/model-users/employe.model';
+import { USER } from '../../../../../models/model-users/user.model';
 
 @Component({
   selector: 'app-add-agence',
@@ -27,7 +27,7 @@ export class AddAgenceComponent implements OnInit {
   generatedAgenceCode: string = '';
 
   listDirections: DIRECTION[] = [];
-  listEmployes: EMPLOYE[] = [];
+  listEmployes: USER[] = [];
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -96,7 +96,7 @@ export class AddAgenceComponent implements OnInit {
   }
 
   getEmployes() {
-    this.http.get<EMPLOYE[]>('http://localhost:2028/users/all').subscribe({
+    this.http.get<USER[]>('http://localhost:2028/users/all').subscribe({
       next: (res) => {
         this.listEmployes = res;
       },

@@ -14,7 +14,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 @Component({
-  selector: 'app-manager',
+  selector: 'app-utilisateur',
   standalone: true,
   imports: [
     HttpClientModule,
@@ -23,15 +23,15 @@ import 'jspdf-autotable';
     PaginationComponent,
     SearchComponent,
   ],
-  templateUrl: './manager.component.html',
-  styleUrl: './manager.component.scss',
+  templateUrl: './utilisateur.component.html',
+  styleUrl: './utilisateur.component.scss',
 })
-export class ManagerComponent implements OnInit {
-  managerObj: USER = new USER();
+export class UtilisateurComponent implements OnInit {
+  userObj: USER = new USER();
 
-  listManagers: USER[] = [];
-  filteredManagers: USER[] = [];
-  displayedManagers: USER[] = [];
+  listUsers: USER[] = [];
+  filteredUsers: USER[] = [];
+  displayedUsers: USER[] = [];
 
   page = 1;
   pageSize = 5;
@@ -49,59 +49,65 @@ export class ManagerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getManagers();
+    this.getUsers();
   }
 
-  getManagers() {
-    this.http.get<USER[]>('http://localhost:2028/users/filter/role/MANAGER').subscribe({
+  openModal() {
+    this.modalService.open(AddUtilisateurComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+    });
+  }
+
+  getUsers() {
+    this.http.get<USER[]>('http://localhost:2028/users/all').subscribe({
       next: (res) => {
-        this.listManagers = res;
-        this.filteredManagers = [...res];
+        this.listUsers = res;
+        this.filteredUsers = [...res];
         this.totalItems = res.length;
         this.applyFilters();
       },
       error: (err) => {
-        console.error('Erreur lors de la récupération des managers', err);
+        console.error('Erreur lors de la récupération des utilisateurs', err);
       },
     });
   }
 
   applyFilters() {
-    let filtered = [...this.listManagers];
+    let filtered = [...this.listUsers];
 
     if (this.searchTerm) {
       filtered = filtered.filter(
-        (manager) =>
-          manager.matricule
+        (user) =>
+          user.matricule
             .toLowerCase()
             .includes(this.searchTerm.toLowerCase()) ||
-          manager.piece.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          manager.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          manager.prenom
-            .toLowerCase()
-            .includes(this.searchTerm.toLowerCase()) ||
-          manager.email.toLowerCase().includes(this.searchTerm.toLowerCase())
+          user.piece.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          user.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          user.prenom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          user.email.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     }
 
     if (this.selectedStartDate && this.selectedEndDate) {
-      filtered = filtered.filter((manager) => {
-        const managerDate = new Date(manager.creationDate);
+      filtered = filtered.filter((user) => {
+        const userDate = new Date(user.creationDate);
         return (
-          managerDate >= new Date(this.selectedStartDate) &&
-          managerDate <= new Date(this.selectedEndDate)
+          userDate >= new Date(this.selectedStartDate) &&
+          userDate <= new Date(this.selectedEndDate)
         );
       });
     }
 
-    this.filteredManagers = filtered;
+    this.filteredUsers = filtered;
     this.totalItems = filtered.length;
     this.updateDisplayedRoles();
   }
 
   updateDisplayedRoles() {
     const startIndex = (this.page - 1) * this.pageSize;
-    this.displayedManagers = this.filteredManagers.slice(
+    this.displayedUsers = this.filteredUsers.slice(
       startIndex,
       startIndex + this.pageSize
     );
@@ -147,13 +153,13 @@ export class ManagerComponent implements OnInit {
       backdrop: 'static',
       keyboard: false,
     });
-    modalRef.componentInstance.managerObj = { ...data };
-    modalRef.componentInstance.listManagers = this.listManagers;
+    modalRef.componentInstance.userObj = { ...data };
+    modalRef.componentInstance.listUsers = this.listUsers;
 
     modalRef.result.then(
       (result) => {
         if (result === 'updated') {
-          this.getManagers();
+          this.getUsers();
         }
       },
       (reason) => {
@@ -163,15 +169,15 @@ export class ManagerComponent implements OnInit {
   }
 
   onDelete(id: number) {
-    if (confirm('Voulez-vous vraiment supprimer ce manager ?')) {
+    if (confirm('Voulez-vous vraiment supprimer cet utilisateur ?')) {
       this.http.delete(`http://localhost:2028/users/delete/${id}`).subscribe({
         next: () => {
           alert('Utilisateur supprimé avec succès !');
-          this.getManagers();
+          this.getUsers();
         },
         error: (err) => {
-          console.error('Erreur lors de la suppression du manager', err);
-          alert('Impossible de supprimer ce manager.');
+          console.error('Erreur lors de la suppression de utilisateur', err);
+          alert('Impossible de supprimer cet utilisateur.');
         },
       });
     }
@@ -179,22 +185,22 @@ export class ManagerComponent implements OnInit {
 
   // Méthode pour l'export PDF
   exportToPDF() {
-    if (!this.filteredManagers || this.filteredManagers.length === 0) {
-      alert('Aucun manager à exporter.');
+    if (!this.filteredUsers || this.filteredUsers.length === 0) {
+      alert('Aucun utilisateur à exporter.');
       return;
     }
 
-    if (confirm('Voulez-vous vraiment exporter les managers en PDF ?')) {
+    if (confirm('Voulez-vous vraiment exporter les utilisateurs en PDF ?')) {
       const doc = new jsPDF();
-      doc.text('Liste des managers', 10, 10);
+      doc.text('Liste des utilisateurs', 10, 10);
 
       const headers = [['ID', 'Matricule', 'Client', 'Téléphone', 'Email']];
-      const data = this.filteredManagers.map((manager) => [
-        manager.id,
-        manager.matricule,
-        manager.nom && manager.prenom,
-        manager.telephone,
-        manager.email,
+      const data = this.filteredUsers.map((user) => [
+        user.id,
+        user.matricule,
+        user.nom && user.prenom,
+        user.telephone,
+        user.email,
       ]);
 
       (doc as any).autoTable({
@@ -204,22 +210,22 @@ export class ManagerComponent implements OnInit {
         theme: 'grid',
       });
 
-      doc.save('manager.pdf');
+      doc.save('utilisateur.pdf');
     }
   }
 
   // Exporter en Excel
   exportToExcel() {
-    if (!this.listManagers || this.listManagers.length === 0) {
-      alert('Aucun manager à exporter.');
+    if (!this.listUsers || this.listUsers.length === 0) {
+      alert('Aucun utilisateurs à exporter.');
       return;
     }
 
-    if (confirm('Voulez-vous vraiment exporter les managers en Excel ?')) {
-      const worksheet = XLSX.utils.json_to_sheet(this.listManagers);
+    if (confirm('Voulez-vous vraiment exporter les utilisateurs en Excel ?')) {
+      const worksheet = XLSX.utils.json_to_sheet(this.listUsers);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Managers');
-      XLSX.writeFile(workbook, 'managers.xlsx');
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Utilisateurs');
+      XLSX.writeFile(workbook, 'utilisateurs.xlsx');
     }
   }
 }

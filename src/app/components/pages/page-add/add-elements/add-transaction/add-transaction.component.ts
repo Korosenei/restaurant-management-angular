@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { EMPLOYE } from '../../../../../models/model-users/employe.model';
 import {
   Payement,
   TRANSACTION,
@@ -19,6 +18,7 @@ import {
   Status,
   TICKET,
 } from '../../../../../models/model-elements/ticket.model';
+import { USER } from '../../../../../models/model-users/user.model';
 
 @Component({
   selector: 'app-add-transaction',
@@ -30,8 +30,9 @@ import {
 export class AddTransactionComponent implements OnInit {
   transactionForm!: FormGroup;
   transactionObj!: TRANSACTION;
-  listClients: EMPLOYE[] = [];
+  listClients: USER[] = [];
   generatedReference: string = '';
+  private isProcessing = false;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -52,7 +53,7 @@ export class AddTransactionComponent implements OnInit {
     this.transactionForm = this.formBuilder.group({
       date: [{ value: new Date(), disabled: true }],
       reference: [{ value: '', disabled: true }],
-      refClient: ['', Validators.required],
+      userId: ['', Validators.required],
       nom: [''],
       prenom: [''],
       nbrTicket: [1, [Validators.required, Validators.max(25)]],
@@ -78,24 +79,24 @@ export class AddTransactionComponent implements OnInit {
     const today = new Date();
     const year = today.getFullYear().toString();
     const month = (today.getMonth() + 1).toString().padStart(2, '0');
-    const agencyNumber = '001';
+    const agencyNumber = 'AGE-001';
 
     this.http
       .get<TRANSACTION[]>(
-        `http://localhost:3000/transactions?year=${year}&month=${month}&agency=${agencyNumber}`
+        `http://localhost:2027/transactions/all?year=${year}&month=${month}&agency=${agencyNumber}`
       )
       .subscribe({
         next: (transactions) => {
           const lastTransaction = transactions.sort((a, b) => {
-            const refA = parseInt(a.reference.slice(-4));
-            const refB = parseInt(b.reference.slice(-4));
+            const refA = parseInt(a.reference.slice(-3));
+            const refB = parseInt(b.reference.slice(-3));
             return refB - refA;
           })[0];
 
           const lastNumber = lastTransaction
-            ? parseInt(lastTransaction.reference.slice(-4))
+            ? parseInt(lastTransaction.reference.slice(-3))
             : 0;
-          const newNumber = (lastNumber + 1).toString().padStart(4, '0');
+          const newNumber = (lastNumber + 1).toString().padStart(3, '0');
 
           this.generatedReference = `${year}${month}${agencyNumber}${newNumber}`;
           this.transactionForm
@@ -114,11 +115,11 @@ export class AddTransactionComponent implements OnInit {
   generateTicketNumbers(): void {
     const year = new Date().getFullYear().toString();
     const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
-    const agencyNumber = '001';
+    const agencyNumber = 'AGE-001';
 
     this.http
       .get<TRANSACTION[]>(
-        `http://localhost:3000/transactions?year=${year}&agency=${agencyNumber}`
+        `http://localhost:2027/transactions/all?year=${year}&agency=${agencyNumber}`
       )
       .subscribe({
         next: (transactions) => {
@@ -174,19 +175,19 @@ export class AddTransactionComponent implements OnInit {
     const year = new Date().getFullYear().toString();
     const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
 
-    this.http.get<EMPLOYE[]>('http://localhost:3000/employes').subscribe({
+    this.http.get<USER[]>('http://localhost:2028/users/all').subscribe({
       next: (clients) => {
         this.http
           .get<TRANSACTION[]>(
-            `http://localhost:3000/transactions?year=${year}&month=${month}`
+            `http://localhost:2027/transactions/all?year=${year}&month=${month}`
           )
           .subscribe({
             next: (transactions) => {
               const usedClientRefs = new Set(
-                transactions.map((transaction) => transaction.refClient)
+                transactions.map((transaction) => transaction.id)
               );
               this.listClients = clients.filter(
-                (client) => !usedClientRefs.has(client.numPiece)
+                (client) => !usedClientRefs.has(client.id)
               );
             },
             error: (err) => {
@@ -207,17 +208,20 @@ export class AddTransactionComponent implements OnInit {
    * Méthode appelée lors du changement de client sélectionné.
    */
   onClientChange(event: any): void {
-    const refClient = event.target.value;
+    const userId = Number(event.target.value);
+    console.log('Utilisateur sélectionné:', userId);
+
     const selectedClient = this.listClients.find(
-      (client) =>
-        client.numPiece === refClient
+      (client) => client.id === userId
     );
 
     if (selectedClient) {
       this.transactionForm.patchValue({
+        userId: selectedClient.id,
         nom: selectedClient.nom,
         prenom: selectedClient.prenom,
       });
+      console.log('Formulaire après mise à jour:', this.transactionForm.value);
     }
   }
 
@@ -225,40 +229,46 @@ export class AddTransactionComponent implements OnInit {
    * Sauvegarde la transaction et génère les tickets associés.
    */
   Save(): void {
-    if (this.transactionForm.valid) {
-      const transactionData = {
-        ...this.transactionForm.getRawValue(),
-        ticketDto: { ...this.transactionForm.value.ticketDto },
-      };
-      this.transactionObj = new TRANSACTION(transactionData);
+    if (this.transactionForm.invalid || this.isProcessing) {
+      alert(
+        'Veuillez remplir correctement le formulaire ou attendez la fin du traitement.'
+      );
+      return;
+    }
 
-      const request$ = this.transactionObj.id
-        ? this.http.put<TRANSACTION>(
-            `http://localhost:3000/transactions/${this.transactionObj.id}`,
-            this.transactionObj
-          )
-        : this.http.post<TRANSACTION>(
-            'http://localhost:3000/transactions',
-            this.transactionObj
-          );
+    this.isProcessing = true; // Empêcher les doubles soumissions
+    this.transactionForm.disable();
+    alert('Enregistrement en cours...');
 
-      request$.subscribe({
+    const newTransaction: TRANSACTION = {
+      ...this.transactionForm.getRawValue(),
+      ticketDto: { ...this.transactionForm.value.ticketDto },
+      userDto: { id: this.transactionForm.value.userId },
+    };
+
+    this.http
+      .post<TRANSACTION>(
+        'http://localhost:2027/transactions/create',
+        newTransaction
+      )
+      .subscribe({
         next: (savedTransaction) => {
-          console.log(
-            `Transaction ${
-              this.transactionObj.id ? 'mise à jour' : 'sauvegardée'
-            } avec succès`,
-            savedTransaction
-          );
-          this.generateAndSaveTickets(savedTransaction);
+          alert('Transaction enregistrée avec succès !');
+
+          // Mise à jour de l'ID de la transaction pour les tickets
+          /* newTransaction.id = savedTransaction.id; */
+          this.generateAndSaveTickets(newTransaction);
         },
         error: (err) => {
-          console.error('Erreur lors de la sauvegarde de la transaction', err);
+          console.error(
+            'Erreur lors de l’enregistrement de la transaction',
+            err
+          );
+          alert('Une erreur est survenue lors de l’enregistrement.');
+          this.transactionForm.enable();
+          this.isProcessing = false;
         },
       });
-    } else {
-      alert('Veuillez remplir tous les champs requis.');
-    }
   }
 
   /**
@@ -269,7 +279,7 @@ export class AddTransactionComponent implements OnInit {
     const lastTicketNumber = parseInt(transaction.lastNumTicket.slice(-4));
     const year = new Date().getFullYear().toString();
     const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
-    const agencyNumber = '001';
+    const agencyNumber = 'AGE-001';
 
     const tickets: TICKET[] = [];
     for (let i = firstTicketNumber; i <= lastTicketNumber; i++) {
@@ -286,12 +296,9 @@ export class AddTransactionComponent implements OnInit {
         transactionDto: {
           id: transaction.id,
           reference: transaction.reference,
-          nom: transaction.nom,
-          prenom: transaction.prenom
+          userId: transaction.userDto?.id,
         } as TRANSACTION,
-        employeDto: transaction.employeDto
-          ? { id: transaction.employeDto.id } as EMPLOYE
-          : null,
+        userDto: transaction.userDto,
       });
 
       tickets.push(ticket);
@@ -299,21 +306,23 @@ export class AddTransactionComponent implements OnInit {
 
     // Sauvegarder les tickets
     tickets.forEach((ticket) => {
-      this.http.post<TICKET>('http://localhost:3000/tickets', ticket).subscribe({
-        next: (savedTicket: TICKET) => {
-          console.log('Ticket sauvegardé avec succès :', savedTicket);
-        },
-        error: (err) => {
-          console.error('Erreur lors de la sauvegarde du ticket', err);
-        },
-      });
+      this.http
+        .post<TICKET>('http://localhost:2027/tickets/create', ticket)
+        .subscribe({
+          next: (savedTicket: TICKET) => {
+            console.log('Ticket sauvegardé avec succès :', savedTicket);
+          },
+          error: (err) => {
+            console.error('Erreur lors de la sauvegarde du ticket', err);
+          },
+        });
     });
 
     // Mettre à jour la transaction avec les informations du premier ticket
     transaction.ticketDto = tickets[0]; // Ajouter le premier ticket dans la transaction
     this.http
       .put<TRANSACTION>(
-        `http://localhost:3000/transactions/${transaction.id}`,
+        `http://localhost:2027/transactions/update/${transaction.id}`,
         transaction
       )
       .subscribe({

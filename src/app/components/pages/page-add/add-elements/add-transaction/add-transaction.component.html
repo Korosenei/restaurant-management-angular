@@ -34,19 +34,19 @@
               <div class="form-floating mb-3 input-group">
                 <select
                   class="form-control"
-                  id="floatingRefClient"
-                  formControlName="refClient"
+                  id="floatingUserId"
+                  formControlName="userId"
                   (change)="onClientChange($event)"
                 >
                   <option value="" disabled>Choisissez le client</option>
                   <option
                     *ngFor="let client of listClients"
-                    [value]="client.numPiece "
+                    [value]="client.id"
                   >
-                    {{ client.numPiece}} ({{client.piece}})
+                    {{ client.id}} ({{ client.matricule }})
                   </option>
                 </select>
-                <label for="floatingRefClient">NIP / PASSPORT</label>
+                <label for="floatingUserId">Client</label>
               </div>
 
               <!-- Affichage du nom et prénom du client sélectionné -->

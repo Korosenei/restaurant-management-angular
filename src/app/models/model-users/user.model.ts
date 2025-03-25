@@ -1,6 +1,6 @@
-import { ROLE } from "./role.model";
+import { TICKET } from "../model-elements/ticket.model";
 
-export class EMPLOYE {
+export class USER {
   id: number = 0;
   matricule: string = '';
   nom: string = '';
@@ -12,18 +12,28 @@ export class EMPLOYE {
   telephone: number = 0;
   email: string = '';
   motDePasse: string = '';
+  tickets: TICKET[] = [];
   agenceId: string = '';
   restoId: string = '';
   enabled: boolean = false;
   accountLocked: boolean = false;
-  role: ROLE| null = null;
+  role: RoleName = RoleName.CLIENT;
   creationDate: Date = new Date();
   modifiedDate: Date = new Date();
   deleted: boolean = false;
 
-  constructor(init?: Partial<EMPLOYE>) {
+  constructor(init?: Partial<USER>) {
     Object.assign(this, init);
   }
+}
+
+export enum RoleName {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+  CAISSIER = 'CAISSIER',
+  MANAGER = 'MANAGER',
+  CLIENT = 'CLIENT',
+  AUTRE = 'AUTRE',
 }
 
 export enum Piece {

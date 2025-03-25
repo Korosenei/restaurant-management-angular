@@ -1,0 +1,81 @@
+<div class="modal-header">
+  <h5 class="modal-title">Détails de l'utilisateur {{ user.matricule }}</h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="Close()"
+  ></button>
+</div>
+<div class="modal-body">
+  <div class="container">
+    <div class="row mb-2">
+      <div class="col-4"><strong>Matricule</strong></div>
+      <div class="col-1">:</div>
+      <div class="col-7">{{ user.matricule }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-4"><strong>Pièce</strong></div>
+      <div class="col-1">:</div>
+      <div class="col-7">{{ user.piece }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-4"><strong>N° de pièce</strong></div>
+      <div class="col-1">:</div>
+      <div class="col-7">{{ user.numPiece }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-4"><strong>Nom</strong></div>
+      <div class="col-1">:</div>
+      <div class="col-7">{{ user.nom }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-4"><strong>Prénom</strong></div>
+      <div class="col-1">:</div>
+      <div class="col-7">{{ user.prenom }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-4"><strong>Civilité</strong></div>
+      <div class="col-1">:</div>
+      <div class="col-7">{{ user.civilite }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-4"><strong>Email</strong></div>
+      <div class="col-1">:</div>
+      <div class="col-7">{{ user.email }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-4"><strong>Téléphone</strong></div>
+      <div class="col-1">:</div>
+      <div class="col-7">{{ user.telephone }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-4"><strong>Role</strong></div>
+      <div class="col-1">:</div>
+      <div class="col-7">{{ user.role }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-4"><strong>Statut</strong></div>
+      <div class="col-1">:</div>
+      <div class="col-7">
+        <div class="form-check form-switch">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="toggleEnabled"
+            [checked]="user.enabled"
+            (change)="toggleEnabled(user.id, $event)"
+          />
+          <label class="form-check-label" for="toggleEnabled">
+            {{ user.enabled ? "Actif" : "Inactif" }}
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="Close()">
+    Fermer
+  </button>
+</div>

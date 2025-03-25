@@ -1,4 +1,5 @@
 <div class="row m-3">
+  <!-- Card de l'utilisateur -->
   <div class="card col-md-5 text-center">
     <div class="col">
       <div class="my-3">
@@ -11,44 +12,122 @@
         />
       </div>
       <div>
-        <h3>Monkey D Luffy</h3>
-        <small class="form-text text-muted">One piece, East Blue, 12345</small>
+        <h3>{{ currentUser?.nom }} {{ currentUser?.prenom }}</h3>
+        <small class="form-text text-muted">{{ currentUser?.agenceId }}</small>
       </div>
       <div class="col">
-        <button type="button" class="btn btn-primary m-3">
-          <i class="fa-solid fa-pencil-alt"></i>&nbsp; Modifier
-        </button>
-        <button type="button" class="btn btn-warning m-3" (click)="modifierMotDePasse()">
+        <!-- Bouton pour ouvrir le modal de changement de mot de passe -->
+        <button
+          type="button"
+          class="btn btn-warning m-3"
+          data-bs-toggle="modal"
+          data-bs-target="#changePasswordModal"
+        >
           <i class="fa-solid fa-lock"></i>&nbsp; Changer votre mot de passe
         </button>
       </div>
     </div>
   </div>
 
-  <div class="card col-md-5 ms-3">
-    <table class="table">
-      <tbody>
-        <tr>
-          <th>Nom complet</th>
-          <td>Monkey D Luffy</td>
-        </tr>
-        <tr>
-          <th>Email</th>
-          <td>luffygmail.com</td>
-        </tr>
-        <tr>
-          <th>Telephone</th>
-          <td>+XXX 71 88 20 20</td>
-        </tr>
-        <tr>
-          <th>Adresse</th>
-          <td>One piece, Wano, 12345, Japon</td>
-        </tr>
-        <tr>
-          <th>Service</th>
-          <td>Thousand Sunny</td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Card avec les détails supplémentaires de l'utilisateur -->
+  <div class="card col-md-7">
+    <div class="card-body">
+      <h5 class="card-title">Détails de votre compte</h5>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <strong>Matricule</strong> : {{ currentUser?.matricule }}
+        </li>
+        <li class="list-group-item">
+          <strong>Email</strong>: {{ currentUser?.email }}
+        </li>
+        <li class="list-group-item">
+          <strong>Téléphone</strong> : {{ currentUser?.telephone }}
+        </li>
+        <li class="list-group-item">
+          <strong>Direction</strong> : {{ currentUser?.telephone }}
+        </li>
+        <li class="list-group-item">
+          <strong>Agence</strong> : {{ currentUser?.agenceId }}
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
+
+<!-- Modal pour changer le mot de passe (si vous souhaitez l'implémenter en modal) -->
+<div
+  class="modal fade"
+  id="changePasswordModal"
+  tabindex="-1"
+  aria-labelledby="changePasswordModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="changePasswordModalLabel">
+          Changer le mot de passe
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="changePasswordForm">
+          <div class="mb-3">
+            <label for="lastPassword" class="form-label"
+              >Mot de passe actuel</label
+            >
+            <input
+              type="password"
+              class="form-control"
+              id="lastPassword"
+              placeholder="Entrez votre mot de passe actuel"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="newPassword" class="form-label"
+              >Nouveau mot de passe</label
+            >
+            <input
+              type="password"
+              class="form-control"
+              id="newPassword"
+              placeholder="Entrez votre nouveau mot de passe"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="confirmNewPassword" class="form-label"
+              >Confirmer le nouveau mot de passe</label
+            >
+            <input
+              type="password"
+              class="form-control"
+              id="confirmNewPassword"
+              placeholder="Confirmez votre nouveau mot de passe"
+              required
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Annuler
+        </button>
+        <button
+          type="button"
+          class="btn btn-warning"
+          (click)="changePassword()"
+        >
+          Enregistrer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

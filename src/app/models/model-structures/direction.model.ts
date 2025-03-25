@@ -1,4 +1,4 @@
-import { EMPLOYE } from "../model-users/employe.model";
+import { USER } from "../model-users/user.model";
 import { AGENCE } from "./agence.model";
 
 export class DIRECTION {
@@ -9,7 +9,7 @@ export class DIRECTION {
   region: string = '';
   ville: string = '';
   userId: string ='';
-  responsable: EMPLOYE | null = null
+  responsable: USER | null = null
   agenceDtos: string = '';
   creationDate: Date = new Date();
   modifiedDate: Date = new Date();

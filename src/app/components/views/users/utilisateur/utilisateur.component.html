@@ -2,13 +2,13 @@
   <div class="col">
     <div class="row m-1">
       <div class="col-md-8 p-0">
-        <h3>Gestion des employés</h3>
+        <h3>Gestion des utilisateurs</h3>
       </div>
 
       <!-- Composant des boutons -->
       <div class="col-md-4 d-flex justify-content-end">
         <app-button-action
-          [isNouveauVisible]="false"
+          (addClicked)="openModal()"
           (exportClicked)="exportToExcel()"
           (importClicked)="exportToPDF()"
         >
@@ -19,41 +19,38 @@
 
   <!-- Composant de recherche -->
   <app-search
-    searchPlaceholder="Employé..."
+    searchPlaceholder="Utilisateur..."
     [showDateFilters]="true"
     (search)="onSearch($event)"
     (filterByDate)="onDateFilter($event)"
   >
   </app-search>
 
-  <div
-    class="body"
-    *ngIf="listEmployes && listEmployes.length > 0; else noEmployes"
-  >
+  <div class="body" *ngIf="listUsers && listUsers.length > 0; else noUsers">
     <div class="row">
       <div class="col-sm-12">
         <table class="table">
           <thead>
             <tr>
               <th scope="col">ID</th>
-              <th scope="col">MATRICULE</th>
               <th scope="col">PIECE</th>
               <th scope="col">N°PIECE</th>
               <th scope="col">NOM & PRENOM</th>
               <th scope="col">TELEPHONE</th>
+              <th scope="col">ROLE</th>
               <th scope="col">ACTION</th>
             </tr>
           </thead>
 
           <tbody>
-            @for (item of listEmployes; track $index) {
+            @for (item of listUsers; track $index) {
             <tr>
               <th scope="row">{{ $index + 1 }}</th>
-              <td>{{ item.matricule }}</td>
               <td>{{ item.piece }}</td>
               <td>{{ item.numPiece }}</td>
               <td>{{ item.nom }} {{ item.prenom }}</td>
               <td>{{ item.telephone }}</td>
+              <td>{{ item.role }}</td>
               <td>
                 <button
                   class="btn btn-outline-info me-2"
@@ -93,7 +90,7 @@
     </div>
   </div>
 
-  <ng-template #noEmployes>
-    <p>Aucun employé trouvé.</p>
+  <ng-template #noUsers>
+    <p>Aucun Utilisateur trouvé.</p>
   </ng-template>
 </div>

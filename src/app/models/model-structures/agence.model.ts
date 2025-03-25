@@ -1,4 +1,4 @@
-import { EMPLOYE } from "../model-users/employe.model";
+import { USER } from "../model-users/user.model";
 import { DIRECTION } from "./direction.model";
 import { PASSAGE } from "./passage.model";
 
@@ -9,7 +9,7 @@ export class AGENCE {
   sigle: string = '';
   ville: string = '';
   userId: string ='';
-  responsable: EMPLOYE | null = null;
+  responsable: USER | null = null;
   directionDto: DIRECTION | null = null;
   passageDtos: PASSAGE[] = [];
   creationDate: Date = new Date();
