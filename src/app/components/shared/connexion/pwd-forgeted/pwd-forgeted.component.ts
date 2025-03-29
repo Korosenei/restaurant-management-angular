@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pwd-forgeted',
@@ -9,4 +10,9 @@ import { Component } from '@angular/core';
 })
 export class PwdForgetedComponent {
 
+  constructor(private router: Router) { }
+
+  onConnexionClick() {
+    this.router.navigate(['/login']);
+  }
 }

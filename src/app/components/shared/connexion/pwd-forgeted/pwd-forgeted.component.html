@@ -1,1 +1,41 @@
-<p>pwd-forgeted works!</p>
+<div class="login-container">
+  <div class="logo-container">
+    <img src="../../../../assets/logo.png" alt="Logo" class="logo" />
+  </div>
+
+  <form class="login-form" >
+    <span class="login-form-title"> Recuperation </span>
+    <br />
+
+    <div class="input-container">
+      <div>
+        <label class="label" for="matricule">Matricule</label>
+      </div>
+      <input
+        type="text"
+        id="matricule"
+        name="matricule"
+        placeholder="Entrez votre matricule"
+        required
+      />
+    </div>
+
+    <div class="input-container">
+      <div class="email">
+        <label class="label" for="email">Email</label>
+        <a routerLink="/login" class="connexion" (click)="onConnexionClick()"> connexion? </a>
+      </div>
+
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Entrez votre adresse email"
+        required
+      />
+    </div>
+    <br />
+
+    <button class="login-btn" type="submit">Envoyer</button>
+  </form>
+</div>

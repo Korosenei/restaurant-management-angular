@@ -1,53 +1,59 @@
-<div class="modal-dialog modal-lg">
-  <div class="modal-content shadow-lg">
-    <div class="modal-header bg-primary-custom">
-      <h5 class="modal-title w-100 text-center text-white">Authentification</h5>
-      <button type="button" class="btn-close text-white" aria-label="Close" (click)="Close()"></button>
+<div class="login-container">
+  <div class="logo-container">
+    <img src="../../../../assets/logo.png" alt="Logo" class="logo" />
+  </div>
+
+  <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <span class="login-form-title"> Authentification </span>
+    <br />
+
+    <!-- Message d'erreur -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="p-4 bg-light">
-      <div class="modal-body">
-        <!-- Matricule -->
-        <div class="mb-4">
-          <label for="matricule" class="form-label text-muted-custom">Matricule</label>
-          <input
-            type="text"
-            id="matricule"
-            formControlName="matricule"
-            class="custom-input"
-            placeholder="Entrez votre matricule"
-            required
-          />
-          <div *ngIf="loginForm.get('matricule')?.invalid && loginForm.get('matricule')?.touched" class="form-text text-danger">
-            Veuillez saisir un matricule valide.
-          </div>
-        </div>
+    <!-- Message de succès -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
 
-        <!-- Mot de passe -->
-        <div class="mb-4">
-          <label for="motDePasse" class="form-label text-muted-custom d-flex justify-content-between">
-            <span>Mot de passe</span>
-            <a routerLink="/recover" class="text-accent small" (click)="openRecoveryModal()">Mot de passe oublié?</a>
-          </label>
-          <input
-            type="motDePasse"
-            id="motDePasse"
-            formControlName="motDePasse"
-            class="custom-input"
-            placeholder="Entrez votre mot de passe"
-            required
-          />
-          <div *ngIf="loginForm.get('motDePasse')?.invalid && loginForm.get('motDePasse')?.touched" class="form-text text-danger">
-            Veuillez saisir un mot de passe valide.
-          </div>
-        </div>
+    <div class="input-container">
+      <div>
+        <label class="label" for="matricule">Matricule</label>
+      </div>
+      <input
+        type="text"
+        id="matricule"
+        name="matricule"
+        formControlName="matricule"
+        placeholder="Entrez votre matricule"
+        required
+      />
+    </div>
+
+    <div class="input-container">
+      <div class="pwd">
+        <label class="label" for="motDePasse">Mot de passe</label>
+        <a
+          routerLink="/recover"
+          class="forgot-password"
+          (click)="onForgotPasswordClick()"
+        >
+          Oublié?
+        </a>
       </div>
 
-      <div class="modal-footer border-0">
-        <button type="submit" class="btn btn-accent w-100 py-2" [disabled]="loginForm.invalid">
-          Connexion
-        </button>
-      </div>
-    </form>
-  </div>
+      <input
+        type="password"
+        id="motDePasse"
+        name="motDePasse"
+        formControlName="motDePasse"
+        placeholder="Entrez votre mot de passe"
+        required
+      />
+    </div>
+    <br />
+
+    <button class="login-btn" type="submit" [disabled]="loginForm.invalid" >Connexion</button>
+  </form>
 </div>

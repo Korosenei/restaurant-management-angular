@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './components/layout';
 import { ActivationComponent } from './components/shared/activation/activation.component';
-import { SigninComponent } from './components/shared/connexion/signin/signin.component';
+import { LoginComponent } from './components/shared/connexion/login/login.component';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'signin',
+    redirectTo: 'login',
     pathMatch: 'full'
   },
   {
@@ -14,8 +14,8 @@ export const routes: Routes = [
     component: ActivationComponent,
   },
   {
-    path: 'signin',
-    component: SigninComponent,
+    path: 'login',
+    component: LoginComponent,
   },
   {
     path: '',
@@ -51,17 +51,24 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'landing',
-    loadComponent: () => import('./components/shared/web/home/home.component').then(m => m.HomeComponent),
-    data: {
-      title: 'Landing page'
-    }
-  },
-  {
     path: 'activate/:token',
     loadComponent: () => import('./components/shared/activation/activation.component').then(m => m.ActivationComponent),
     data: {
       title: 'Activation'
+    }
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./components/shared/connexion/login/login.component').then(m => m.LoginComponent),
+    data: {
+      title: 'Login Page'
+    }
+  },
+  {
+    path: 'recover',
+    loadComponent: () => import('./components/shared/connexion/pwd-forgeted/pwd-forgeted.component').then(m => m.PwdForgetedComponent),
+    data: {
+      title: 'Mot de passe oublié'
     }
   },
   {
