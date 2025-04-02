@@ -29,7 +29,7 @@ export const navItems: INavData[] = [
   {
     name: 'Restaurants',
     url: '/restos/restaurants',
-    iconComponent: { name: 'cil-restaurant' }
+    iconComponent: { name: 'cilHome' }
   },
   {
     name: 'Menu du Jour',
@@ -107,31 +107,16 @@ export const navItems: INavData[] = [
 
   {
     title: true,
-    name: 'Rapports et Suivi'
-  },
-  {
-    name: 'Rapports Globaux',
-    url: '/reports/global',
-    iconComponent: { name: 'cil-chart-pie' }
-  },
-  {
-    name: 'Évaluations Prestataires',
-    url: '/reports/prestataires',
-    iconComponent: { name: 'cil-star' }
-  },
-
-  {
-    title: true,
     name: 'Paramètres'
   },
   {
-    name: 'Notifications',
-    url: '/autre/notifications',
-    iconComponent: { name: 'cil-bell' }
+    name: 'Mon Compte',
+    url: '/parametres/compte',
+    iconComponent: { name: 'cil-user' }
   },
   {
-    name: 'Mon Compte',
-    url: '/autre/compte',
-    iconComponent: { name: 'cil-user' }
+    name: 'Configurations',
+    url: '/parametres/configurations',
+    iconComponent: { name: 'cil-settings' }
   },
 ];

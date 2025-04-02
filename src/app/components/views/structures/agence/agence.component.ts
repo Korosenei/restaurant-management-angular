@@ -124,82 +124,89 @@ export class AgenceComponent implements OnInit {
     this.selectedEndDate = dateRange.endDate;
     this.applyFilters();
   }
-  
-    onEdite(data: AGENCE) {
-      const modalRef = this.modalService.open(AddAgenceComponent, {
-        size: 'lg',
-        backdrop: 'static',
-        keyboard: false,
-      });
-      modalRef.componentInstance.agenceObj = { ...data };
-      modalRef.componentInstance.listAgences = this.listAgences;
-  
-      modalRef.result.then(
-        (result) => {
-          if (result === 'updated') {
-            this.getAgences();
-          }
-        },
-        (reason) => {
-          console.log('Modal dismissed: ' + reason);
+
+  onEdite(data: AGENCE) {
+    const modalRef = this.modalService.open(AddAgenceComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+    });
+    modalRef.componentInstance.agenceObj = { ...data };
+    modalRef.componentInstance.listAgences = this.listAgences;
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'updated') {
+          this.getAgences();
         }
-      );
+      },
+      (reason) => {
+        console.log('Modal dismissed: ' + reason);
+      }
+    );
+  }
+
+  onDelete(id: number) {
+    if (confirm('Voulez-vous vraiment supprimer cette agence ?')) {
+      this.http.delete(`http://localhost:2025/agences/delete/${id}`).subscribe({
+        next: () => {
+          alert('Agence supprimée avec succès !');
+          this.getAgences();
+        },
+        error: (err) => {
+          console.error('Erreur lors de la suppression de agence', err);
+          alert('Impossible de supprimer cette agence.');
+        },
+      });
     }
-  
-    onDelete(id: number) {
-      if (confirm('Voulez-vous vraiment supprimer cette agence ?')) {
-        this.http.delete(`http://localhost:2025/agences/delete/${id}`).subscribe({
-          next: () => {
-            alert('Agence supprimée avec succès !');
-            this.getAgences();
-          },
-          error: (err) => {
-            console.error('Erreur lors de la suppression de agence', err);
-            alert('Impossible de supprimer cette agence.');
-          },
-        });
-      }
+  }
+
+  // Méthode pour l'export PDF
+  exportToPDF() {
+    if (!this.filteredAgences || this.filteredAgences.length === 0) {
+      alert('Aucune agence à exporter.');
+      return;
     }
-  
-    // Méthode pour l'export PDF
-    exportToPDF() {
-      if (!this.filteredAgences || this.filteredAgences.length === 0) {
-        alert("Aucune agence à exporter.");
-        return;
-      }
-    
-      if (confirm("Voulez-vous vraiment exporter les agences en PDF ?")) {
-        const doc = new jsPDF();
-        doc.text('Liste des agences', 10, 10);
-    
-        const headers = [['ID', 'Code', 'Sigle', 'Ville', 'Responsable']];
-        const data = this.filteredAgences.map(
-          agence => [agence.id, agence.code, agence.sigle, agence.ville, agence.userId]
-        );
-    
-        (doc as any).autoTable({
-          startY: 20,
-          head: headers,
-          body: data,
-          theme: 'grid',
-        });
-    
-        doc.save('agences.pdf');
-      }
+
+    if (confirm('Voulez-vous vraiment exporter les agences en PDF ?')) {
+      const doc = new jsPDF();
+      doc.text('Liste des agences', 10, 10);
+
+      const headers = [
+        ['ID', 'Code', 'Sigle', 'Ville', 'Direction', 'Responsable'],
+      ];
+      const data = this.filteredAgences.map((agence) => [
+        agence.id,
+        agence.code,
+        agence.sigle,
+        agence.ville,
+        agence.directionDto?.sigle,
+        agence.userId,
+      ]);
+
+      (doc as any).autoTable({
+        startY: 20,
+        head: headers,
+        body: data,
+        theme: 'grid',
+      });
+
+      doc.save('agences.pdf');
     }
-  
-    // Exporter en Excel
-    exportToExcel() {
-      if (!this.listAgences || this.listAgences.length === 0) {
-        alert("Aucune agence à exporter.");
-        return;
-      }
-    
-      if (confirm("Voulez-vous vraiment exporter les agences en Excel ?")) {
-        const worksheet = XLSX.utils.json_to_sheet(this.listAgences);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Agences');
-        XLSX.writeFile(workbook, 'agences.xlsx');
-      }
+  }
+
+  // Exporter en Excel
+  exportToExcel() {
+    if (!this.listAgences || this.listAgences.length === 0) {
+      alert('Aucune agence à exporter.');
+      return;
     }
+
+    if (confirm('Voulez-vous vraiment exporter les agences en Excel ?')) {
+      const worksheet = XLSX.utils.json_to_sheet(this.listAgences);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Agences');
+      XLSX.writeFile(workbook, 'agences.xlsx');
+    }
+  }
 }

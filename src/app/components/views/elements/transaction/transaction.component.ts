@@ -180,10 +180,11 @@ export class TransactionComponent {
       doc.text('Liste des transactions', 10, 10);
 
       const headers = [
-        ['ID', 'Client', 'Nombre', 'Premier Num', 'Dernier Num', 'montant'],
+        ['ID', 'Date Achat', 'Client', 'Nombre', 'Premier Num', 'Dernier Num', 'montant'],
       ];
       const data = this.filteredTransactions.map((transaction) => [
         transaction.id,
+        transaction.creationDate,
         transaction.userDto?.nom && transaction.userDto.prenom,
         transaction.nbrTicket,
         transaction.firstNumTicket,

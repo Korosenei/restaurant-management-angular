@@ -1,20 +1,18 @@
-export class RESTAURANT{
+import { USER } from "../model-users/user.model";
 
-  id: number;
-  code: string;
-  nom : string;
-  sigle:  string;
-  region:  string;
-  ville:  string;
-  responsable:  string;
+export class RESTAURANT {
+  id: number = 0;
+  code: string = '';
+  nom: string = '';
+  ville: string = '';
+  telephone: number = 0;
+  manager : USER | null = null
+  menuDtos: string = '';
+  creationDate: Date = new Date();
+  modifiedDate: Date = new Date();
+  deleted: boolean = false;
 
-  constructor(){
-    this.id = 0;
-    this.code = '';
-    this.nom = '';
-    this.sigle = '';
-    this.region = '';
-    this.ville = '';
-    this.responsable = '';
+  constructor(init?: Partial<RESTAURANT>) {
+    Object.assign(this, init);
   }
 }

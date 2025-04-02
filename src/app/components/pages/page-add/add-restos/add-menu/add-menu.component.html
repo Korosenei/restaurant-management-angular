@@ -1,1 +1,92 @@
-<p>add-menu works!</p>
+<div class="modal-dialog modal-xl">
+  <div class="modal-content">
+    <form [formGroup]="menuForm" novalidate>
+      <div class="modal-header">
+        <h4 class="modal-title">Création ou Modification d'un menu</h4>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="Close()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Nom et Description du menu sur la même ligne -->
+        <div class="row mb-3">
+          <!-- Nom du menu -->
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingNom"
+                placeholder="Nom"
+                formControlName="nom"
+              />
+              <label for="floatingNom">Nom du menu</label>
+            </div>
+          </div>
+
+          <!-- Description du menu -->
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <textarea
+                class="form-control"
+                id="floatingDescription"
+                placeholder="Description"
+                formControlName="description"
+              ></textarea>
+              <label for="floatingDescription">Description du menu</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image et Restaurant sur la même ligne -->
+        <div class="row mb-3">
+          <!-- Image du menu -->
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="file"
+                class="form-control"
+                id="floatingImage"
+                (change)="onImageSelected($event)"
+              />
+              <label for="floatingImage">Image du menu</label>
+            </div>
+          </div>
+
+          <!-- Restaurant associé -->
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <select
+                class="form-control"
+                id="floatingRestaurant"
+                formControlName="restaurantId"
+              >
+                <option value="" disabled>Choisissez un restaurant</option>
+                <option
+                  *ngFor="let restaurant of listRestaurants"
+                  [value]="restaurant.id"
+                >
+                  {{ restaurant.nom }} ({{ restaurant.ville }})
+                </option>
+              </select>
+              <label for="floatingRestaurant">Restaurant associé</label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" (click)="Close()">
+          Annuler
+        </button>
+        <button type="button" class="btn btn-outline-success" (click)="Save()">
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

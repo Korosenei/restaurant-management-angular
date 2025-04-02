@@ -1,0 +1,14 @@
+.body{
+  text-align: center;
+}
+
+
+.table-container {
+  overflow-x: auto;  /* Ajoute un défilement horizontal */
+  -webkit-overflow-scrolling: touch;  /* Permet un défilement fluide sur mobile */
+  max-width: 100%;  /* Empêche que le tableau dépasse la largeur du conteneur */
+}
+
+table {
+  width: 100%;  /* Assure que le tableau occupe toute la largeur de son conteneur */
+}

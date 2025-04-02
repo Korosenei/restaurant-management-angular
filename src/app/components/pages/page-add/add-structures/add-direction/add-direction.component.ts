@@ -69,22 +69,22 @@ export class AddDirectionComponent implements OnInit {
         next: (directions: DIRECTION[]) => {
           if (directions.length > 0) {
             const lastDirection = directions.sort((a, b) => {
-              const codeA = parseInt(a.code.replace('DIR-', ''), 10);
-              const codeB = parseInt(b.code.replace('DIR-', ''), 10);
+              const codeA = parseInt(a.code.replace('DR-', ''), 10);
+              const codeB = parseInt(b.code.replace('DR-', ''), 10);
               return codeB - codeA;
             })[0];
 
             const lastCodeNumber = parseInt(
-              lastDirection.code.replace('DIR-', ''),
+              lastDirection.code.replace('DR-', ''),
               10
             );
             const newCodeNumber = (lastCodeNumber + 1)
               .toString()
-              .padStart(3, '0');
-            this.generatedDirectionCode = `DIR-${newCodeNumber}`;
+              .padStart(2, '0');
+            this.generatedDirectionCode = `DR-${newCodeNumber}`;
           } else {
-            // Si aucune direction n'existe, commencer à 'DIR-001'
-            this.generatedDirectionCode = 'DIR-001';
+            // Si aucune direction n'existe, commencer à 'DR-01'
+            this.generatedDirectionCode = 'DR-01';
           }
 
           // Mettre à jour le champ du formulaire avec le code généré

@@ -1,1 +1,124 @@
-<p>add-restaurant works!</p>
+<div class="modal-dialog modal-xl">
+  <div class="modal-content">
+    <form [formGroup]="restaurantForm" novalidate>
+      <div class="modal-header">
+        <h4 class="modal-title">Création ou Modification d'un restaurant</h4>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="Close()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Code du restaurant -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingCode"
+                placeholder="Code"
+                formControlName="code"
+              />
+              <label for="floatingCode">Code du restaurant</label>
+            </div>
+          </div>
+
+          <!-- Nom du restaurant -->
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingNom"
+                placeholder="Nom"
+                formControlName="nom"
+              />
+              <label for="floatingNom">Nom du restaurant</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ville et téléphone du restaurant -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingVille"
+                placeholder="Ville"
+                formControlName="ville"
+              />
+              <label for="floatingVille">Ville</label>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingTelephone"
+                placeholder="Téléphone"
+                formControlName="telephone"
+              />
+              <label for="floatingTelephone">Téléphone</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Menu du restaurant -->
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <div class="form-floating w-100">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingMenu"
+                placeholder="Menu"
+                formControlName="menuDtos"
+              />
+              <label for="floatingMenu">Menu (optionnel)</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Responsable du restaurant -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <select
+                class="form-control"
+                id="floatingManager"
+                formControlName="managerId"
+                (change)="onManagerChange($event)"
+              >
+                <option value="" disabled>Choisissez un responsable</option>
+                <option
+                  *ngFor="let employe of listEmployes"
+                  [value]="employe.matricule"
+                >
+                  {{ employe.matricule }} ({{ employe.nom }} {{ employe.prenom }})
+                </option>
+              </select>
+              <label for="floatingManager">Responsable du restaurant</label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" (click)="Close()">
+          Annuler
+        </button>
+        <button type="button" class="btn btn-outline-success" (click)="Save()">
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

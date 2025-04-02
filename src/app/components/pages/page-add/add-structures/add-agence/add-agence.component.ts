@@ -67,22 +67,22 @@ export class AddAgenceComponent implements OnInit {
       next: (agences: AGENCE[]) => {
         if (agences.length > 0) {
           const lastAgence = agences.sort((a, b) => {
-            const codeA = parseInt(a.code.replace('AGE-', ''), 10);
-            const codeB = parseInt(b.code.replace('AGE-', ''), 10);
+            const codeA = parseInt(a.code.replace('AG-', ''), 10);
+            const codeB = parseInt(b.code.replace('AG-', ''), 10);
             return codeB - codeA;
           })[0];
 
           const lastCodeNumber = parseInt(
-            lastAgence.code.replace('AGE-', ''),
+            lastAgence.code.replace('AG-', ''),
             10
           );
           const newCodeNumber = (lastCodeNumber + 1)
             .toString()
-            .padStart(4, '0');
-          this.generatedAgenceCode = `AGE-${newCodeNumber}`;
+            .padStart(3, '0');
+          this.generatedAgenceCode = `AG-${newCodeNumber}`;
         } else {
-          // Si aucune agence n'existe, commencer à 'AGE-0001'
-          this.generatedAgenceCode = 'AGE-0001';
+          // Si aucune agence n'existe, commencer à 'AG-001'
+          this.generatedAgenceCode = 'AG-001';
         }
 
         // Mettre à jour le champ du formulaire avec le code généré

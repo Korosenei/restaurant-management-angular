@@ -1,20 +1,16 @@
-export class MENU{
+import { RESTAURANT } from "./restaurant.model";
 
-  id: number;
-  code: string;
-  nom : string;
-  sigle:  string;
-  region:  string;
-  ville:  string;
-  responsable:  string;
+export class MENU {
+  id: number = 0;
+  nom: string = '';
+  description: string = '';
+  image: string = '';
+  restaurant: RESTAURANT | null = null;
+  creationDate: Date = new Date();
+  modifiedDate: Date = new Date();
+  deleted: boolean = false;
 
-  constructor(){
-    this.id = 0;
-    this.code = '';
-    this.nom = '';
-    this.sigle = '';
-    this.region = '';
-    this.ville = '';
-    this.responsable = '';
+  constructor(init?: Partial<MENU>) {
+    Object.assign(this, init);
   }
 }

@@ -79,7 +79,7 @@ export class AddTransactionComponent implements OnInit {
     const today = new Date();
     const year = today.getFullYear().toString();
     const month = (today.getMonth() + 1).toString().padStart(2, '0');
-    const agencyNumber = 'AGE-001';
+    const agencyNumber = 'AG-001';
 
     this.http
       .get<TRANSACTION[]>(
@@ -115,7 +115,7 @@ export class AddTransactionComponent implements OnInit {
   generateTicketNumbers(): void {
     const year = new Date().getFullYear().toString();
     const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
-    const agencyNumber = 'AGE-001';
+    const agencyNumber = 'AG-001';
 
     this.http
       .get<TRANSACTION[]>(

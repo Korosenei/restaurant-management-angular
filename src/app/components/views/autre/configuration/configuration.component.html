@@ -1,0 +1,62 @@
+<div class="container">
+  <div class="row my-3">
+    <div class="col-md-8">
+      <h3>Paramètres de configuration</h3>
+    </div>
+  </div>
+
+  <div class="body" *ngIf="configObj">
+    <div class="table-container">
+      <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Montant</th>
+            <th scope="col">
+              Min <br />
+              tickets/transactions
+            </th>
+            <th scope="col">
+              Max <br />
+              Achat/Client
+            </th>
+            <th scope="col">
+              Min <br />
+              Ticket/Transaction/Periode
+            </th>
+            <th scope="col">Période Début</th>
+            <th scope="col">Période Fin</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ configObj.prixTicket }} FCFA</td>
+            <td>{{ configObj.minTicketParTransaction }}</td>
+            <td>{{ configObj.maxAchatParClient }}</td>
+            <td>{{ configObj.minTicketParTransactionMensuelle }}</td>
+            <td>{{ configObj.dateDebut | date }}</td>
+            <td>{{ configObj.dateFin | date }}</td>
+            <td>
+              <button
+                class="btn btn-outline-warning me-2"
+                type="button"
+                (click)="onEdite(configObj)"
+              >
+                <i class="fa-solid fa-pen"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer with last updated information -->
+  <div class="footer mt-5 d-flex justify-content-end">
+    <p *ngIf="configObj.modifiedDate">
+      Dernière mise à jour le
+      {{ configObj.modifiedDate | date : "dd/MM/yyyy HH:mm" }} par
+      {{ configObj.modifiedBy }}
+    </p>
+  </div>
+</div>

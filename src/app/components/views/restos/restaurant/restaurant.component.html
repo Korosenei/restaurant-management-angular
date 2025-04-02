@@ -1,63 +1,86 @@
-
-<div class="col">
-  <div class="row m-1">
-    <div class="col-md-8 p-0">
-      <h3>Gestion des restaurants</h3>
+<div class="container">
+  <div class="row my-3">
+    <div class="col-md-8">
+      <h3>Gestion des Restaurants</h3>
     </div>
 
-    <div class="col-md-4 d-grid gap-2 d-md-flex justify-content-md-end">
-      <app-button-action (addClicked)="openModal()"></app-button-action>
-    </div>
-  </div>
-</div>
-
-
-<div class="row m-3">
-  <div class="card">
-    <div class="card-header">
-      Recherche de restaurant
-    </div>
-    <div class="card-body">
-      <form class="row g-3 align-items-center">
-        <!-- Recherche générale -->
-        <div class="col-md-3">
-          <div class="form-floating">
-            <input type="text" class="form-control" id="generalSearch" placeholder="Entrez un terme de recherche">
-            <label for="generalSearch">Recherche générale</label>
-          </div>
-        </div>
-
-        <!-- Date de début -->
-        <div class="col-md-3">
-          <div class="form-floating">
-            <input type="date" class="form-control" id="startDate" placeholder="Début">
-            <label for="startDate">Début</label>
-          </div>
-        </div>
-
-        <!-- Date de fin -->
-        <div class="col-md-3">
-          <div class="form-floating">
-            <input type="date" class="form-control" id="endDate" placeholder="Fin">
-            <label for="endDate">Fin</label>
-          </div>
-        </div>
-
-        <!-- Bouton de recherche -->
-        <div class="col-md-3">
-          <button type="button" class="btn btn-outline-warning">
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </button>
-        </div>
-      </form>
+    <!-- Composant des boutons -->
+    <div class="col-md-4 d-flex justify-content-end">
+      <app-button-action
+        (addClicked)="openModal()"
+        (exportClicked)="exportToExcel()"
+        (importClicked)="exportToPDF()"
+      >
+      </app-button-action>
     </div>
   </div>
-</div>
 
-<div class="row m-3">
-  <app-list-restaurant></app-list-restaurant>
-</div>
+  <!-- Composant de recherche -->
+  <app-search
+    searchPlaceholder="Restaurant..."
+    [showDateFilters]="true"
+    (search)="onSearch($event)"
+    (filterByDate)="onDateFilter($event)"
+  >
+  </app-search>
 
-<div class="row text-center mb-3">
-  <app-pagination></app-pagination>
+  <div
+    class="body"
+    *ngIf="listRestaurants && listRestaurants.length > 0; else noRestaurants"
+  >
+    <div class="row">
+      <div class="col-sm-12">
+        <table class="table table-bordered table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">NOM</th>
+              <th scope="col">VILLE</th>
+              <th scope="col">TELEPHONE</th>
+              <th scope="col">MANAGER</th>
+              <th scope="col">ACTION</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let item of listRestaurants; let i = index">
+              <th scope="row">{{ i + 1 }}</th>
+              <td>{{ item.nom }}</td>
+              <td>{{ item.ville }}</td>
+              <td>{{ item.telephone }}</td>
+              <td>{{ item.manager?.nom }} {{ item.manager?.prenom }}</td>
+              <td>
+                <button
+                  class="btn btn-outline-warning me-2"
+                  type="button"
+                  (click)="onEdite(item)"
+                >
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button
+                  class="btn btn-outline-danger"
+                  type="button"
+                  (click)="onDelete(item.id)"
+                >
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination Component -->
+        <app-pagination
+          [collectionSize]="totalItems"
+          [pageSize]="pageSize"
+          [page]="page"
+          (pageChange)="onPageChange($event)"
+        ></app-pagination>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noRestaurants>
+    <p>Aucun restaurant trouvé.</p>
+  </ng-template>
 </div>

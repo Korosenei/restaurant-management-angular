@@ -1,0 +1,122 @@
+<div class="modal-dialog modal-xl">
+  <div class="modal-content">
+    <form [formGroup]="configForm" novalidate>
+      <div class="modal-header">
+        <h4 class="modal-title">
+          Paramètres de configuration
+        </h4>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="Close()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Prix du ticket et Minimum par transaction sur la même ligne -->
+        <div class="row mb-3">
+          <!-- Prix du ticket -->
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="number"
+                class="form-control"
+                id="floatingPrixTicket"
+                placeholder="Prix"
+                formControlName="prixTicket"
+              />
+              <label for="floatingPrixTicket">Prix du ticket</label>
+            </div>
+          </div>
+
+          <!-- Minimum de tickets par transaction -->
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="number"
+                class="form-control"
+                id="floatingMinTicket"
+                placeholder="Minimum de tickets"
+                formControlName="minTicketParTransaction"
+              />
+              <label for="floatingMinTicket"
+                >Minimum de tickets par transaction</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Maximum d'achat par client et Minimum de tickets par transaction mensuelle -->
+        <div class="row mb-3">
+          <!-- Maximum d'achat par client -->
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="number"
+                class="form-control"
+                id="floatingMaxAchat"
+                placeholder="Maximum d'achat"
+                formControlName="maxAchatParClient"
+              />
+              <label for="floatingMaxAchat">Maximum d'achat par client</label>
+            </div>
+          </div>
+
+          <!-- Minimum de tickets par transaction mensuelle -->
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="number"
+                class="form-control"
+                id="floatingMinTicketMensuelle"
+                placeholder="Minimum mensuel"
+                formControlName="minTicketParTransactionMensuelle"
+              />
+              <label for="floatingMinTicketMensuelle"
+                >Minimum de tickets par mois</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Date de début et Date de fin -->
+        <div class="row mb-3">
+          <!-- Date de début -->
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="date"
+                class="form-control"
+                id="floatingDateDebut"
+                formControlName="dateDebut"
+              />
+              <label for="floatingDateDebut">Date de début</label>
+            </div>
+          </div>
+
+          <!-- Date de fin -->
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="date"
+                class="form-control"
+                id="floatingDateFin"
+                formControlName="dateFin"
+              />
+              <label for="floatingDateFin">Date de fin</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" (click)="Close()">
+          Annuler
+        </button>
+        <button type="button" class="btn btn-outline-success" (click)="save()">
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

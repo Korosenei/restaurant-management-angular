@@ -4,26 +4,26 @@ export const routes: Routes = [
   {
     path: '',
     data: {
-      title: 'Autre'
+      title: 'Paramètres'
     },
     children: [
       {
         path: '',
-        redirectTo: 'notifications',
+        redirectTo: 'compte',
         pathMatch: 'full'
-      },
-      {
-        path: 'notifications',
-        loadComponent: () => import('./notification/notification.component').then(m => m.NotificationComponent),
-        data: {
-          title: 'Notifications'
-        }
       },
       {
         path: 'compte',
         loadComponent: () => import('./compte/compte.component').then(m => m.CompteComponent),
         data: {
           title: 'Mon Compte'
+        }
+      },
+      {
+        path: 'configurations',
+        loadComponent: () => import('./configuration/configuration.component').then(m => m.ConfigurationComponent),
+        data: {
+          title: 'Configurations'
         }
       }
     ]
