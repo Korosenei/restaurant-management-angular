@@ -60,35 +60,33 @@ export class AddParamsAchatComponent implements OnInit {
   save() {
     if (this.configForm.valid) {
       const formValue = this.configForm.value;
-
-      // Convertir les dates au format ISO standard
-      const dateDebut = new Date(formValue.dateDebut).toISOString();
-      const dateFin = new Date(formValue.dateFin).toISOString();
+      const utilisateurConnecte = JSON.parse(
+        localStorage.getItem('user') || '{}'
+      );
+      if (!utilisateurConnecte || !utilisateurConnecte.id) {
+        console.error("❌ Aucun ID utilisateur trouvé ! L'utilisateur envoyé sera SYSTEM.");
+      } else {
+        console.log('Utilisateur connecté:', utilisateurConnecte);
+      }
 
       const parametreAchatDto = {
         ...formValue,
-        dateDebut,
-        dateFin,
+        dateDebut: new Date(formValue.dateDebut).toISOString(),
+        dateFin: new Date(formValue.dateFin).toISOString(),
+        user: utilisateurConnecte, // ✅ Envoi de l'utilisateur correct
+        modifiedDate: new Date().toISOString(),
       };
 
-      console.log('ParametreAchatDto à envoyer:', parametreAchatDto);
+      console.log('🛠 Données envoyées au backend :', parametreAchatDto);
 
       this.http
-        .put('http://localhost:2027/config/update', parametreAchatDto, {
-          headers: { 'Content-Type': 'application/json' },
-        })
+        .put('http://localhost:2027/config/update', parametreAchatDto)
         .subscribe(
-          (response) => {
+          () => {
             alert('Configuration mise à jour avec succès!');
-            this.activeModal.close();
+            this.activeModal.close('updated');
           },
-          (error) => {
-            console.error('Erreur lors de la mise à jour : ', error);
-            if (error.error) {
-              console.error("Détails de l'erreur retournée : ", error.error);
-            }
-            this.errors = error.error;
-          }
+          (error) => console.error('❌ Erreur lors de la mise à jour :', error)
         );
     } else {
       alert('Veuillez corriger les erreurs dans le formulaire.');

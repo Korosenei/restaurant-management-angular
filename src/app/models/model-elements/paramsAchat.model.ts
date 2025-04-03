@@ -1,3 +1,4 @@
+import { USER } from "../model-users/user.model";
 
 export class PARAMSACHAT {
   id: number = 0;
@@ -9,7 +10,7 @@ export class PARAMSACHAT {
   dateFin: Date = new Date();
   creationDate: Date = new Date();
   modifiedDate: Date = new Date();
-  modifiedBy: string = '';
+  user: USER | null = new USER();
   deleted: boolean = false;
 
   constructor(init?: Partial<PARAMSACHAT>) {

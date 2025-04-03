@@ -52,11 +52,13 @@
   </div>
 
   <!-- Footer with last updated information -->
-  <div class="footer mt-5 d-flex justify-content-end">
+  <div class="footer my-lg-4 d-flex justify-content-end">
     <p *ngIf="configObj.modifiedDate">
-      Dernière mise à jour le
-      {{ configObj.modifiedDate | date : "dd/MM/yyyy HH:mm" }} par
-      {{ configObj.modifiedBy }}
+      <strong>Dernière mise à jour</strong> :
+      {{ configObj.modifiedDate | date : "dd/MM/yyyy HH:mm" }}
+      <br>
+      <strong>Auteur</strong> :
+      {{ configObj.user?.nom }} {{ configObj.user?.prenom }}
     </p>
   </div>
 </div>

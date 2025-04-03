@@ -20,6 +20,8 @@ export class USER {
   role: RoleName = RoleName.CLIENT;
   creationDate: Date = new Date();
   modifiedDate: Date = new Date();
+  lastLogin: Date = new Date();
+  lastLogout: Date = new Date();
   deleted: boolean = false;
 
   constructor(init?: Partial<USER>) {

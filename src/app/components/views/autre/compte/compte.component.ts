@@ -1,65 +1,92 @@
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { USER } from '../../../../models/model-users/user.model';
-import { ChangePwdUser } from '../../../../models/model-users/ChangePwdUser.model';
+import { ChangePwdComponent } from '../change-pwd/change-pwd.component';
+import { CHANGEPWD } from '../../../../models/model-users/ChangePwd.model';
 @Component({
   selector: 'app-compte',
   standalone: true,
-  imports: [HttpClientModule],
+  imports: [HttpClientModule, CommonModule],
   templateUrl: './compte.component.html',
   styleUrl: './compte.component.scss',
 })
 export class CompteComponent implements OnInit {
-  user: USER = new USER();
   currentUser: USER | null = null;
-  token: string | null = '';
-  updateUserData: USER = new USER();
-  changePwdUser: ChangePwdUser = {
-    userId: 0,
-    lastPassword: '',
-    newPassword: '',
-    confirmNewPassword: '',
-    modifiedDate: ''
-  };
-  errorMessage: string = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private modalService: NgbModal, private router: Router) {}
 
   ngOnInit(): void {
-    /* this.token = localStorage.getItem('token');
-    if (this.token) {
-      this.getCurrentUser();
-    } */
     this.getUser();
   }
 
   // Récupération de l'utilisateur connecté depuis le LocalStorage
   getUser(): void {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      this.user = JSON.parse(storedUser);
-      this.changePwdUser.userId = this.user.id;
+    const userFromStorage = localStorage.getItem('user');
+    if (userFromStorage) {
+      this.currentUser = JSON.parse(userFromStorage);
+
+      // Vérifier si lastLogout est stocké
+      const lastLogoutFromStorage = localStorage.getItem('lastLogout');
+      if (lastLogoutFromStorage && this.currentUser) {
+        this.currentUser.lastLogout = new Date(lastLogoutFromStorage);
+      }
     } else {
-      this.errorMessage = 'Utilisateur non trouvé!';
+      this.router.navigate(['/login']);
     }
   }
 
-  // Méthode pour changer le mot de passe
   changePassword(): void {
-    if (this.changePwdUser.newPassword !== this.changePwdUser.confirmNewPassword) {
-      this.errorMessage = 'Les nouveaux mots de passe ne correspondent pas.';
+    if (!this.currentUser) {
+      alert('Utilisateur non trouvé !');
       return;
     }
 
-    this.http.put(`http://localhost:2028/users/${this.changePwdUser.userId}/update-password`, this.changePwdUser).subscribe(
-      () => {
-        alert('Mot de passe modifié avec succès!');
-        this.errorMessage = '';
+    const modalRef = this.modalService.open(ChangePwdComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+    });
+
+    // Passer les informations de l'utilisateur connecté au modal
+    modalRef.componentInstance.currentUser = this.currentUser;
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'updated') {
+          this.getUser();
+        }
       },
-      () => {
-        this.errorMessage = 'Erreur lors de la modification du mot de passe.';
+      (reason) => {
+        console.log('Modal dismissed: ' + reason);
       }
     );
+  }
+
+  // Méthode pour afficher une confirmation avant de se déconnecter
+  confirmLogout(): void {
+    const confirmAction = window.confirm('Êtes-vous sûr de vouloir vous déconnecter ?');
+    if (confirmAction) {
+      this.logout();
+    }
+  }
+
+  // Méthode de déconnexion
+  logout(): void {
+    if (this.currentUser) {
+      // Enregistrer la date de la dernière déconnexion
+      this.currentUser.lastLogout = new Date();
+
+      // Sauvegarder la dernière déconnexion dans localStorage
+      localStorage.setItem('lastLogout', this.currentUser.lastLogout.toISOString());
+    }
+
+    // Effacer les données utilisateur du localStorage
+    localStorage.removeItem('user');
+
+    // Rediriger vers la page de connexion
+    this.router.navigate(['/login']);
   }
 }

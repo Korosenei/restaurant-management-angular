@@ -9,7 +9,7 @@ export class DIRECTION {
   region: string = '';
   ville: string = '';
   userId: string ='';
-  responsable: USER | null = null
+  responsable: USER | null = null;
   agenceDtos: string = '';
   creationDate: Date = new Date();
   modifiedDate: Date = new Date();

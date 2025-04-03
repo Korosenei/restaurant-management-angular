@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { PARAMSACHAT } from '../../../../models/model-elements/paramsAchat.model';
 import { AddParamsAchatComponent } from '../../../pages/page-add/add-elements/add-params-achat/add-params-achat.component';
+import { USER } from '../../../../models/model-users/user.model';
 
 @Component({
   selector: 'app-configuration',
@@ -35,38 +36,42 @@ export class ConfigurationComponent implements OnInit {
       next: (res) => {
         console.log('Données récupérées:', res);
         this.configObj = res;
-        // Vérifie les informations supplémentaires (modifié par)
-        if (this.configObj.modifiedBy) {
-          console.log('Dernière modification par:', this.configObj.modifiedBy);
+
+        if (this.configObj.user) {
+          console.log('Dernière modification par:', this.configObj.user);
+        } else {
+          console.warn("L'utilisateur qui a modifié n'est pas récupéré.");
         }
       },
       error: (err) => {
-        console.error(
-          'Erreur lors de la récupération des données de configuration',
-          err
-        );
+        console.error('Erreur lors de la récupération des données', err);
       },
     });
   }
 
   onEdite(data: PARAMSACHAT) {
-    const modalRef = this.modalService.open(AddParamsAchatComponent, {
+    this.configObj = { ...data };
+
+    // 🔍 Récupération de l'utilisateur connecté
+    const utilisateurConnecte: USER = JSON.parse(localStorage.getItem('user') || '{}');
+
+    if (!utilisateurConnecte || !utilisateurConnecte.id) {
+      console.error("❌ Aucun ID utilisateur trouvé ! L'utilisateur envoyé sera SYSTEM.");
+    } else {
+      console.log("✅ Utilisateur connecté récupéré :", utilisateurConnecte);
+    }
+
+    // ✅ Envoi de l'utilisateur complet
+    this.configObj.user = utilisateurConnecte;
+    this.configObj.modifiedDate = new Date();  // ⬅ Correction du type
+
+    this.modalService.open(AddParamsAchatComponent, {
       size: 'lg',
       backdrop: 'static',
-      keyboard: false,
-    });
-    modalRef.componentInstance.configObj = { ...data };
-    modalRef.componentInstance.listConfigs = this.listConfigs;
-
-    modalRef.result.then(
-      (result) => {
-        if (result === 'updated') {
-          this.getParametres();
-        }
-      },
-      (reason) => {
-        console.log('Modal dismissed: ' + reason);
+    }).result.then((result) => {
+      if (result === 'updated') {
+        this.getParametres();
       }
-    );
+    }).catch((err) => console.error('Erreur lors de l’ouverture du modal', err));
   }
 }

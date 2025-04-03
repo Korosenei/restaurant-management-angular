@@ -1,0 +1,41 @@
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <form [formGroup]="changePwdForm" novalidate>
+      <div class="modal-header">
+        <h4 class="modal-title">Changement de mot de passe</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="Close()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <div class="form-floating w-100">
+              <input type="password" class="form-control" id="floatingLastPassword" placeholder="Ancien mot de passe" formControlName="lastPassword" />
+              <label for="floatingLastPassword">Ancien mot de passe</label>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input type="password" class="form-control" id="floatingNewPassword" placeholder="Nouveau mot de passe" formControlName="newPassword" />
+              <label for="floatingNewPassword">Nouveau mot de passe</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input type="password" class="form-control" id="floatingConfirmNewPassword" placeholder="Confirmer le mot de passe" formControlName="confirmNewPassword" />
+              <label for="floatingConfirmNewPassword">Confirmer le mot de passe</label>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="changePwdForm.hasError('mismatch')" class="text-danger text-center mb-3">
+          Les mots de passe ne correspondent pas.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" (click)="Close()">Annuler</button>
+        <button type="button" class="btn btn-outline-success" (click)="save()" [disabled]="changePwdForm.invalid">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
