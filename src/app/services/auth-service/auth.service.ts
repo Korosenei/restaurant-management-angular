@@ -7,7 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
   private apiUrl = 'http://localhost:2028/auth/login';
-  private userUrl = 'http://localhost:2028/users/filter/matricule/'; // URL correcte pour récupérer l'utilisateur
+  private userUrl = 'http://localhost:2028/users/filter/matricule/';
+  private userForgotPwdUrl = 'http://localhost:2028/users/forgot-password';
 
   constructor(private http: HttpClient) {}
 
@@ -22,6 +23,11 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!localStorage.getItem('token');
+  }
+
+  // Méthode pour demander la récupération du mot de passe
+  forgotPassword(credentials: { matricule: string; email: string }): Observable<any> {
+    return this.http.post<any>(this.userForgotPwdUrl, credentials);
   }
 }
 

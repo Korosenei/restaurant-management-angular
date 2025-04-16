@@ -8,7 +8,6 @@ export class AGENCE {
   nom: string = '';
   sigle: string = '';
   ville: string = '';
-  userId: string ='';
   responsable: USER | null = null;
   directionDto: DIRECTION | null = null;
   passageDtos: PASSAGE[] = [];

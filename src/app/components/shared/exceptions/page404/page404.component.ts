@@ -13,4 +13,10 @@ export class Page404Component {
 
   constructor() { }
 
+
+  OnLogin(): void {
+    // Redirection vers la page de connexion
+    window.location.href = '/login';
+  }
+
 }

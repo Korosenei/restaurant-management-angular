@@ -8,7 +8,7 @@ import { PaginationComponent } from '../../../pages/pagination/pagination.compon
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { SearchComponent } from '../../../pages/search/search.component';
-import { USER } from '../../../../models/model-users/user.model';
+import { Civilite, Piece, RoleName, USER } from '../../../../models/model-users/user.model';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -34,7 +34,7 @@ export class UtilisateurComponent implements OnInit {
   displayedUsers: USER[] = [];
 
   page = 1;
-  pageSize = 5;
+  pageSize = 1;
   totalItems = 0;
 
   searchTerm: string = '';
@@ -78,28 +78,39 @@ export class UtilisateurComponent implements OnInit {
     let filtered = [...this.listUsers];
 
     if (this.searchTerm) {
+      const searchLower = this.searchTerm.toLowerCase();
       filtered = filtered.filter(
         (user) =>
-          user.matricule
-            .toLowerCase()
-            .includes(this.searchTerm.toLowerCase()) ||
-          user.piece.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          user.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          user.prenom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          user.email.toLowerCase().includes(this.searchTerm.toLowerCase())
+          user.matricule.toLowerCase().includes(searchLower) ||
+          user.piece.toLowerCase().includes(searchLower) ||
+          user.numPiece.toLowerCase().includes(searchLower) ||
+          user.nom.toLowerCase().includes(searchLower) ||
+          user.prenom.toLowerCase().includes(searchLower) ||
+          user.email.toLowerCase().includes(searchLower) ||
+          user.role.toLowerCase().includes(searchLower) ||
+          false
       );
     }
 
+    // Filtrer par date (Assurez-vous que `creationDate` est bien formaté en `YYYY-MM-DD`)
+    // Filtrage par plage de dates (creationDate et modifiedDate)
     if (this.selectedStartDate && this.selectedEndDate) {
-      filtered = filtered.filter((user) => {
-        const userDate = new Date(user.creationDate);
+      const startDate = new Date(this.selectedStartDate);
+      const endDate = new Date(this.selectedEndDate);
+
+      filtered = filtered.filter((direction) => {
+        const createdDate = new Date(direction.creationDate);
+        const modifiedDate = new Date(direction.modifiedDate);
+
+        // Vérifier si la direction a été créée ou modifiée dans la plage
         return (
-          userDate >= new Date(this.selectedStartDate) &&
-          userDate <= new Date(this.selectedEndDate)
+          (createdDate >= startDate && createdDate <= endDate) ||
+          (modifiedDate >= startDate && modifiedDate <= endDate)
         );
       });
     }
 
+    // Mettre à jour la liste filtrée et la pagination
     this.filteredUsers = filtered;
     this.totalItems = filtered.length;
     this.updateDisplayedRoles();
@@ -120,13 +131,13 @@ export class UtilisateurComponent implements OnInit {
 
   onSearch(searchTerm: string) {
     this.searchTerm = searchTerm;
-    this.page = 1;
     this.applyFilters();
   }
 
   onDateFilter(dateRange: { startDate: string; endDate: string }): void {
     this.selectedStartDate = dateRange.startDate;
     this.selectedEndDate = dateRange.endDate;
+    this.page = 1; // Revenir à la première page après filtrage
     this.applyFilters();
   }
 
@@ -183,49 +194,225 @@ export class UtilisateurComponent implements OnInit {
     }
   }
 
-  // Méthode pour l'export PDF
+  // Méthode pour choisir l'option d'exportation
+  chooseExportOption(): 'all' | 'page' | 'cancel' {
+    const choice = window.prompt(
+      "Choisissez une option pour l'exportation :\n" +
+        '1 - Exporter toute la liste\n' +
+        '2 - Exporter seulement la page affichée\n' +
+        '3 - Annuler',
+      '1'
+    );
+
+    if (choice === '1') return 'all';
+    if (choice === '2') return 'page';
+    return 'cancel';
+  }
+
+  // Exporter en PDF
   exportToPDF() {
     if (!this.filteredUsers || this.filteredUsers.length === 0) {
       alert('Aucun utilisateur à exporter.');
       return;
     }
 
-    if (confirm('Voulez-vous vraiment exporter les utilisateurs en PDF ?')) {
-      const doc = new jsPDF();
-      doc.text('Liste des utilisateurs', 10, 10);
-
-      const headers = [['ID', 'Matricule', 'Client', 'Téléphone', 'Email']];
-      const data = this.filteredUsers.map((user) => [
-        user.id,
-        user.matricule,
-        user.nom && user.prenom,
-        user.telephone,
-        user.email,
-      ]);
-
-      (doc as any).autoTable({
-        startY: 20,
-        head: headers,
-        body: data,
-        theme: 'grid',
-      });
-
-      doc.save('utilisateur.pdf');
+    const exportOption = this.chooseExportOption();
+    if (exportOption === 'cancel') {
+      alert('Exportation annulée.');
+      return;
     }
+
+    const dataToExport =
+      exportOption === 'all' ? this.filteredUsers : this.displayedUsers;
+    const totalElements = dataToExport.length;
+    const currentDate = new Date().toLocaleString();
+
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    // Titre du document
+    const title = 'Liste des Utilisateurs';
+    const titleWidth = doc.getTextWidth(title); // Calculer la largeur du texte
+    const pageWidth = doc.internal.pageSize.width; // Largeur de la page
+    const xPosition = (pageWidth - titleWidth) / 2; // Calculer la position X pour centrer le titre
+
+    doc.setFontSize(14);
+    doc.text(title, xPosition, 15); // Centrer le titre
+
+    // Préparation des données pour le tableau
+    const headers = [
+      [
+        '#',
+        'Matricule',
+        'Nom',
+        'Prénom',
+        'Civilité',
+        'Pièce',
+        'Numéro de pièce',
+        'Teléphone',
+        'Email',
+        'Direction',
+        'Agence',
+        'Role',
+      ],
+    ];
+    const data = dataToExport.map((user, index) => [
+      exportOption === 'all'
+        ? index + 1
+        : (this.page - 1) * this.pageSize + index + 1,
+      user.matricule,
+      user.nom,
+      user.prenom,
+      user.civilite,
+      user.piece,
+      user.numPiece,
+      user.telephone,
+      user.email,
+      `${user.direction?.nom || 'Non assigné'}`,
+      user.agenceId,
+      user.role,
+    ]);
+
+    // Ajout du tableau
+    (doc as any).autoTable({
+      startY: 25,
+      head: headers,
+      body: data,
+      theme: 'grid',
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
+      margin: { top: 20 },
+    });
+
+    // Gestion du pied de page
+    const pageCount = doc.internal.pages.length - 1; // Récupérer le nombre total de pages
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      const pageHeight = doc.internal.pageSize.height;
+      doc.setFontSize(10);
+
+      // Date d'export en bas à gauche
+      doc.text(`Date d'export : ${currentDate}`, 10, pageHeight - 15);
+
+      // Total des utilisateurs exportées en bas à droite
+      doc.text(
+        `Total des utilisateurs exportées : ${totalElements}`,
+        230,
+        pageHeight - 15
+      );
+
+      // Numérotation des pages au centre
+      doc.text(`Page ${i} / ${pageCount}`, 150, pageHeight - 10, {
+        align: 'center',
+      });
+    }
+
+    const fileName =
+      exportOption === 'all'
+        ? `utilisateurs_complete_${currentDate.replace(/[/,:]/g, '_')}.pdf`
+        : `utilisateurs_page_${currentDate.replace(/[/,:]/g, '_')}.pdf`;
+
+    doc.save(fileName);
   }
 
   // Exporter en Excel
   exportToExcel() {
-    if (!this.listUsers || this.listUsers.length === 0) {
+    if (!this.filteredUsers || this.filteredUsers.length === 0) {
       alert('Aucun utilisateurs à exporter.');
       return;
     }
 
-    if (confirm('Voulez-vous vraiment exporter les utilisateurs en Excel ?')) {
-      const worksheet = XLSX.utils.json_to_sheet(this.listUsers);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Utilisateurs');
-      XLSX.writeFile(workbook, 'utilisateurs.xlsx');
+    const exportOption = this.chooseExportOption();
+    if (exportOption === 'cancel') {
+      alert('Exportation annulée.');
+      return;
     }
+
+    const dataToExport =
+      exportOption === 'all' ? this.filteredUsers : this.displayedUsers;
+    const totalElements = dataToExport.length;
+    const currentDate = new Date().toLocaleString();
+
+    // Préparation des données
+    const formattedData = dataToExport.map((user, index) => ({
+      '#':
+        exportOption === 'all'
+          ? index + 1
+          : (this.page - 1) * this.pageSize + index + 1,
+      Matricule: user.matricule,
+      Nom: user.nom,
+      Prénom: user.prenom,
+      Civilité: user.civilite,
+      Pièce: user.piece,
+      'Numéro de pièce': user.numPiece,
+      Téléphone: user.telephone,
+      Email: user.email,
+      Direction: `${user.direction?.nom || 'Non assigné'}`,
+      Agence: user.agenceId,
+      Role: user.role,
+    }));
+
+    // Ajout du total des utilisateurs exportées et de la date d'export en bas du fichier
+    formattedData.push(
+      {
+        '#': 0,
+        Matricule: '',
+        Nom: '',
+        Prénom: '',
+        Civilité: Civilite.MME,
+        Pièce: Piece.CNIB,
+        'Numéro de pièce': '',
+        Téléphone: 0,
+        Email: '',
+        Direction: '',
+        Agence: 0,
+        Role: RoleName.CLIENT,
+      },
+      {
+        '#': 0,
+        Matricule: '',
+        Nom: 'Total utilisateur exportées :',
+        Prénom: '',
+        Civilité: Civilite.MME,
+        Pièce: Piece.CNIB,
+        'Numéro de pièce': totalElements.toString(),
+        Téléphone: 0,
+        Email: '',
+        Direction: '',
+        Agence: 0,
+        Role: RoleName.CLIENT,
+      },
+      {
+        '#': 0,
+        Matricule: '',
+        Nom: "Date d'export :",
+        Prénom: '',
+        Civilité: Civilite.MME,
+        Pièce: Piece.CNIB,
+        'Numéro de pièce': currentDate,
+        Téléphone: 0,
+        Email: '',
+        Direction: '',
+        Agence: 0,
+        Role: RoleName.CLIENT,
+      }
+    );
+
+    // Création de la feuille Excel
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Utilisateurs');
+
+    // Nom du fichier
+    const fileName =
+      exportOption === 'all'
+        ? `utilisateurs_complete_${currentDate.replace(/[/,:]/g, '_')}.xlsx`
+        : `utilisateurs_page_${currentDate.replace(/[/,:]/g, '_')}.xlsx`;
+
+    // Enregistrement du fichier
+    XLSX.writeFile(workbook, fileName);
   }
 }

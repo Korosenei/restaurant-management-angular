@@ -80,16 +80,16 @@
             <div class="form-floating w-100">
               <select
                 class="form-control"
-                id="floatingUserId"
-                formControlName="userId"
+                id="floatingResponsable"
+                formControlName="responsable"
                 (change)="onEmployeChange($event)"
               >
                 <option value="" disabled>Choisissez un responsable</option>
-                <option *ngFor="let employe of listEmployes" [value]="employe.matricule">
-                  {{ employe.matricule }} ({{ employe.nom }} {{ employe.prenom }})
+                <option *ngFor="let employe of listEmployes" [value]="employe.id">
+                  {{ employe.nom }} {{ employe.prenom }} ({{ employe.matricule }})
                 </option>
               </select>
-              <label for="floatingUserId">Responsable de la direction</label>
+              <label for="floatingResponsable">Responsable de la direction</label>
             </div>
           </div>
         </div>

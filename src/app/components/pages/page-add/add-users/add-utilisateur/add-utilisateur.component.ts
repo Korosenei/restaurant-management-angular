@@ -74,6 +74,7 @@ export class AddUtilisateurComponent implements OnInit {
       email: [this.userObj.email, [Validators.required, Validators.email]],
       telephone: [this.userObj.telephone, Validators.required],
       role: [this.userObj.role || ''],
+      agenceId: [this.userObj.agenceId || ''],
       creationDate: [this.userObj.creationDate || new Date()],
       modifiedDate: [this.userObj.modifiedDate || new Date()],
       deleted: [this.userObj.deleted || false],
@@ -109,7 +110,7 @@ export class AddUtilisateurComponent implements OnInit {
 
     const newUser: USER = { ...this.userForm.getRawValue() };
 
-    console.log("Données envoyées au backend :", newUser);
+    console.log("🛠 Données envoyées au backend :", newUser);
 
     if (newUser.piece === Piece.CNIB && (!newUser.numPiece || !newUser.nip)) {
       alert('Le CNIB nécessite un numPiece et un nip.');

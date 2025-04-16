@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import {
@@ -7,8 +7,6 @@ import {
   FormBuilder,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
-import { FormModule } from '@coreui/angular';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DIRECTION } from '../../../../../models/model-structures/direction.model';
 import { AGENCE } from '../../../../../models/model-structures/agence.model';
@@ -17,7 +15,7 @@ import { USER } from '../../../../../models/model-users/user.model';
 @Component({
   selector: 'app-add-agence',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, FormModule],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
   templateUrl: './add-agence.component.html',
   styleUrl: './add-agence.component.scss',
 })
@@ -43,26 +41,25 @@ export class AddAgenceComponent implements OnInit {
 
   initializeForm(): void {
     this.agenceForm = this.formBuilder.group({
-      code: [{ value: '', disabled: true }],
+      code: [this.agenceObj.code || '', Validators.required],
       nom: [
         this.agenceObj.nom || '',
         [Validators.required, Validators.minLength(3)],
       ],
       sigle: [this.agenceObj.sigle || '', Validators.required],
       ville: [this.agenceObj.ville || '', Validators.required],
-      directionDto: [this.agenceObj.directionDto || [], Validators.required],
+      directionDto: [this.agenceObj.directionDto, Validators.required],
       passageDtos: [this.agenceObj.passageDtos || []],
-      userId: [this.agenceObj.userId, Validators.required],
-      responsable: [this.agenceObj.responsable || null, Validators.required],
+      responsable: [this.agenceObj.responsable?.id || null],
       creationDate: [this.agenceObj.creationDate || new Date()],
       modifiedDate: [this.agenceObj.modifiedDate || new Date()],
       deleted: [this.agenceObj.deleted || false],
     });
 
-    this.generateAgenceCode();
+    //this.generateAgenceCode();
   }
 
-  generateAgenceCode(): void {
+  /* generateAgenceCode(): void {
     this.http.get<AGENCE[]>('http://localhost:2025/agences/all').subscribe({
       next: (agences: AGENCE[]) => {
         if (agences.length > 0) {
@@ -93,7 +90,7 @@ export class AddAgenceComponent implements OnInit {
         alert('Erreur lors de la génération du code agence.');
       },
     });
-  }
+  } */
 
   getEmployes() {
     this.http.get<USER[]>('http://localhost:2028/users/all').subscribe({
@@ -120,18 +117,10 @@ export class AddAgenceComponent implements OnInit {
   }
 
   onEmployeChange(event: any): void {
-    const userId = event.target.value;
-    const selectedEmploye = this.listEmployes.find(
-      (employe) => employe.matricule === userId
-    );
-
-    if (selectedEmploye) {
-      const fullName = `${selectedEmploye.nom} ${selectedEmploye.prenom}`;
-
-      this.agenceForm.patchValue({
-        responsable: fullName,
-      });
-    }
+    const employeId = event.target.value;
+    this.agenceForm.patchValue({
+      responsable: employeId,
+    });
   }
 
   onDirectionChange(event: any): void {
@@ -151,30 +140,83 @@ export class AddAgenceComponent implements OnInit {
     if (this.agenceForm.valid) {
       const newAgence: AGENCE = {
         ...this.agenceForm.getRawValue(),
-        code: this.generatedAgenceCode,
+        //code: this.generatedAgenceCode,
         directionDto: this.agenceForm.value.directionDto,
+        responsable: { id: this.agenceForm.value.responsable },
       };
 
-      this.http
-        .post('http://localhost:2025/agences/create', newAgence)
-        .subscribe({
-          next: () => {
-            alert('Agence ajoutée avec succès !');
-            this.agenceForm.reset();
-          },
-          error: (err) => {
-            console.error("Erreur lors de l’ajout de l'agence", err);
-            alert('Une erreur est survenue.');
-          },
-        });
+      console.log('🛠 Données envoyées au backend :', newAgence);
+
+      if (this.agenceObj.id) {
+        this.updateAgence(newAgence);
+      } else {
+        this.createAgence(newAgence);
+      }
     } else {
-      alert('Veuillez remplir tous les champs requis.');
+      alert('Veuillez remplir tous les champs obligatoires.');
     }
-    this.activeModal.close();
+  }
+
+  createAgence(agence: AGENCE) {
+    this.http.post('http://localhost:2025/agences/create', agence).subscribe({
+      next: () => {
+        alert('Agence ajoutée avec succès !');
+
+        const responsableId = this.agenceForm.value.responsable;
+        if (responsableId) {
+          this.assignAgenceToUser(responsableId, agence.id);
+        }
+
+        this.activeModal.close('updated');
+      },
+      error: (err) => {
+        console.error('Erreur lors de l’ajout de la agence', err);
+        alert('Une erreur est survenue.');
+      },
+    });
+  }
+
+  updateAgence(agence: AGENCE) {
+    this.http
+      .put(`http://localhost:2025/agences/update/${this.agenceObj.id}`, agence)
+      .subscribe({
+        next: () => {
+          alert('Agence mis à jour avec succès !');
+
+          const responsableId = this.agenceForm.value.responsable;
+          if (responsableId) {
+            this.assignAgenceToUser(responsableId, this.agenceObj.id);
+          }
+
+          this.activeModal.close('updated');
+        },
+        error: (err) => {
+          console.error("Erreur lors de la mise à jour de l'agence", err);
+          alert('Une erreur est survenue.');
+        },
+      });
+  }
+
+  assignAgenceToUser(userId: number, agenceId: number) {
+    const url = `http://localhost:2028/users/patch/${userId}`;
+
+    const updatePayload = {
+      agenceId: agenceId,
+    };
+
+    this.http.patch(url, updatePayload).subscribe({
+      next: () => {
+        console.log(
+          `✅ L'utilisateur ${userId} a été lié à l'agence ${agenceId}`
+        );
+      },
+      error: (err) => {
+        console.error('❌ Erreur lors de la mise à jour de l’utilisateur', err);
+      },
+    });
   }
 
   Close(): void {
     this.activeModal.close();
   }
 }
-

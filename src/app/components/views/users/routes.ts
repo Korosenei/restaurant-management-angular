@@ -9,21 +9,21 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'allUsers',
+        redirectTo: 'utilisateurs',
         pathMatch: 'full'
       },
       {
-        path: 'allUsers',
+        path: 'utilisateurs',
         loadComponent: () => import('./utilisateur/utilisateur.component').then(m => m.UtilisateurComponent),
         data: {
-          title: 'All Users'
+          title: 'Utilisateurs'
         }
       },
       {
-        path: 'employes',
+        path: 'clients',
         loadComponent: () => import('./employe/employe.component').then(m => m.EmployeComponent),
         data: {
-          title: 'Employés'
+          title: 'Clients'
         }
       },
       {

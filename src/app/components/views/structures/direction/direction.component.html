@@ -19,12 +19,11 @@
 
   <!-- Composant de recherche -->
   <app-search
-    searchPlaceholder="Direction..."
+    searchPlaceholder="Rechercher une direction..."
     [showDateFilters]="true"
     (search)="onSearch($event)"
     (filterByDate)="onDateFilter($event)"
-  >
-  </app-search>
+  ></app-search>
 
   <div
     class="body"
@@ -46,13 +45,19 @@
           </thead>
 
           <tbody>
-            <tr *ngFor="let item of listDirections; let i = index">
-              <th scope="row">{{ i + 1 }}</th>
+            <tr *ngFor="let item of displayedDirections; let i = index">
+              <th scope="row">{{ (page - 1) * pageSize + i + 1 }}</th>
               <td>{{ item.code }}</td>
               <td>{{ item.nom }}</td>
               <td>{{ item.sigle }}</td>
               <td>{{ item.ville }}</td>
-              <td>{{ item.userId }}</td>
+              <td>
+                {{
+                  item.responsable
+                    ? item.responsable.nom + " " + item.responsable.prenom
+                    : "Non assigné"
+                }}
+              </td>
               <td>
                 <button
                   class="btn btn-outline-warning me-2"
@@ -88,3 +93,4 @@
     <p>Aucune direction trouvé.</p>
   </ng-template>
 </div>
+

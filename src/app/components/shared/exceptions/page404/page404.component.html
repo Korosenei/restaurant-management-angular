@@ -1,20 +1,21 @@
-<div class="bg-light dark:bg-transparent min-vh-100 d-flex flex-row align-items-center">
+<div
+  class="bg-light dark:bg-transparent min-vh-100 d-flex flex-row align-items-center"
+>
   <c-container>
     <c-row class="justify-content-center">
       <c-col md="6">
         <div class="clearfix">
           <h1 class="float-start display-3 me-4">404</h1>
           <h4 class="pt-3">Oups ! Vous êtes perdu.</h4>
-          <p class="text-body-secondary float-start">
-            Page non trouvée
-          </p>
+          <p class="text-body-secondary float-start">Page non trouvée</p>
         </div>
         <c-input-group class="input-prepend">
           <span cInputGroupText>
-            <svg cIcon name="cilMagnifyingGlass"></svg>
+
+          <p class="pt-3">Veuillez vous connecter pour continuer.</p>
           </span>
-          <input cFormControl placeholder="Que recherchez-vous ?" type="text" />
-          <button cButton color="info">Recherche</button>
+          <button cButton color="danger" (click)="OnLogin()"><i class="fa-solid fa-sign-out-alt"></i>&nbsp; Retour à l'accueil</button>
+
         </c-input-group>
       </c-col>
     </c-row>

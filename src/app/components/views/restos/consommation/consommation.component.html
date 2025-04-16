@@ -1,8 +1,9 @@
-<div class="container">
+<div class="container py-4">
   <div class="row">
-    <!-- Colonne de gauche : Résultats -->
-    <div class="col-md-7">
-      <h4>Résultats du Scanner</h4>
+    <!-- Colonne de gauche : Résultats du QR code -->
+    <div class="col-md-7 mb-4">
+      <h4>Résultats du QR Code</h4>
+
       <table class="table table-bordered">
         <thead class="table-dark">
           <tr>
@@ -11,63 +12,71 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngIf="transactionNumber">
-            <td>Numéro Transaction</td>
-            <td>{{ transactionNumber }}</td>
-          </tr>
-          <tr *ngIf="ticketNumber">
-            <td>Numéro Ticket</td>
-            <td>{{ ticketNumber }}</td>
-          </tr>
-          <tr *ngIf="clientName">
-            <td>Client</td>
-            <td>{{ clientName }}</td>
-          </tr>
-          <tr *ngIf="purchaseDate">
-            <td>Date Achat</td>
-            <td>{{ purchaseDate | date: 'short' }}</td>
-          </tr>
-          <tr *ngIf="status">
-            <td>Statut</td>
-            <td>{{ status }}</td>
+          <tr *ngFor="let item of qrCodeDetails">
+            <td>{{ item.label }}</td>
+            <td>{{ item.value }}</td>
           </tr>
         </tbody>
       </table>
+
+      <!-- Actions après scan valide -->
+      <div *ngIf="scanState === 'valide'" class="mt-3">
+        <button
+          (click)="validerConsommation()"
+          class="btn btn-success me-2"
+          type="button"
+        >
+          ✅ Valider
+        </button>
+        <button
+          (click)="refuserConsommation()"
+          class="btn btn-danger"
+          type="button"
+        >
+          ❌ Refuser
+        </button>
+      </div>
     </div>
 
-    <!-- Colonne de droite : Scanner QR -->
+    <!-- Colonne de droite : Scanner un QR code -->
     <div class="col-md-5">
-      <h4>Scanner QR</h4>
-      <!-- Zone pour afficher l'image du QR code -->
-      <div class="border rounded bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-        <img
-          *ngIf="qrCodeImageUrl"
-          [src]="qrCodeImageUrl"
-          alt="QR Code Scanné"
-          class="img-fluid"
-          style="max-height: 100%; max-width: 100%;"
-        />
-        <p *ngIf="!qrCodeImageUrl" class="text-secondary">Scannez un code QR...</p>
+      <h4>Scanner un QR Code</h4>
+
+      <!-- État après scan -->
+      <div *ngIf="scanState" class="alert mt-3"
+           [ngClass]="{
+             'alert-success': scanState === 'valide',
+             'alert-danger': scanState === 'corrompu',
+             'alert-warning': scanState === 'expiré'
+           }">
+        {{ scanMessage }}
       </div>
 
-      <!-- Champ pour importer une image QR code -->
+      <!-- Espace visuel pour l'image -->
+      <div
+        class="border rounded bg-light d-flex align-items-center justify-content-center mt-3"
+        style="height: 200px"
+      >
+        <p class="text-muted m-0">Scannez un code QR...</p>
+      </div>
+
+      <!-- Saisie manuelle -->
       <div class="mt-3">
-        <label for="qrCodeFile" class="form-label">Importer une image QR Code</label>
+        <label for="qrCodeInput" class="form-label">Saisie manuelle</label>
         <input
-          type="file"
-          id="qrCodeFile"
+          type="text"
+          id="qrCodeInput"
           class="form-control"
-          (change)="onFileSelected($event)"
-          accept="image/*"
+          placeholder="Entrer le QR code..."
+          [(ngModel)]="qrCodeData"
         />
       </div>
 
-      <!-- Boutons d'action -->
-      <div *ngIf="ticketValid" class="alert alert-success mt-3">
-        TICKET VALIDE
-      </div>
-      <div *ngIf="!ticketValid" class="alert alert-danger mt-3">
-        TICKET CORROMPU
+      <!-- Boutons de scan -->
+      <div class="mt-4 d-flex justify-content-between">
+        <button class="btn btn-warning me-2" (click)="scannerQrCode()">
+          🔍 Scanner
+        </button>
       </div>
     </div>
   </div>

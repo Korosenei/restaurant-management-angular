@@ -32,11 +32,12 @@
           <thead class="thead-light">
             <tr>
               <th scope="col">ID</th>
-              <th scope="col">DATE ACHAT</th>
+              <th scope="col">DATE</th>
               <th scope="col">REFERENCE</th>
               <th scope="col">CLIENT</th>
               <th scope="col">NBRS TICKET</th>
               <th scope="col">MONTANT</th>
+              <th scope="col">CAISSE</th>
               <th scope="col">ACTION</th>
             </tr>
           </thead>
@@ -44,11 +45,13 @@
           <tbody>
             <tr *ngFor="let item of displayedTransactions; let i = index">
               <th scope="row">{{ (page - 1) * pageSize + i + 1 }}</th>
-              <td>{{ item.creationDate }}</td>
+              <td>{{ item.modifiedDate | date:'dd/MM/yyyy' }}</td>
               <td>{{ item.reference }}</td>
               <td>{{ item.userDto?.nom }} {{ item.userDto?.prenom }}</td>
               <td>{{ item.nbrTicket }}</td>
               <td>{{ item.montant | number }} FCFA</td>
+              <td>{{ item.userDto ? item.userDto.nom + " " + item.userDto.prenom : "Non assigné" }}
+              </td>
               <td>
                 <button class="btn btn-outline-warning me-2" type="button" (click)="onEdite(item)">
                   <i class="fa-solid fa-pen"></i>

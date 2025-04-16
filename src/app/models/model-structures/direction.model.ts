@@ -8,9 +8,8 @@ export class DIRECTION {
   sigle: string = '';
   region: string = '';
   ville: string = '';
-  userId: string ='';
   responsable: USER | null = null;
-  agenceDtos: string = '';
+  agenceDtos: AGENCE[] = [];
   creationDate: Date = new Date();
   modifiedDate: Date = new Date();
   deleted: boolean = false;

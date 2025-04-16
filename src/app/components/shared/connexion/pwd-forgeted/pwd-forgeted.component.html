@@ -1,8 +1,18 @@
 <div class="login-container">
 
-  <form class="login-form" >
-    <span class="login-form-title"> Recuperation </span>
+  <form class="login-form" [formGroup]="pwdResetForm" (ngSubmit)="onSubmit()">
+    <span class="login-form-title"> Récupération de mot de passe </span>
     <br />
+
+    <!-- Message d'erreur -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Message de succès -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
 
     <div class="input-container">
       <div>
@@ -11,7 +21,7 @@
       <input
         type="text"
         id="matricule"
-        name="matricule"
+        formControlName="matricule"
         placeholder="Entrez votre matricule"
         required
       />
@@ -20,19 +30,19 @@
     <div class="input-container">
       <div class="email">
         <label class="label" for="email">Email</label>
-        <a routerLink="/login" class="connexion" (click)="onConnexionClick()"> connexion? </a>
+        <a routerLink="/login" class="connexion" (click)="onConnexionClick()">Connexion ?</a>
       </div>
 
       <input
         type="email"
         id="email"
-        name="email"
+        formControlName="email"
         placeholder="Entrez votre adresse email"
         required
       />
     </div>
     <br />
 
-    <button class="login-btn" type="submit">Envoyer</button>
+    <button class="login-btn" type="submit" [disabled]="pwdResetForm.invalid">Envoyer</button>
   </form>
 </div>

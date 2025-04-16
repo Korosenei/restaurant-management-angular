@@ -1,96 +1,126 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
-import { QrCodeService } from '../../../../services/qr-code/qr-code.service';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import jsQR from 'jsqr';
+import { FormsModule } from '@angular/forms';
+import {
+  HttpClient,
+  HttpClientModule,
+  HttpErrorResponse,
+} from '@angular/common/http';
+import { QRCODE } from '../../../../models/model-restos/qrcode.model';
 
 @Component({
   selector: 'app-consommation',
   standalone: true,
-  imports: [
-    CommonModule,
-    HttpClientModule
-  ],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './consommation.component.html',
-  styleUrl: './consommation.component.scss'
+  styleUrl: './consommation.component.scss',
 })
 export class ConsommationComponent {
+  qrCodeData: string = '';
+  qrCode: QRCODE | null = null;
+  scanState: 'valide' | 'expiré' | 'corrompu' | null = null;
+  selectedDevice: MediaDeviceInfo | undefined;
+  scanMessage: string = '';
+  loading: boolean = false;
 
-  // Variables pour afficher les résultats
-  transactionNumber: string | null = null;
-  ticketNumber: string | null = null;
-  clientName: string | null = null;
-  purchaseDate: Date | null = null;
-  status: string | null = null;
-  ticketValid: boolean = false;  // Indicateur de validité du ticket
-  qrCodeImageUrl: string | null = null;  // URL de l'image QR Code téléchargée
-  file: File | null = null;  // Fichier téléchargé
-
-  // Constructeur
   constructor(private http: HttpClient) {}
 
-  // Méthode pour traiter l'image téléchargée
-  onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.file = file;
-      const reader = new FileReader();
-
-      reader.onload = (e: any) => {
-        const imageDataUrl = e.target.result;
-        this.qrCodeImageUrl = imageDataUrl;
-
-        // Décodez l'image QR à partir de l'URL de données
-        this.decodeQRCode(imageDataUrl);
-      };
-
-      reader.readAsDataURL(file);
-    }
+  get qrCodeDetails() {
+    if (!this.qrCode) return [];
+    return [
+      {
+        label: 'Numéro Transaction',
+        value: this.qrCode.transaction?.reference || '-',
+      },
+      { label: 'Numéro Ticket', value: this.qrCode.ticket?.numero || '-' },
+      { label: "Date d'achat", value: this.qrCode.transaction?.creationDate || '-' },
+      {
+        label: 'Client',
+        value: `${this.qrCode.client?.prenom || ''} ${
+          this.qrCode.client?.nom || ''
+        }`,
+      },
+      { label: 'Agence', value: this.qrCode.agence?.nom || '-' },
+      {
+        label: 'Statut',
+        value: this.qrCode.consumed ? 'Consommé' : 'Non consommé',
+      },
+    ];
   }
 
-  // Méthode pour décoder le QR code à partir de l'image
-  decodeQRCode(imageDataUrl: string): void {
-    const img = new Image();
-    img.src = imageDataUrl;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+  scannerQrCode() {
+    if (!this.qrCodeData) return;
 
-      if (ctx) {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    this.loading = true;
+    this.qrCode = null;
+    this.scanState = null;
+    this.scanMessage = '';
 
-        const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
-        if (qrCode) {
-          this.processQRCode(qrCode.data);
+    const url = `http://localhost:2030/qrcodes/scan/${encodeURIComponent(
+      this.qrCodeData
+    )}`;
+
+    this.http.get<QRCODE>(url).subscribe({
+      next: (data) => {
+        this.qrCode = new QRCODE(data);
+        this.scanState = 'valide';
+        this.scanMessage = 'QR Code valide.';
+        this.loading = false;
+      },
+      error: (err: HttpErrorResponse) => {
+        this.loading = false;
+        if (err.status === 410) {
+          this.scanState = 'expiré';
+          this.scanMessage = 'QR Code expiré.';
+        } else if (err.status === 404) {
+          this.scanState = 'corrompu';
+          this.scanMessage = 'QR Code Corrompu.';
         } else {
-          this.ticketValid = false;
+          this.scanState = 'corrompu';
+          this.scanMessage = 'QR Code Corrompu.';
         }
-      }
-    };
-  }
-
-  // Traitement des données extraites du QR code
-  processQRCode(data: string): void {
-    this.http.get<any>(`http://localhost:3000/qrCodes`).subscribe(qrCodes => {
-      const qrCode = qrCodes.find((code: any) => code.uniqueCode === data);
-      if (qrCode) {
-        // Si le QR Code est valide, remplissez les résultats
-        this.transactionNumber = qrCode.transactionNumber;
-        this.ticketNumber = qrCode.ticketNumber;
-        this.clientName = qrCode.clientName;
-        this.purchaseDate = new Date(qrCode.purchaseDate);
-        this.status = qrCode.status;
-        this.ticketValid = true; // Indique que le ticket est valide
-      } else {
-        // QR Code invalide
-        this.ticketValid = false;
-      }
-    }, error => {
-      console.error('Erreur lors de la récupération des QR Codes:', error);
-      this.ticketValid = false;
+      },
     });
   }
+
+  validerConsommation() {
+    if (!this.qrCode) return;
+
+    const url = `http://localhost:2030/qrcodes/confirm/${encodeURIComponent(
+      this.qrCodeData
+    )}`;
+
+    this.http.put(url, {}).subscribe({
+      next: () => {
+        this.qrCode!.consumed = true;
+        alert('Ticket marqué comme consommé !');
+      },
+      error: () => {
+        alert('Échec de la validation.');
+      },
+    });
+  }
+
+  refuserConsommation() {
+    this.qrCode = null;
+    this.scanState = null;
+    this.qrCodeData = '';
+    this.scanMessage = 'Scan annulé.';
+  }
+
+  ngAfterViewInit(): void {
+  // Sélection automatique de la caméra disponible
+  navigator.mediaDevices.enumerateDevices().then((devices) => {
+    const videoDevices = devices.filter((device) => device.kind === 'videoinput');
+    if (videoDevices.length > 0) {
+      this.selectedDevice = videoDevices[0];
+    }
+  });
+}
+
+// Lorsque le scanner détecte un code
+handleQrCodeResult(result: string): void {
+  this.qrCodeData = result;
+  this.scannerQrCode(); // ou toute autre fonction de traitement
+}
 }

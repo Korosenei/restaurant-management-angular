@@ -8,9 +8,9 @@ export class TRANSACTION {
   userId: number = 0;
   nom: string = '';
   prenom: string = '';
-  nbrTicket: number = 1;
-  firstNumTicket: string = '';
-  lastNumTicket: string = '';
+  nbrTicket: number = 20;
+  firstTicketNum: string = '';
+  lastTicketNum: string = '';
   payement: Payement = Payement.ESPECE;
   montant: number = 500;
   ticketDto: TICKET | null = null

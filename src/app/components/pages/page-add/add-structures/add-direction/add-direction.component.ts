@@ -7,11 +7,8 @@ import {
   FormBuilder,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
-import { FormModule } from '@coreui/angular';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DIRECTION } from '../../../../../models/model-structures/direction.model';
-import { AGENCE } from '../../../../../models/model-structures/agence.model';
 import { USER } from '../../../../../models/model-users/user.model';
 
 @Component({
@@ -33,7 +30,6 @@ export class AddDirectionComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private formBuilder: FormBuilder,
     private http: HttpClient,
-    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -43,7 +39,7 @@ export class AddDirectionComponent implements OnInit {
 
   initializeForm(): void {
     this.directionForm = this.formBuilder.group({
-      code: [{ value: '', disabled: true }],
+      code: [this.directionObj.code || '', Validators.required],
       nom: [
         this.directionObj.nom || '',
         [Validators.required, Validators.minLength(3)],
@@ -52,17 +48,16 @@ export class AddDirectionComponent implements OnInit {
       region: [this.directionObj.region, Validators.required],
       ville: [this.directionObj.ville, Validators.required],
       agenceDto: [this.directionObj.agenceDtos || null],
-      userId: [this.directionObj.userId, Validators.required],
-      responsable: [this.directionObj.responsable || null, Validators.required],
+      responsable: [this.directionObj.responsable?.id || null],
       creationDate: [this.directionObj.creationDate || new Date()],
       modifiedDate: [this.directionObj.modifiedDate || new Date()],
       deleted: [this.directionObj.deleted || false],
     });
 
-    this.generateDirectionCode();
+    //this.generateDirectionCode();
   }
 
-  generateDirectionCode(): void {
+  /* generateDirectionCode(): void {
     this.http
       .get<DIRECTION[]>('http://localhost:2025/directions/all')
       .subscribe({
@@ -95,7 +90,7 @@ export class AddDirectionComponent implements OnInit {
           alert('Erreur lors de la génération du code direction.');
         },
       });
-  }
+  } */
 
   getEmployes() {
     this.http.get<USER[]>('http://localhost:2028/users/all').subscribe({
@@ -109,44 +104,88 @@ export class AddDirectionComponent implements OnInit {
   }
 
   onEmployeChange(event: any): void {
-    const userId = event.target.value;
-    const selectedEmploye = this.listEmployes.find(
-      (employe) => employe.matricule === userId
-    );
-
-    if (selectedEmploye) {
-      const fullName = `${selectedEmploye.nom} ${selectedEmploye.prenom}`;
-
-      this.directionForm.patchValue({
-        responsable: fullName,
-      });
-    }
+    const employeId = event.target.value;
+    this.directionForm.patchValue({
+      responsable: employeId,
+    });
   }
 
   Save() {
     if (this.directionForm.valid) {
       const newDirection: DIRECTION = {
         ...this.directionForm.getRawValue(),
-        code: this.generatedDirectionCode,
+        responsable: { id: this.directionForm.value.responsable },
+        //code: this.generatedDirectionCode,
       };
 
-      this.http
-        .post('http://localhost:2025/directions/create', newDirection)
-        .subscribe({
-          next: () => {
-            alert('Direction ajoutée avec succès !');
-            this.directionForm.reset();
-          },
-          error: (err) => {
-            console.error('Erreur lors de l’ajout de la direction', err);
-            alert('Une erreur est survenue.');
-          },
-        });
-    } else {
-      alert('Veuillez remplir tous les champs requis.');
+      console.log('🛠 Données envoyées au backend :', newDirection);
+
+      if (this.directionObj.id) {
+        this.updateDirection(newDirection);
+      }
+      else {
+        this.createDirection(newDirection);
+      }
     }
-    this.activeModal.close();
+    else {
+      alert('Veuillez remplir tous les champs obligatoires.');
+    }
   }
+
+  createDirection(direction: DIRECTION) {
+    this.http.post('http://localhost:2025/directions/create', direction).subscribe({
+      next: () => {
+        alert('Direction ajoutée avec succès !');
+
+        /* const responsableId = this.directionForm.value.responsable;
+        if (responsableId) {
+          this.assignDirectionToUser(responsableId, direction.id);
+        } */
+
+        this.activeModal.close('updated');
+      },
+      error: (err) => {
+        console.error("Erreur lors de l’ajout de la direction", err);
+        alert('Une erreur est survenue.');
+      },
+    });
+  }
+
+  updateDirection(direction: DIRECTION) {
+    this.http.put(`http://localhost:2025/directions/update/${this.directionObj.id}`, direction).subscribe({
+      next: () => {
+        alert('Direction mis à jour avec succès !');
+
+        /* const responsableId = this.directionForm.value.responsable;
+        if (responsableId) {
+          this.assignDirectionToUser(responsableId, this.directionObj.id);
+        } */
+
+        this.activeModal.close('updated');
+      },
+      error: (err) => {
+        console.error("Erreur lors de la mise à jour de la direction", err);
+        alert('Une erreur est survenue.');
+      },
+    });
+  }
+
+  /* assignDirectionToUser(userId: number, directionId: number) {
+    const url = `http://localhost:2028/users/patch/${userId}`;
+
+    const updatePayload = {
+      directionId: directionId
+    };
+
+    this.http.patch(url, updatePayload).subscribe({
+      next: () => {
+        console.log(`✅ L'utilisateur ${userId} a été lié à la direction ${directionId}`);
+      },
+      error: (err) => {
+        console.error('❌ Erreur lors de la mise à jour de l’utilisateur', err);
+      }
+    });
+  } */
 
   Close(): void {
     this.activeModal.close();

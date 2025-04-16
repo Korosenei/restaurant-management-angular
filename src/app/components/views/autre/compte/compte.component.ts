@@ -15,8 +15,13 @@ import { CHANGEPWD } from '../../../../models/model-users/ChangePwd.model';
 })
 export class CompteComponent implements OnInit {
   currentUser: USER | null = null;
+  currentDirection: any = null;
 
-  constructor(private modalService: NgbModal, private router: Router) {}
+  constructor(
+    private modalService: NgbModal,
+    private router: Router,
+    private http: HttpClient
+  ) {}
 
   ngOnInit(): void {
     this.getUser();
@@ -28,14 +33,30 @@ export class CompteComponent implements OnInit {
     if (userFromStorage) {
       this.currentUser = JSON.parse(userFromStorage);
 
-      // Vérifier si lastLogout est stocké
       const lastLogoutFromStorage = localStorage.getItem('lastLogout');
       if (lastLogoutFromStorage && this.currentUser) {
         this.currentUser.lastLogout = new Date(lastLogoutFromStorage);
       }
+
+      if (this.currentUser?.direction.nom) {  // Vérification si directionId existe
+        this.getDirection(this.currentUser.direction.id);
+      }
     } else {
       this.router.navigate(['/login']);
     }
+  }
+
+  // Récupérer la direction associée à l'utilisateur
+  getDirection(directionId: number): void {
+    const url = `http://localhost:2025/directions/${directionId}`;
+    this.http.get(url).subscribe({
+      next: (data) => {
+        this.currentDirection = data; // Stocke la direction récupérée
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération de la direction', err);
+      },
+    });
   }
 
   changePassword(): void {
@@ -67,7 +88,9 @@ export class CompteComponent implements OnInit {
 
   // Méthode pour afficher une confirmation avant de se déconnecter
   confirmLogout(): void {
-    const confirmAction = window.confirm('Êtes-vous sûr de vouloir vous déconnecter ?');
+    const confirmAction = window.confirm(
+      'Êtes-vous sûr de vouloir vous déconnecter ?'
+    );
     if (confirmAction) {
       this.logout();
     }
@@ -80,7 +103,10 @@ export class CompteComponent implements OnInit {
       this.currentUser.lastLogout = new Date();
 
       // Sauvegarder la dernière déconnexion dans localStorage
-      localStorage.setItem('lastLogout', this.currentUser.lastLogout.toISOString());
+      localStorage.setItem(
+        'lastLogout',
+        this.currentUser.lastLogout.toISOString()
+      );
     }
 
     // Effacer les données utilisateur du localStorage

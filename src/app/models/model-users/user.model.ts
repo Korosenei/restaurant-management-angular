@@ -1,4 +1,5 @@
 import { TICKET } from "../model-elements/ticket.model";
+import { DIRECTION } from "../model-structures/direction.model";
 
 export class USER {
   id: number = 0;
@@ -13,7 +14,8 @@ export class USER {
   email: string = '';
   motDePasse: string = '';
   tickets: TICKET[] = [];
-  agenceId: string = '';
+  direction: DIRECTION = new DIRECTION();
+  agenceId: number = 0;
   restoId: string = '';
   enabled: boolean = false;
   accountLocked: boolean = false;

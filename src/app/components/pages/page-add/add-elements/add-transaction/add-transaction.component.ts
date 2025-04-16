@@ -56,14 +56,14 @@ export class AddTransactionComponent implements OnInit {
       userId: ['', Validators.required],
       nom: [''],
       prenom: [''],
-      nbrTicket: [1, [Validators.required, Validators.max(25)]],
+      nbrTicket: [20, [Validators.required, Validators.min(20)]],
       ticketDto: this.formBuilder.group({
         numero: [''],
         dateValid: [new Date()],
         status: [Status.VALIDE],
       }),
-      firstNumTicket: [''],
-      lastNumTicket: [''],
+      firstTicketNum: [''],
+      lastTicketNum: [''],
       payement: [{ value: Payement.ESPECE, disabled: true }],
       montant: [{ value: 500, disabled: true }],
     });
@@ -124,8 +124,8 @@ export class AddTransactionComponent implements OnInit {
       .subscribe({
         next: (transactions) => {
           const tickets = transactions.flatMap((transaction) => {
-            const firstNum = parseInt(transaction.firstNumTicket.slice(-4));
-            const lastNum = parseInt(transaction.lastNumTicket.slice(-4));
+            const firstNum = parseInt(transaction.firstTicketNum.slice(-4));
+            const lastNum = parseInt(transaction.lastTicketNum.slice(-4));
             return Array.from(
               { length: lastNum - firstNum + 1 },
               (_, i) => firstNum + i
@@ -275,8 +275,8 @@ export class AddTransactionComponent implements OnInit {
    * Génère et sauvegarde les tickets associés à une transaction.
    */
   generateAndSaveTickets(transaction: TRANSACTION): void {
-    const firstTicketNumber = parseInt(transaction.firstNumTicket.slice(-4));
-    const lastTicketNumber = parseInt(transaction.lastNumTicket.slice(-4));
+    const firstTicketNumber = parseInt(transaction.firstTicketNum.slice(-4));
+    const lastTicketNumber = parseInt(transaction.lastTicketNum.slice(-4));
     const year = new Date().getFullYear().toString();
     const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
     const agencyNumber = 'AGE-001';

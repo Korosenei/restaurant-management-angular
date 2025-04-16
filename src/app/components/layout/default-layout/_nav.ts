@@ -69,13 +69,13 @@ export const navItems: INavData[] = [
     name: 'Utilisateurs'
   },
   {
-    name: 'All Users',
-    url: '/users/allUsers',
+    name: 'Utilisateurs',
+    url: '/users/utilisateurs',
     iconComponent: { name: 'cil-user' }
   },
   {
-    name: 'Employés',
-    url: '/users/employes',
+    name: 'Clients',
+    url: '/users/clients',
     iconComponent: { name: 'cil-user' }
   },
   {
