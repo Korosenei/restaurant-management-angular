@@ -16,6 +16,7 @@ import { USER } from '../../../../models/model-users/user.model';
 import { QRCodeModule } from 'angularx-qrcode';
 import * as crypto from 'crypto-js';
 import * as QRCode from 'qrcode';
+import { QRCODE } from '../../../../models/model-restos/qrcode.model';
 
 @Component({
   selector: 'app-ticket',
@@ -34,6 +35,7 @@ import * as QRCode from 'qrcode';
 })
 export class TicketComponent {
   ticketObj: TICKET = new TICKET();
+  generatedQrCode: QRCODE | null = null;
 
   listTickets: TICKET[] = [];
   filteredTickets: TICKET[] = [];
@@ -67,64 +69,37 @@ export class TicketComponent {
 
   ngAfterViewInit(): void {}
 
-  // Générer un QR Code et l'afficher dans un canvas
-  generateQRCode(ticket: TICKET, content: any): void {
-    this.currentTicket = ticket; // Stocker le ticket courant
-    const qrData = {
-      transactionNumber: ticket.transactionDto?.reference,
-      ticketNumber: ticket.numero,
-      matricule: ticket.transactionDto?.userDto?.matricule,
-      employeeName: `${ticket.transactionDto?.userDto?.nom} ${ticket.transactionDto?.userDto?.prenom}`,
-      status: ticket.status,
-      uniqueCode: this.generateUniqueCode(ticket),
-    };
+  // Appeler le backend pour générer un QR code
+  generateQrCodeFromBackend(clientId: number, modalTemplate: any): void {
+    this.http.get<QRCODE>(`http://localhost:2030/qrcodes/generate/${clientId}`).subscribe({
+      next: (response: QRCODE) => {
+        this.generatedQrCode = response;
+        this.qrCodeData = response.qrCodeData;
 
-    this.qrCodeData = JSON.stringify(qrData);
+        this.modalService.open(modalTemplate);
 
-    this.modalService.open(content);
-
-    setTimeout(() => {
-      this.generateQRCodeCanvas();
-    }, 500); // Délai de 500 ms pour laisser le temps à la modale de se charger
-  }
-
-  // Générer un code unique pour chaque ticket
-  generateUniqueCode(ticket: TICKET): string {
-    return btoa(ticket.numero + ticket.transactionDto?.reference); // Base64 pour un code unique
+        setTimeout(() => {
+          this.generateQRCodeCanvas();
+        }, 300);
+      },
+      error: (err) => {
+        console.error("Erreur lors de la génération du QR Code :", err);
+        alert("Impossible de générer un QR code pour ce client.");
+      },
+    });
   }
 
   // Générer et afficher le QR Code dans le canvas
   generateQRCodeCanvas(): void {
     if (this.qrCodeCanvas && this.qrCodeData) {
-      QRCode.toCanvas(
-        this.qrCodeCanvas.nativeElement,
-        this.qrCodeData,
-        (error) => {
-          if (error) {
-            console.error(error);
-            return;
-          }
-
-          const qrCanvas = this.qrCodeCanvas.nativeElement;
-          const qrCodeBase64 = qrCanvas.toDataURL('image/png');
-
-          this.http
-            .post('http://localhost:3000/qrCodes', { qrCodeData: qrCodeBase64 })
-            .subscribe({
-              next: (response) => {
-                console.log('QR Code sauvegardé avec succès', response);
-              },
-              error: (err) => {
-                console.error(
-                  "Erreur lors de l'enregistrement du QR Code",
-                  err
-                );
-              },
-            });
+      QRCode.toCanvas(this.qrCodeCanvas.nativeElement, this.qrCodeData, (error) => {
+        if (error) {
+          console.error('Erreur de génération du canvas QR Code', error);
         }
-      );
+      });
     }
   }
+
 
   downloadQRCode(): void {
     const qrCanvas = this.qrCodeCanvas.nativeElement;

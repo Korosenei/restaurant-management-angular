@@ -259,7 +259,7 @@ export class TransactionComponent {
         : (this.page - 1) * this.pageSize + index + 1,
       this.formatDate(transaction.modifiedDate),
       transaction.reference,
-      `${transaction.userDto?.nom || ''} ${transaction.userDto?.prenom || ''}`,
+      `${transaction.client?.nom || ''} ${transaction.client?.prenom || ''}`,
       transaction.nbrTicket,
       transaction.firstTicketNum || 'Non défini',
       transaction.lastTicketNum || 'Non défini',

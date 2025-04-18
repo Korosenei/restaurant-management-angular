@@ -6,6 +6,7 @@ export class TRANSACTION {
   date: Date = new Date();
   reference: string = '';
   userId: number = 0;
+  clientId: number = 0;
   nom: string = '';
   prenom: string = '';
   nbrTicket: number = 20;
@@ -15,6 +16,7 @@ export class TRANSACTION {
   montant: number = 500;
   ticketDto: TICKET | null = null
   userDto: USER | null = null
+  client: USER | null = null
   creationDate: Date = new Date();
   modifiedDate: Date = new Date();
   deleted: boolean = false;

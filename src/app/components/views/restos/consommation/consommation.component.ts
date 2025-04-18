@@ -7,17 +7,20 @@ import {
   HttpErrorResponse,
 } from '@angular/common/http';
 import { QRCODE } from '../../../../models/model-restos/qrcode.model';
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
+import { BarcodeFormat } from '@zxing/browser';
 
 @Component({
   selector: 'app-consommation',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, ZXingScannerModule],
   templateUrl: './consommation.component.html',
   styleUrl: './consommation.component.scss',
 })
 export class ConsommationComponent {
   qrCodeData: string = '';
   qrCode: QRCODE | null = null;
+  formatsEnabled: BarcodeFormat[] = [BarcodeFormat.QR_CODE];
   scanState: 'valide' | 'expiré' | 'corrompu' | null = null;
   selectedDevice: MediaDeviceInfo | undefined;
   scanMessage: string = '';
@@ -30,17 +33,27 @@ export class ConsommationComponent {
     return [
       {
         label: 'Numéro Transaction',
-        value: this.qrCode.transaction?.reference || '-',
+        value: this.qrCode.ticket?.transactionDto?.reference || '-',
       },
       { label: 'Numéro Ticket', value: this.qrCode.ticket?.numero || '-' },
-      { label: "Date d'achat", value: this.qrCode.transaction?.creationDate || '-' },
+      {
+        label: "Date d'achat",
+        value: this.qrCode.creationDate || '-',
+      },
       {
         label: 'Client',
         value: `${this.qrCode.client?.prenom || ''} ${
           this.qrCode.client?.nom || ''
         }`,
       },
-      { label: 'Agence', value: this.qrCode.agence?.nom || '-' },
+      {
+        label: 'Géneré le ',
+        value: this.qrCode.creationDate || '-',
+      },
+      {
+        label: 'Expire le ',
+        value: this.qrCode.expirationDate || '-',
+      },
       {
         label: 'Statut',
         value: this.qrCode.consumed ? 'Consommé' : 'Non consommé',
@@ -109,18 +122,29 @@ export class ConsommationComponent {
   }
 
   ngAfterViewInit(): void {
-  // Sélection automatique de la caméra disponible
-  navigator.mediaDevices.enumerateDevices().then((devices) => {
-    const videoDevices = devices.filter((device) => device.kind === 'videoinput');
-    if (videoDevices.length > 0) {
-      this.selectedDevice = videoDevices[0];
-    }
-  });
-}
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        navigator.mediaDevices.enumerateDevices().then((devices) => {
+          const videoDevices = devices.filter((d) => d.kind === 'videoinput');
+          if (videoDevices.length > 0) {
+            this.selectedDevice = videoDevices[0];
+          }
+        });
+      })
+      .catch((err) => {
+        console.error('Permission caméra refusée ou non disponible.', err);
+        alert(
+          'Permission caméra refusée. Vérifiez les autorisations du navigateur.'
+        );
+      });
+  }
 
-// Lorsque le scanner détecte un code
-handleQrCodeResult(result: string): void {
-  this.qrCodeData = result;
-  this.scannerQrCode(); // ou toute autre fonction de traitement
-}
+  // Lorsque le scanner détecte un code
+
+  handleQrCodeResult(result: string): void {
+    console.log('QR Code détecté :', result);
+    this.qrCodeData = result;
+    this.scannerQrCode();
+  }
 }

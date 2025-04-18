@@ -50,10 +50,12 @@
               <td>{{ item.transactionDto?.creationDate | date:'dd/MM/yyyy' }}</td>
               <td>{{ item.transactionDto?.reference }}</td>
               <td>{{ item.numero }}</td>
-              <td>{{ getUserName(item.transactionDto?.userId ?? 0) }}</td>
-              <td>{{ item.status }}</td>
-              <td>{{ item.userDto ? item.userDto.nom + " " + item.userDto.prenom : "Non assigné" }}
+              <td>
+                {{ item.client?.nom }}
+                {{ item.client?.prenom }}
               </td>
+              <td>{{ item.status }}</td>
+              <td>{{ getUserName(item.transactionDto?.userId ?? 0) }}</td>
               <td>
                 <button
                   class="btn btn-outline-warning me-2"
@@ -65,7 +67,7 @@
                 <button
                   class="btn btn-outline-secondary me-2"
                   type="button"
-                  (click)="generateQRCode(item, qrCodeModal)"
+                  (click)="generateQrCodeFromBackend(item.clientId!, qrCodeModal)"
                 >
                   <i class="fa-solid fa-qrcode"></i>
                 </button>
@@ -114,3 +116,5 @@
     </button>
   </div>
 </ng-template>
+
+

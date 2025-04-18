@@ -34,8 +34,8 @@
               <div class="form-floating mb-3 input-group">
                 <select
                   class="form-control"
-                  id="floatingUserId"
-                  formControlName="userId"
+                  id="floatingClientId"
+                  formControlName="clientId"
                   (change)="onClientChange($event)"
                 >
                   <option value="" disabled>Choisissez le client</option>
@@ -46,7 +46,7 @@
                     {{ client.id}} ({{ client.matricule }})
                   </option>
                 </select>
-                <label for="floatingUserId">Client</label>
+                <label for="floatingClientId">Client</label>
               </div>
 
               <!-- Affichage du nom et prénom du client sélectionné -->

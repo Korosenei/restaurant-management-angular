@@ -53,14 +53,14 @@ export class AddTransactionComponent implements OnInit {
     this.transactionForm = this.formBuilder.group({
       date: [{ value: new Date(), disabled: true }],
       reference: [{ value: '', disabled: true }],
-      userId: ['', Validators.required],
+      clientId: ['', Validators.required],
       nom: [''],
       prenom: [''],
       nbrTicket: [20, [Validators.required, Validators.min(20)]],
       ticketDto: this.formBuilder.group({
         numero: [''],
-        dateValid: [new Date()],
         status: [Status.VALIDE],
+        creationDate: [new Date()],
       }),
       firstTicketNum: [''],
       lastTicketNum: [''],
@@ -208,16 +208,16 @@ export class AddTransactionComponent implements OnInit {
    * Méthode appelée lors du changement de client sélectionné.
    */
   onClientChange(event: any): void {
-    const userId = Number(event.target.value);
-    console.log('Utilisateur sélectionné:', userId);
+    const clientId = Number(event.target.value);
+    console.log('Utilisateur sélectionné:', clientId);
 
     const selectedClient = this.listClients.find(
-      (client) => client.id === userId
+      (client) => client.id === clientId
     );
 
     if (selectedClient) {
       this.transactionForm.patchValue({
-        userId: selectedClient.id,
+        clientId: selectedClient.id,
         nom: selectedClient.nom,
         prenom: selectedClient.prenom,
       });
@@ -243,6 +243,7 @@ export class AddTransactionComponent implements OnInit {
     const newTransaction: TRANSACTION = {
       ...this.transactionForm.getRawValue(),
       ticketDto: { ...this.transactionForm.value.ticketDto },
+      client: { id: this.transactionForm.value.clientId },
       userDto: { id: this.transactionForm.value.userId },
     };
 
@@ -291,12 +292,14 @@ export class AddTransactionComponent implements OnInit {
 
       const ticket: TICKET = new TICKET({
         numero: ticketNumber,
-        dateValid: dateValid,
         status: Status.VALIDE,
+        clientId: transaction.clientId,
+        client: transaction.client,
+        creationDate: new Date(),
         transactionDto: {
           id: transaction.id,
           reference: transaction.reference,
-          userId: transaction.userDto?.id,
+          client: transaction.client,
         } as TRANSACTION,
         userDto: transaction.userDto,
       });
