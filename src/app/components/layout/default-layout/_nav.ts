@@ -36,7 +36,7 @@ export const navItems: INavData[] = [
     url: '/restos/menus',
     iconComponent: { name: 'cil-list' }
   },
-  {
+  /* {
     name: 'Réservations',
     url: '/restos/reservations',
     iconComponent: { name: 'cil-calendar' },
@@ -57,7 +57,7 @@ export const navItems: INavData[] = [
         icon: 'nav-icon-bullet'
       }
     ]
-  },
+  }, */
   {
     name: 'Consommations',
     url: '/restos/consommations',

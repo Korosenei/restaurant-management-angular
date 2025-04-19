@@ -40,6 +40,7 @@
     "@zxing/browser": "^0.1.5",
     "@zxing/ngx-scanner": "^19.0.0",
     "angularx-qrcode": "^18.0.2",
+    "animate.css": "^4.1.1",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.3",
     "coreui-free-angular-admin-template": "file:",

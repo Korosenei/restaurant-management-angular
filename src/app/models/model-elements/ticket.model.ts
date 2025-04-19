@@ -20,6 +20,5 @@ export class TICKET {
 
 export enum Status {
   VALIDE = 'VALIDE',
-  INVALIDE = 'INVALIDE',
   CONSOMME = 'CONSOMME'
 }

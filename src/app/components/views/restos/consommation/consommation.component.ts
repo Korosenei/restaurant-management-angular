@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -17,16 +17,33 @@ import { BarcodeFormat } from '@zxing/browser';
   templateUrl: './consommation.component.html',
   styleUrl: './consommation.component.scss',
 })
-export class ConsommationComponent {
+export class ConsommationComponent implements OnInit {
   qrCodeData: string = '';
+  scanResult: QRCODE | null = null;
   qrCode: QRCODE | null = null;
+  qrCodeList: QRCODE[] = [];
   formatsEnabled: BarcodeFormat[] = [BarcodeFormat.QR_CODE];
-  scanState: 'valide' | 'expiré' | 'corrompu' | null = null;
+  scanState: 'invalide' | 'valide' | 'expiré' | 'corrompu' | null = null;
   selectedDevice: MediaDeviceInfo | undefined;
   scanMessage: string = '';
   loading: boolean = false;
 
   constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.getQrcode();
+  }
+
+  getQrcode() {
+    this.http.get<QRCODE[]>('http://localhost:2030/qrcodes/all').subscribe({
+      next: (res) => {
+        this.qrCodeList = res;
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération des QRCodes', err);
+      },
+    });
+  }
 
   get qrCodeDetails() {
     if (!this.qrCode) return [];
@@ -69,44 +86,87 @@ export class ConsommationComponent {
     this.scanState = null;
     this.scanMessage = '';
 
-    const url = `http://localhost:2030/qrcodes/scan/${encodeURIComponent(
-      this.qrCodeData
-    )}`;
+    const url = `http://localhost:2030/qrcodes/scan/${encodeURIComponent(this.qrCodeData)}`;
 
     this.http.get<QRCODE>(url).subscribe({
       next: (data) => {
-        this.qrCode = new QRCODE(data);
-        this.scanState = 'valide';
-        this.scanMessage = 'QR Code valide.';
         this.loading = false;
+
+        if (!data) {
+          this.setScanResult('corrompu', '❌ QR Code invalide ou non reconnu.');
+          return;
+        }
+
+        this.qrCode = data;
+        this.setScanResult('valide', '✅ QR Code valide.');
       },
-      error: (err: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse) => {
         this.loading = false;
-        if (err.status === 410) {
-          this.scanState = 'expiré';
-          this.scanMessage = 'QR Code expiré.';
-        } else if (err.status === 404) {
-          this.scanState = 'corrompu';
-          this.scanMessage = 'QR Code Corrompu.';
-        } else {
-          this.scanState = 'corrompu';
-          this.scanMessage = 'QR Code Corrompu.';
+
+        const code = error?.error?.code;
+        const message = error?.error?.message || 'Erreur inconnue.';
+
+        switch (code) {
+          case 100: // QRCODE_NOT_FOUND
+            this.setScanResult('corrompu', '❌ QR Code invalide ou non reconnu.');
+            break;
+          case 101: // QRCODE_EXPIRED
+            this.setScanResult('expiré', '⛔ QR Code expiré. Veuillez en générer un nouveau.');
+            break;
+          case 102: // QRCODE_NOT_VALID
+          case 103: // QRCODE_ALREADY_IN_USE
+            this.setScanResult('invalide', '⚠️ QR Code déjà utilisé pour un ticket consommé.');
+            break;
+          default:
+            this.setScanResult('corrompu', `❌ ${message}`);
         }
       },
     });
   }
 
+  private setScanResult(
+    state: 'valide' | 'invalide' | 'expiré' | 'corrompu',
+    message: string
+  ) {
+    this.scanState = state;
+    this.scanMessage = message;
+  }
+
+  getScanClass(): string {
+    switch (this.scanState) {
+      case 'valide':
+        return 'bg-success animate__animated animate__fadeInDown';
+      case 'expiré':
+        return 'bg-warning text-dark animate__animated animate__shakeX';
+      case 'invalide':
+        return 'bg-danger animate__animated animate__fadeInUp';
+      case 'corrompu':
+        return 'bg-dark text-light animate__animated animate__fadeIn';
+      default:
+        return 'bg-secondary';
+    }
+  }
+
   validerConsommation() {
     if (!this.qrCode) return;
 
-    const url = `http://localhost:2030/qrcodes/confirm/${encodeURIComponent(
-      this.qrCodeData
-    )}`;
+    const url = `http://localhost:2030/qrcodes/confirm/${encodeURIComponent(this.qrCodeData)}`;
 
     this.http.put(url, {}).subscribe({
       next: () => {
+        // On marque comme consommé côté affichage
         this.qrCode!.consumed = true;
-        alert('Ticket marqué comme consommé !');
+
+        // Message de succès
+        this.setScanResult('valide', '✅ Ticket consommé avec succès.');
+
+        // Réinitialisation après délai (affichage message 3 secondes)
+        setTimeout(() => {
+          this.qrCode = null;
+          this.qrCodeData = '';
+          this.scanState = null;
+          this.scanMessage = '';
+        }, 3000);
       },
       error: () => {
         alert('Échec de la validation.');
@@ -116,9 +176,15 @@ export class ConsommationComponent {
 
   refuserConsommation() {
     this.qrCode = null;
-    this.scanState = null;
     this.qrCodeData = '';
-    this.scanMessage = 'Scan annulé.';
+    this.scanState = 'invalide';
+    this.scanMessage = '❌ Scan annulé.';
+
+    // Réinitialiser l'état après 3 secondes
+    setTimeout(() => {
+      this.scanState = null;
+      this.scanMessage = '';
+    }, 3000);
   }
 
   ngAfterViewInit(): void {
@@ -141,7 +207,6 @@ export class ConsommationComponent {
   }
 
   // Lorsque le scanner détecte un code
-
   handleQrCodeResult(result: string): void {
     console.log('QR Code détecté :', result);
     this.qrCodeData = result;

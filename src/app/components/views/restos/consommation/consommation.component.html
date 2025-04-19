@@ -42,17 +42,14 @@
     <div class="col-md-5">
       <h4>Scanner un QR Code</h4>
 
-      <!-- État après scan -->
-      <div
-        *ngIf="scanState"
-        class="alert mt-3"
-        [ngClass]="{
-          'alert-success': scanState === 'valide',
-          'alert-danger': scanState === 'corrompu',
-          'alert-warning': scanState === 'expiré'
-        }"
-      >
-        {{ scanMessage }}
+      <!-- Zone d’affichage du message de scan -->
+      <div *ngIf="scanMessage" class="mt-3">
+        <div
+          [ngClass]="getScanClass()"
+          class="p-3 rounded shadow text-center text-white"
+        >
+          <strong>{{ scanMessage }}</strong>
+        </div>
       </div>
 
       <!-- Espace visuel pour l'image -->
