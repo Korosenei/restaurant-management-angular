@@ -70,25 +70,9 @@
           </div>
         </div>
 
-        <!-- Menu du restaurant -->
-        <div class="row mb-3">
-          <div class="col-md-12">
-            <div class="form-floating w-100">
-              <input
-                type="text"
-                class="form-control"
-                id="floatingMenu"
-                placeholder="Menu"
-                formControlName="menuDtos"
-              />
-              <label for="floatingMenu">Menu (optionnel)</label>
-            </div>
-          </div>
-        </div>
-
         <!-- Responsable du restaurant -->
         <div class="row mb-3">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="form-floating w-100">
               <select
                 class="form-control"
@@ -98,10 +82,10 @@
               >
                 <option value="" disabled>Choisissez un responsable</option>
                 <option
-                  *ngFor="let employe of listEmployes"
-                  [value]="employe.matricule"
+                  *ngFor="let manager of listManagers"
+                  [value]="manager.id"
                 >
-                  {{ employe.matricule }} ({{ employe.nom }} {{ employe.prenom }})
+                  {{ manager.matricule }} ({{ manager.nom }} {{ manager.prenom }})
                 </option>
               </select>
               <label for="floatingManager">Responsable du restaurant</label>

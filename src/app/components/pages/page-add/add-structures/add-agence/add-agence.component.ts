@@ -42,10 +42,7 @@ export class AddAgenceComponent implements OnInit {
   initializeForm(): void {
     this.agenceForm = this.formBuilder.group({
       code: [this.agenceObj.code || '', Validators.required],
-      nom: [
-        this.agenceObj.nom || '',
-        [Validators.required, Validators.minLength(3)],
-      ],
+      nom: [this.agenceObj.nom || '', Validators.required],
       sigle: [this.agenceObj.sigle || '', Validators.required],
       ville: [this.agenceObj.ville || '', Validators.required],
       directionDto: [this.agenceObj.directionDto, Validators.required],

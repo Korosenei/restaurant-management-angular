@@ -34,7 +34,7 @@ export class UtilisateurComponent implements OnInit {
   displayedUsers: USER[] = [];
 
   page = 1;
-  pageSize = 1;
+  pageSize = 5;
   totalItems = 0;
 
   searchTerm: string = '';

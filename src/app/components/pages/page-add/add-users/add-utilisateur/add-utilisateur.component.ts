@@ -16,6 +16,8 @@ import {
   Civilite,
   Piece,
 } from '../../../../../models/model-users/user.model';
+import { DIRECTION } from '../../../../../models/model-structures/direction.model';
+import { AGENCE } from '../../../../../models/model-structures/agence.model';
 
 @Component({
   selector: 'app-add-utilisateur',
@@ -27,6 +29,9 @@ import {
 export class AddUtilisateurComponent implements OnInit {
 
   listUsers: USER[] = [];
+  listDirections: DIRECTION[] = [];
+  listAgences: AGENCE[] = [];
+  /* listRestos: RESTAURANT[] = []; */
   userForm!: FormGroup;
   userObj: USER = new USER();
   selectedPieceType: string = '';
@@ -60,6 +65,8 @@ export class AddUtilisateurComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+    this.getDirections();
+    this.getAgences();
   }
 
   initializeForm(): void{
@@ -74,11 +81,64 @@ export class AddUtilisateurComponent implements OnInit {
       email: [this.userObj.email, [Validators.required, Validators.email]],
       telephone: [this.userObj.telephone, Validators.required],
       role: [this.userObj.role || ''],
-      agenceId: [this.userObj.agenceId || ''],
+      direction: [this.userObj.direction?.id || null],
+      agence: [this.userObj.agence?.id || null],
       creationDate: [this.userObj.creationDate || new Date()],
       modifiedDate: [this.userObj.modifiedDate || new Date()],
       deleted: [this.userObj.deleted || false],
     });
+  }
+
+  getDirections() {
+    this.http
+      .get<DIRECTION[]>('http://localhost:2025/directions/all')
+      .subscribe({
+        next: (res) => {
+          this.listDirections = res;
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération des directions', err);
+        },
+      });
+  }
+
+  onDirectionChange(event: any): void {
+    const directionId = event.target.value;
+    const selectedDirection = this.listDirections.find(
+      (direction) => direction.id == directionId
+    );
+
+    if (selectedDirection) {
+      this.userForm.patchValue({
+        direction: selectedDirection,
+      });
+    }
+  }
+
+  getAgences() {
+    this.http
+      .get<AGENCE[]>('http://localhost:2025/agences/all')
+      .subscribe({
+        next: (res) => {
+          this.listAgences = res;
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération des agences', err);
+        },
+      });
+  }
+
+  onAgenceChange(event: any): void {
+    const agenceId = event.target.value;
+    const selectedAgence = this.listDirections.find(
+      (agence) => agence.id == agenceId
+    );
+
+    if (selectedAgence) {
+      this.userForm.patchValue({
+        agence: selectedAgence,
+      });
+    }
   }
 
   onPieceTypeChange(event: any) {

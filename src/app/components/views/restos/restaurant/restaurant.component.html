@@ -30,44 +30,46 @@
   >
     <div class="row">
       <div class="col-sm-12">
-        <table class="table table-bordered table-hover">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">NOM</th>
-              <th scope="col">VILLE</th>
-              <th scope="col">TELEPHONE</th>
-              <th scope="col">MANAGER</th>
-              <th scope="col">ACTION</th>
-            </tr>
-          </thead>
+        <div class="table-container">
+          <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">NOM</th>
+                <th scope="col">VILLE</th>
+                <th scope="col">TELEPHONE</th>
+                <th scope="col">MANAGER</th>
+                <th scope="col">ACTION</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr *ngFor="let item of listRestaurants; let i = index">
-              <th scope="row">{{ i + 1 }}</th>
-              <td>{{ item.nom }}</td>
-              <td>{{ item.ville }}</td>
-              <td>{{ item.telephone }}</td>
-              <td>{{ item.manager?.nom }} {{ item.manager?.prenom }}</td>
-              <td>
-                <button
-                  class="btn btn-outline-warning me-2"
-                  type="button"
-                  (click)="onEdite(item)"
-                >
-                  <i class="fa-solid fa-pen"></i>
-                </button>
-                <button
-                  class="btn btn-outline-danger"
-                  type="button"
-                  (click)="onDelete(item.id)"
-                >
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            <tbody>
+              <tr *ngFor="let item of listRestaurants; let i = index">
+                <th scope="row">{{ i + 1 }}</th>
+                <td>{{ item.nom }}</td>
+                <td>{{ item.ville }}</td>
+                <td>{{ item.telephone }}</td>
+                <td>{{ item.manager?.nom }} {{ item.manager?.prenom }}</td>
+                <td>
+                  <button
+                    class="btn btn-outline-warning me-2"
+                    type="button"
+                    (click)="onEdite(item)"
+                  >
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-danger"
+                    type="button"
+                    (click)="onDelete(item.id)"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <!-- Pagination Component -->
         <app-pagination

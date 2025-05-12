@@ -1,4 +1,5 @@
 import { TICKET } from "../model-elements/ticket.model";
+import { AGENCE } from "../model-structures/agence.model";
 import { DIRECTION } from "../model-structures/direction.model";
 
 export class USER {
@@ -14,9 +15,11 @@ export class USER {
   email: string = '';
   motDePasse: string = '';
   tickets: TICKET[] = [];
+  directionId: number = 0;
   direction: DIRECTION = new DIRECTION();
   agenceId: number = 0;
-  restoId: string = '';
+  agence: AGENCE = new AGENCE();
+  restoId: number = 0;
   enabled: boolean = false;
   accountLocked: boolean = false;
   role: RoleName = RoleName.CLIENT;

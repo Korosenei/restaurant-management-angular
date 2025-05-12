@@ -9,6 +9,7 @@ export class AGENCE {
   sigle: string = '';
   ville: string = '';
   responsable: USER | null = null;
+  creerPar: USER | null = null;
   directionDto: DIRECTION | null = null;
   passageDtos: PASSAGE[] = [];
   creationDate: Date = new Date();

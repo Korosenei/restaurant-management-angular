@@ -19,6 +19,8 @@ import { navItems } from './_nav';
 import { DefaultFooterComponent } from './default-footer/default-footer.component';
 import { DefaultHeaderComponent } from './default-header/default-header.component';
 
+import { AuthService  } from '../../../services/auth-service/auth.service';
+
 function isOverflown(element: HTMLElement) {
   return (
     element.scrollHeight > element.clientHeight ||

@@ -38,7 +38,7 @@ export class CompteComponent implements OnInit {
         this.currentUser.lastLogout = new Date(lastLogoutFromStorage);
       }
 
-      if (this.currentUser?.direction.nom) {  // Vérification si directionId existe
+      if (this.currentUser?.direction.nom) {
         this.getDirection(this.currentUser.direction.id);
       }
     } else {

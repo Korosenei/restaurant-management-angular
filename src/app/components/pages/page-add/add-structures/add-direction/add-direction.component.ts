@@ -40,10 +40,7 @@ export class AddDirectionComponent implements OnInit {
   initializeForm(): void {
     this.directionForm = this.formBuilder.group({
       code: [this.directionObj.code || '', Validators.required],
-      nom: [
-        this.directionObj.nom || '',
-        [Validators.required, Validators.minLength(3)],
-      ],
+      nom: [this.directionObj.nom || '', Validators.required],
       sigle: [this.directionObj.sigle || '', Validators.required],
       region: [this.directionObj.region, Validators.required],
       ville: [this.directionObj.ville, Validators.required],

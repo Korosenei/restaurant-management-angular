@@ -26,7 +26,7 @@ export class AddRestaurantComponent implements OnInit {
   restaurantObj: RESTAURANT = new RESTAURANT();
   generatedRestaurantCode: string = '';
 
-  listEmployes: USER[] = [];
+  listManagers: USER[] = [];
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -37,7 +37,7 @@ export class AddRestaurantComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
-    this.getEmployes();
+    this.getManagers();
   }
 
   initializeForm(): void {
@@ -47,13 +47,11 @@ export class AddRestaurantComponent implements OnInit {
       ville: [this.restaurantObj.ville || '', Validators.required],
       telephone: [this.restaurantObj.telephone || 0, Validators.required,],
       menuDtos: [this.restaurantObj.menuDtos || '', Validators.required],
-      managerId: [this.restaurantObj.manager ? this.restaurantObj.manager.id : null, Validators.required],
       manager: [this.restaurantObj.manager || null, Validators.required],
       creationDate: [this.restaurantObj.creationDate || new Date()],
       modifiedDate: [this.restaurantObj.modifiedDate || new Date()],
       deleted: [this.restaurantObj.deleted || false],
     });
-
     this.generateRestaurantCode();
   }
 
@@ -83,25 +81,25 @@ export class AddRestaurantComponent implements OnInit {
     });
   }
 
-  getEmployes() {
-    this.http.get<USER[]>('http://localhost:2028/users/all').subscribe({
+  getManagers() {
+    this.http.get<USER[]>('http://localhost:2028/users/filter/role/MANAGER').subscribe({
       next: (res) => {
-        this.listEmployes = res;
+        this.listManagers = res;
       },
       error: (err) => {
-        console.error('Erreur lors de la récupération des employés', err);
+        console.error('Erreur lors de la récupération des managers', err);
       },
     });
   }
 
   onManagerChange(event: any): void {
     const userId = event.target.value;
-    const selectedEmploye = this.listEmployes.find(
-      (employe) => employe.id === userId
+    const selectedManager = this.listManagers.find(
+      (manager) => manager.id === userId
     );
 
-    if (selectedEmploye) {
-      const fullName = `${selectedEmploye.nom} ${selectedEmploye.prenom}`;
+    if (selectedManager) {
+      const fullName = `${selectedManager.nom} ${selectedManager.prenom}`;
 
       this.restaurantForm.patchValue({
         manager: fullName,

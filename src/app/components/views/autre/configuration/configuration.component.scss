@@ -1,14 +1,24 @@
-.body{
+.body,
+.footer {
   text-align: center;
+  font-size: 0.8rem; /* Réduction de la taille de police */
 }
 
-
 .table-container {
-  overflow-x: auto;  /* Ajoute un défilement horizontal */
-  -webkit-overflow-scrolling: touch;  /* Permet un défilement fluide sur mobile */
-  max-width: 100%;  /* Empêche que le tableau dépasse la largeur du conteneur */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
 }
 
 table {
-  width: 100%;  /* Assure que le tableau occupe toute la largeur de son conteneur */
+  width: 100%;
+  white-space: nowrap; /* Empêche le contenu de se plier à la ligne */
+  font-size: 0.8rem; /* Appliqué aussi ici par précaution */
+}
+
+th,
+td {
+  white-space: nowrap; /* Garde tout sur une ligne */
+  text-align: center; /* Centrage du contenu */
+  vertical-align: middle; /* Alignement vertical */
 }

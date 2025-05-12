@@ -23,7 +23,7 @@ export class ConsommationComponent implements OnInit {
   qrCode: QRCODE | null = null;
   qrCodeList: QRCODE[] = [];
   formatsEnabled: BarcodeFormat[] = [BarcodeFormat.QR_CODE];
-  scanState: 'invalide' | 'valide' | 'expiré' | 'corrompu' | null = null;
+  scanState: 'invalide' | 'valide' | 'expire' | 'corrompu' | null = null;
   selectedDevice: MediaDeviceInfo | undefined;
   scanMessage: string = '';
   loading: boolean = false;
@@ -111,7 +111,7 @@ export class ConsommationComponent implements OnInit {
             this.setScanResult('corrompu', '❌ QR Code invalide ou non reconnu.');
             break;
           case 101: // QRCODE_EXPIRED
-            this.setScanResult('expiré', '⛔ QR Code expiré. Veuillez en générer un nouveau.');
+            this.setScanResult('expire', '⛔ QR Code expiré. Générer à nouveau.');
             break;
           case 102: // QRCODE_NOT_VALID
           case 103: // QRCODE_ALREADY_IN_USE
@@ -125,7 +125,7 @@ export class ConsommationComponent implements OnInit {
   }
 
   private setScanResult(
-    state: 'valide' | 'invalide' | 'expiré' | 'corrompu',
+    state: 'valide' | 'invalide' | 'expire' | 'corrompu',
     message: string
   ) {
     this.scanState = state;
@@ -136,7 +136,7 @@ export class ConsommationComponent implements OnInit {
     switch (this.scanState) {
       case 'valide':
         return 'bg-success animate__animated animate__fadeInDown';
-      case 'expiré':
+      case 'expire':
         return 'bg-warning text-dark animate__animated animate__shakeX';
       case 'invalide':
         return 'bg-danger animate__animated animate__fadeInUp';

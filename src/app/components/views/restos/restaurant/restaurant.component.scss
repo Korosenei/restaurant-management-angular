@@ -1,3 +1,23 @@
-.body{
+.body {
   text-align: center;
+  font-size: 0.8rem; /* Réduction de la taille de police */
+}
+
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+table {
+  width: 100%;
+  white-space: nowrap; /* Empêche le contenu de se plier à la ligne */
+  font-size: 0.8rem; /* Appliqué aussi ici par précaution */
+}
+
+th,
+td {
+  white-space: nowrap; /* Garde tout sur une ligne */
+  text-align: center; /* Centrage du contenu */
+  vertical-align: middle; /* Alignement vertical */
 }

@@ -29,5 +29,10 @@ export class AuthService {
   forgotPassword(credentials: { matricule: string; email: string }): Observable<any> {
     return this.http.post<any>(this.userForgotPwdUrl, credentials);
   }
+
+  getUserRole(): string {
+  const user = JSON.parse(localStorage.getItem('user')!);
+  return user?.role || '';
+}
 }
 

@@ -29,53 +29,55 @@
   <div class="body" *ngIf="listUsers && listUsers.length > 0; else noUsers">
     <div class="row">
       <div class="col-sm-12">
-        <table class="table table-bordered table-hover">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">PIECE</th>
-              <th scope="col">N°PIECE</th>
-              <th scope="col">NOM & PRENOM</th>
-              <th scope="col">TELEPHONE</th>
-              <th scope="col">ROLE</th>
-              <th scope="col">ACTION</th>
-            </tr>
-          </thead>
+        <div class="table-container">
+          <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">PIECE</th>
+                <th scope="col">N°PIECE</th>
+                <th scope="col">NOM & PRENOM</th>
+                <th scope="col">TELEPHONE</th>
+                <th scope="col">ROLE</th>
+                <th scope="col">ACTION</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr *ngFor="let item of displayedUsers; let i = index">
-              <th scope="row">{{ (page - 1) * pageSize + i + 1 }}</th>
-              <td>{{ item.piece }}</td>
-              <td>{{ item.numPiece }}</td>
-              <td>{{ item.nom }} {{ item.prenom }}</td>
-              <td>{{ item.telephone }}</td>
-              <td>{{ item.role }}</td>
-              <td>
-                <button
-                  class="btn btn-outline-info me-2"
-                  type="button"
-                  (click)="onDetail(item)"
-                >
-                  <i class="fa-solid fa-circle-info"></i>
-                </button>
-                <button
-                  class="btn btn-outline-warning me-2"
-                  type="button"
-                  (click)="onEdite(item)"
-                >
-                  <i class="fa-solid fa-pen"></i>
-                </button>
-                <button
-                  class="btn btn-outline-danger"
-                  type="button"
-                  (click)="onDelete(item.id)"
-                >
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            <tbody>
+              <tr *ngFor="let item of displayedUsers; let i = index">
+                <th scope="row">{{ (page - 1) * pageSize + i + 1 }}</th>
+                <td>{{ item.piece }}</td>
+                <td>{{ item.numPiece }}</td>
+                <td>{{ item.nom }} {{ item.prenom }}</td>
+                <td>{{ item.telephone }}</td>
+                <td>{{ item.role }}</td>
+                <td>
+                  <button
+                    class="btn btn-outline-info me-2"
+                    type="button"
+                    (click)="onDetail(item)"
+                  >
+                    <i class="fa-solid fa-circle-info"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-warning me-2"
+                    type="button"
+                    (click)="onEdite(item)"
+                  >
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-danger"
+                    type="button"
+                    (click)="onDelete(item.id)"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <!-- Pagination Component -->
         <app-pagination

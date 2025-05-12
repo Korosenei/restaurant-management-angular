@@ -24,50 +24,57 @@
   >
   </app-search>
 
-  <div
-    class="body"
-    *ngIf="listMenus && listMenus.length > 0; else noMenus"
-  >
+  <div class="body" *ngIf="listMenus && listMenus.length > 0; else noMenus">
     <div class="row">
       <div class="col-sm-12">
-        <table class="table table-bordered table-hover">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">NOM</th>
-              <th scope="col">DESCRIPTION</th>
-              <th scope="col">IMAGE</th>
-              <th scope="col">RESTAURANT</th>
-              <th scope="col">ACTION</th>
-            </tr>
-          </thead>
+        <div class="table-container">
+          <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">IMAGE</th>
+                <th scope="col">NOM</th>
+                <th scope="col">DESCRIPTION</th>
+                <!-- <th scope="col">RESTAURANT</th> -->
+                <th scope="col">ACTION</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr *ngFor="let item of listMenus; let i = index">
-              <th scope="row">{{ i + 1 }}</th>
-              <td>{{ item.nom }}</td>
-              <td>{{ item.description }}</td>
-              <td>{{ item.image }}</td>
-              <td>{{ item.restaurant?.nom }}</td>
-              <td>
-                <button
-                  class="btn btn-outline-warning me-2"
-                  type="button"
-                  (click)="onEdite(item)"
-                >
-                  <i class="fa-solid fa-pen"></i>
-                </button>
-                <button
-                  class="btn btn-outline-danger"
-                  type="button"
-                  (click)="onDelete(item.id)"
-                >
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            <tbody>
+              <tr *ngFor="let item of displayedMenus; let i = index">
+                <th scope="row">{{ i + 1 }}</th>
+                <td>
+                  <img
+                    [src]="item.image"
+                    alt="Image du plat"
+                    width="80"
+                    height="80"
+                    style="object-fit: cover;"
+                  />
+                </td>
+                <td>{{ item.nom }}</td>
+                <td>{{ item.description }}</td>
+                <!-- <td>{{ item.restaurant?.nom }}</td> -->
+                <td>
+                  <button
+                    class="btn btn-outline-warning me-2"
+                    type="button"
+                    (click)="onEdite(item)"
+                  >
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-danger"
+                    type="button"
+                    (click)="onDelete(item.id)"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <!-- Pagination Component -->
         <app-pagination

@@ -1,7 +1,7 @@
 <div class="container">
   <div class="row my-3">
     <div class="col-md-8">
-      <h3>Gestion des Tickets</h3>
+      <h3 class="titre-principal">Gestion des Tickets</h3>
     </div>
 
     <!-- Composant des boutons -->
@@ -24,57 +24,93 @@
   >
   </app-search>
 
+
   <div
     class="body"
     *ngIf="listTickets && listTickets.length > 0; else noTickets"
   >
     <div class="row">
-      <div class="col-sm-12">
-        <table class="table table-bordered table-hover">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">DATE</th>
-              <th scope="col">TRANSACTION</th>
-              <th scope="col">NUMERO</th>
-              <th scope="col">CLIENT</th>
-              <th scope="col">STATUS</th>
-              <th scope="col">CAISSE</th>
-              <th scope="col">ACTION</th>
-            </tr>
-          </thead>
+      <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap">
+        <!-- Radios pour filtrer par statut -->
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="statusFilter" id="all" value="ALL" [(ngModel)]="selectedStatus" (change)="applyFilters()" />
+          <label class="form-check-label" for="all">Tous</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="statusFilter" id="valide" value="VALIDE" [(ngModel)]="selectedStatus" (change)="applyFilters()" />
+          <label class="form-check-label" for="valide">Valide</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="statusFilter" id="consomme" value="CONSOMME" [(ngModel)]="selectedStatus" (change)="applyFilters()" />
+          <label class="form-check-label" for="consomme">Consommé</label>
+        </div>
 
-          <tbody>
-            <tr *ngFor="let item of displayedTickets; let i = index">
-              <th scope="row">{{ (page - 1) * pageSize + i + 1 }}</th>
-              <td>{{ item.transactionDto?.creationDate | date:'dd/MM/yyyy' }}</td>
-              <td>{{ item.transactionDto?.reference }}</td>
-              <td>{{ item.numero }}</td>
-              <td>
-                {{ item.client?.nom }}
-                {{ item.client?.prenom }}
-              </td>
-              <td>{{ item.status }}</td>
-              <td>{{ getUserName(item.transactionDto?.userId ?? 0) }}</td>
-              <td>
-                <button
-                  class="btn btn-outline-warning me-2"
-                  type="button"
-                  (click)="onDetail(item)"
-                >
-                  <i class="fa-solid fa-circle-info"></i>
-                </button>
-                <button
-                  class="btn btn-outline-secondary me-2"
-                  type="button"
-                  (click)="generateQrCodeFromBackend(item.clientId!, qrCodeModal)"
-                >
-                  <i class="fa-solid fa-qrcode"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- Tri par date -->
+        <div>
+          <select class="form-select form-select-sm" [(ngModel)]="sortOrder" (change)="applyFilters()">
+            <option value="recent">Du plus récent au plus ancien</option>
+            <option value="ancien">Du plus ancien au plus récent</option>
+          </select>
+        </div>
+      </div>
+
+
+      <div class="col-sm-12">
+        <div class="table-container">
+          <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">DATE ACHAT</th>
+                <th scope="col">TRANSACTION</th>
+                <th scope="col">NUMERO</th>
+                <th scope="col">CLIENT</th>
+                <th scope="col">STATUT</th>
+                <th scope="col">DATE CONSOMMATION</th>
+                <th scope="col">CAISSE</th>
+                <th scope="col">ACTION</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let item of displayedTickets; let i = index">
+                <th scope="row">{{ (page - 1) * pageSize + i + 1 }}</th>
+                <td>
+                  {{ item.transactionDto?.creationDate | date: 'dd/MM/yyyy HH:mm' }}
+                </td>
+                <td>{{ item.transactionDto?.reference }}</td>
+                <td>{{ item.numero }}</td>
+                <td>
+                  {{ item.client?.nom }}
+                  {{ item.client?.prenom }}
+                </td>
+                <td>{{ item.status }}</td>
+                <td>
+                  {{ item.status === 'CONSOMME' ? (item.modifiedDate | date: 'dd/MM/yyyy HH:mm') : 'Non cosommé' }}
+                </td>
+                <td>{{ getUserName(item.transactionDto?.userId ?? 0) }}</td>
+                <td>
+                  <button
+                    class="btn btn-outline-warning me-2"
+                    type="button"
+                    (click)="onDetail(item)"
+                  >
+                    <i class="fa-solid fa-circle-info"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-secondary me-2"
+                    type="button"
+                    (click)="
+                      generateQrCodeFromBackend(item.clientId!, qrCodeModal)
+                    "
+                  >
+                    <i class="fa-solid fa-qrcode"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <!-- Pagination Component -->
         <app-pagination
@@ -116,5 +152,3 @@
     </button>
   </div>
 </ng-template>
-
-

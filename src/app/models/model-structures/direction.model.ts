@@ -9,6 +9,7 @@ export class DIRECTION {
   region: string = '';
   ville: string = '';
   responsable: USER | null = null;
+  creerPar: USER | null = null;
   agenceDtos: AGENCE[] = [];
   creationDate: Date = new Date();
   modifiedDate: Date = new Date();

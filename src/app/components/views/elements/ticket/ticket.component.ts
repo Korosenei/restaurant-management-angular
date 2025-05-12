@@ -17,6 +17,7 @@ import { QRCodeModule } from 'angularx-qrcode';
 import * as crypto from 'crypto-js';
 import * as QRCode from 'qrcode';
 import { QRCODE } from '../../../../models/model-restos/qrcode.model';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-ticket',
@@ -24,6 +25,7 @@ import { QRCODE } from '../../../../models/model-restos/qrcode.model';
   imports: [
     HttpClientModule,
     CommonModule,
+    FormsModule,
     ButtonActionComponent,
     PaginationComponent,
     SearchComponent,
@@ -45,6 +47,8 @@ export class TicketComponent {
   pageSize = 5;
   totalItems = 0;
 
+  selectedStatus: string = 'ALL'; // Par défaut, afficher tous
+  sortOrder: string = 'recent'; // Par défaut, tri du plus récent
   searchTerm: string = '';
   selectedDate: string = '';
   selectedStartDate: string = '';
@@ -71,35 +75,40 @@ export class TicketComponent {
 
   // Appeler le backend pour générer un QR code
   generateQrCodeFromBackend(clientId: number, modalTemplate: any): void {
-    this.http.get<QRCODE>(`http://localhost:2030/qrcodes/generate/${clientId}`).subscribe({
-      next: (response: QRCODE) => {
-        this.generatedQrCode = response;
-        this.qrCodeData = response.qrCodeData;
+    this.http
+      .get<QRCODE>(`http://localhost:2030/qrcodes/generate/${clientId}`)
+      .subscribe({
+        next: (response: QRCODE) => {
+          this.generatedQrCode = response;
+          this.qrCodeData = response.qrCodeData;
 
-        this.modalService.open(modalTemplate);
+          this.modalService.open(modalTemplate);
 
-        setTimeout(() => {
-          this.generateQRCodeCanvas();
-        }, 300);
-      },
-      error: (err) => {
-        console.error("Erreur lors de la génération du QR Code :", err);
-        alert("Impossible de générer un QR code pour ce client.");
-      },
-    });
+          setTimeout(() => {
+            this.generateQRCodeCanvas();
+          }, 300);
+        },
+        error: (err) => {
+          console.error('Erreur lors de la génération du QR Code :', err);
+          alert('Impossible de générer un QR code pour ce client.');
+        },
+      });
   }
 
   // Générer et afficher le QR Code dans le canvas
   generateQRCodeCanvas(): void {
     if (this.qrCodeCanvas && this.qrCodeData) {
-      QRCode.toCanvas(this.qrCodeCanvas.nativeElement, this.qrCodeData, (error) => {
-        if (error) {
-          console.error('Erreur de génération du canvas QR Code', error);
+      QRCode.toCanvas(
+        this.qrCodeCanvas.nativeElement,
+        this.qrCodeData,
+        (error) => {
+          if (error) {
+            console.error('Erreur de génération du canvas QR Code', error);
+          }
         }
-      });
+      );
     }
   }
-
 
   downloadQRCode(): void {
     const qrCanvas = this.qrCodeCanvas.nativeElement;
@@ -126,7 +135,7 @@ export class TicketComponent {
         res.forEach((ticket) => {
           const userId = ticket.transactionDto?.userId;
           if (userId && !this.userMap[userId]) {
-            this.getUserById(userId); // Charge l'utilisateur uniquement s'il n'est pas encore dans le cache
+            this.getUserById(userId);
           }
         });
 
@@ -141,7 +150,7 @@ export class TicketComponent {
   getUserById(userId: number): void {
     this.http.get<USER>(`http://localhost:2028/users/${userId}`).subscribe({
       next: (user) => {
-        this.userMap[userId] = user; // Sauvegarder l'utilisateur dans le map
+        this.userMap[userId] = user;
       },
       error: (err) => {
         console.error("Erreur lors de la récupération de l'utilisateur", err);
@@ -157,14 +166,19 @@ export class TicketComponent {
   applyFilters() {
     let filtered = [...this.listTickets];
 
+    // 🔍 Filtre par recherche
     if (this.searchTerm) {
       filtered = filtered.filter((ticket) =>
-        ticket.numero.toLowerCase().includes(this.searchTerm.toLowerCase())
+        ticket.numero.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        ticket.transactionDto?.reference
+          .toLowerCase()
+          .includes(this.searchTerm.toLowerCase()) ||
+        ticket.client?.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        ticket.client?.prenom.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     }
 
-    // Filtrer par date (Assurez-vous que `creationDate` est bien formaté en `YYYY-MM-DD`)
-    // Filtrage par plage de dates (creationDate et modifiedDate)
+    // 📅 Filtre par plage de dates
     if (this.selectedStartDate && this.selectedEndDate) {
       const startDate = new Date(this.selectedStartDate);
       const endDate = new Date(this.selectedEndDate);
@@ -172,8 +186,6 @@ export class TicketComponent {
       filtered = filtered.filter((ticket) => {
         const createdDate = new Date(ticket.creationDate);
         const modifiedDate = new Date(ticket.modifiedDate);
-
-        // Vérifier si la transaction a été créée ou modifiée dans la plage
         return (
           (createdDate >= startDate && createdDate <= endDate) ||
           (modifiedDate >= startDate && modifiedDate <= endDate)
@@ -181,7 +193,22 @@ export class TicketComponent {
       });
     }
 
-    // Mettre à jour la liste filtrée et la pagination
+    // ✅ Filtre par statut
+    if (this.selectedStatus !== 'ALL') {
+      filtered = filtered.filter(
+        (ticket) => ticket.status === this.selectedStatus
+      );
+    }
+
+    // ⬆️⬇️ Tri par date de création (ou modification si tu préfères)
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.creationDate).getTime();
+      const dateB = new Date(b.creationDate).getTime();
+
+      return this.sortOrder === 'recent' ? dateB - dateA : dateA - dateB;
+    });
+
+    // 📄 Mise à jour des tickets affichés
     this.filteredTickets = filtered;
     this.totalItems = filtered.length;
     this.updateDisplayedRoles();
@@ -279,11 +306,12 @@ export class TicketComponent {
     const headers = [
       [
         '#',
-        'Date',
+        'Acheté le',
         'Transaction',
         'Numero',
         'Client',
         'Statut',
+        'Consommé le',
         'Montant',
         'Caissier',
       ],
@@ -295,11 +323,16 @@ export class TicketComponent {
       this.formatDate(ticket.transactionDto?.creationDate),
       ticket.transactionDto?.reference,
       ticket.numero,
-      `${ticket.transactionDto?.userDto?.nom || ''} ${ticket.transactionDto?.userDto?.prenom || ''}`,
+      `${ticket.client?.nom || ''} ${ticket.client?.prenom || ''}`,
       ticket.status,
+      ticket.status === 'CONSOMME'
+        ? this.formatDate(ticket.modifiedDate)
+        : 'Non cosommé',
       ticket.transactionDto?.montant && ticket.transactionDto?.nbrTicket
-  ? `${(ticket.transactionDto.montant / ticket.transactionDto.nbrTicket).toFixed(0)} FCFA`
-  : 'Inconnu',
+        ? `${(
+            ticket.transactionDto.montant / ticket.transactionDto.nbrTicket
+          ).toFixed(0)} FCFA`
+        : 'Inconnu',
       'Non assigné',
       ticket.transactionDto?.userDto?.matricule || 'Non défini',
     ]);

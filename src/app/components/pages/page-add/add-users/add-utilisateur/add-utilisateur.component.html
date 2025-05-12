@@ -193,6 +193,43 @@
             </div>
           </div>
         </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="form-floating w-100">
+              <select
+                class="form-control"
+                id="floatingDirection"
+                formControlName="direction"
+              >
+                <option value="" disabled>Choisissez une direction</option>
+                <option
+                  *ngFor="let direction of listDirections"
+                  [ngValue]="direction"
+                >
+                  {{ direction.sigle }} ({{ direction.nom }})
+                </option>
+              </select>
+              <label for="floatingDirection">Direction</label>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="form-floating w-100">
+              <select
+                class="form-control"
+                id="floatingAgence"
+                formControlName="agence"
+              >
+                <option value="" disabled>Choisissez une agence</option>
+                <option *ngFor="let agence of listAgences" [ngValue]="agence">
+                  {{ agence.sigle }} ({{ agence.nom }})
+                </option>
+              </select>
+              <label for="floatingAgence">Agence</label>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
     <div class="modal-footer">
