@@ -3,17 +3,16 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import { MENU } from '../../../models/model-restos/menu.model';
 import { AuthService } from '../../auth-service/auth.service';
+import { USER } from 'src/app/models/model-users/user.model';
+import { RESTAURANT } from 'src/app/models/model-restos/restaurant.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MenuService {
   private readonly API_BASE_URL = 'http://localhost:2026/menus';
 
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService
-  ) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   /**
    * Obtenir les headers d'authentification
@@ -22,7 +21,7 @@ export class MenuService {
     const token = this.authService.getToken();
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
   }
 
@@ -32,7 +31,7 @@ export class MenuService {
   private getFileUploadHeaders(): HttpHeaders {
     const token = this.authService.getToken();
     return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
       // Ne pas définir Content-Type pour les FormData
     });
   }
@@ -42,10 +41,9 @@ export class MenuService {
    */
   create(menuData: any): Observable<MENU> {
     const headers = this.getAuthHeaders();
-    return this.http.post<MENU>(`${this.API_BASE_URL}/create`, menuData, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .post<MENU>(`${this.API_BASE_URL}/create`, menuData, { headers })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -53,10 +51,9 @@ export class MenuService {
    */
   update(id: number, menuData: any): Observable<MENU> {
     const headers = this.getAuthHeaders();
-    return this.http.put<MENU>(`${this.API_BASE_URL}/update/${id}`, menuData, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .put<MENU>(`${this.API_BASE_URL}/update/${id}`, menuData, { headers })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -64,10 +61,9 @@ export class MenuService {
    */
   findById(id: number): Observable<MENU> {
     const headers = this.getAuthHeaders();
-    return this.http.get<MENU>(`${this.API_BASE_URL}/${id}`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .get<MENU>(`${this.API_BASE_URL}/${id}`, { headers })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -75,10 +71,11 @@ export class MenuService {
    */
   findByRestaurant(restaurantId: number): Observable<MENU[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<MENU[]>(`${this.API_BASE_URL}/restaurant/${restaurantId}`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .get<MENU[]>(`${this.API_BASE_URL}/restaurant/${restaurantId}`, {
+        headers,
+      })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -86,10 +83,9 @@ export class MenuService {
    */
   findByManager(managerId: number): Observable<MENU[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<MENU[]>(`${this.API_BASE_URL}/manager/${managerId}`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .get<MENU[]>(`${this.API_BASE_URL}/manager/${managerId}`, { headers })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -97,10 +93,9 @@ export class MenuService {
    */
   findAll(): Observable<MENU[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<MENU[]>(`${this.API_BASE_URL}/all`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .get<MENU[]>(`${this.API_BASE_URL}/all`, { headers })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -108,10 +103,9 @@ export class MenuService {
    */
   delete(id: number): Observable<void> {
     const headers = this.getAuthHeaders();
-    return this.http.delete<void>(`${this.API_BASE_URL}/delete/${id}`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .delete<void>(`${this.API_BASE_URL}/delete/${id}`, { headers })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -122,10 +116,11 @@ export class MenuService {
     formData.append('image', file, file.name);
 
     const headers = this.getFileUploadHeaders();
-    return this.http.post(`${this.API_BASE_URL}/${menuId}/upload-image`, formData, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .post(`${this.API_BASE_URL}/${menuId}/upload-image`, formData, {
+        headers,
+      })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -133,10 +128,9 @@ export class MenuService {
    */
   findByDate(date: string): Observable<MENU[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<MENU[]>(`${this.API_BASE_URL}/date/${date}`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .get<MENU[]>(`${this.API_BASE_URL}/date/${date}`, { headers })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -144,21 +138,25 @@ export class MenuService {
    */
   findAvailable(): Observable<MENU[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<MENU[]>(`${this.API_BASE_URL}/available`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .get<MENU[]>(`${this.API_BASE_URL}/available`, { headers })
+      .pipe(catchError(this.handleError));
   }
 
   /**
    * Récupérer les menus par restaurant et date
    */
-  findByRestaurantAndDate(restaurantId: number, date: string): Observable<MENU[]> {
+  findByRestaurantAndDate(
+    restaurantId: number,
+    date: string
+  ): Observable<MENU[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<MENU[]>(`${this.API_BASE_URL}/restaurant/${restaurantId}/date/${date}`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .get<MENU[]>(
+        `${this.API_BASE_URL}/restaurant/${restaurantId}/date/${date}`,
+        { headers }
+      )
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -166,21 +164,28 @@ export class MenuService {
    */
   findByWeek(weekNumber: number, year: number): Observable<MENU[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<MENU[]>(`${this.API_BASE_URL}/week/${weekNumber}/year/${year}`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .get<MENU[]>(`${this.API_BASE_URL}/week/${weekNumber}/year/${year}`, {
+        headers,
+      })
+      .pipe(catchError(this.handleError));
   }
 
   /**
    * Récupérer les menus d'une semaine pour un restaurant spécifique
    */
-  findByRestaurantAndWeek(restaurantId: number, weekNumber: number, year: number): Observable<MENU[]> {
+  findByRestaurantAndWeek(
+    restaurantId: number,
+    weekNumber: number,
+    year: number
+  ): Observable<MENU[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<MENU[]>(`${this.API_BASE_URL}/restaurant/${restaurantId}/week/${weekNumber}/year/${year}`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .get<MENU[]>(
+        `${this.API_BASE_URL}/restaurant/${restaurantId}/week/${weekNumber}/year/${year}`,
+        { headers }
+      )
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -188,10 +193,13 @@ export class MenuService {
    */
   toggleAvailability(id: number): Observable<MENU> {
     const headers = this.getAuthHeaders();
-    return this.http.patch<MENU>(`${this.API_BASE_URL}/${id}/toggle-availability`, {}, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .patch<MENU>(
+        `${this.API_BASE_URL}/${id}/toggle-availability`,
+        {},
+        { headers }
+      )
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -200,10 +208,9 @@ export class MenuService {
   duplicate(id: number, newDate: string): Observable<MENU> {
     const headers = this.getAuthHeaders();
     const body = { newDate };
-    return this.http.post<MENU>(`${this.API_BASE_URL}/${id}/duplicate`, body, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .post<MENU>(`${this.API_BASE_URL}/${id}/duplicate`, body, { headers })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -211,10 +218,12 @@ export class MenuService {
    */
   searchByName(name: string): Observable<MENU[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<MENU[]>(`${this.API_BASE_URL}/search?name=${encodeURIComponent(name)}`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .get<MENU[]>(
+        `${this.API_BASE_URL}/search?name=${encodeURIComponent(name)}`,
+        { headers }
+      )
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -222,10 +231,9 @@ export class MenuService {
    */
   getStatistics(): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any>(`${this.API_BASE_URL}/statistics`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .get<any>(`${this.API_BASE_URL}/statistics`, { headers })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -233,10 +241,9 @@ export class MenuService {
    */
   getPopularMenus(limit: number = 10): Observable<MENU[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<MENU[]>(`${this.API_BASE_URL}/popular?limit=${limit}`, { headers })
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http
+      .get<MENU[]>(`${this.API_BASE_URL}/popular?limit=${limit}`, { headers })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -262,7 +269,7 @@ export class MenuService {
     }
 
     if (!menuData.creerPar || !menuData.creerPar.id) {
-      errors.push('L\'utilisateur créateur est requis');
+      errors.push("L'utilisateur créateur est requis");
     }
 
     return errors;
@@ -271,7 +278,17 @@ export class MenuService {
   /**
    * Formatter les données du menu pour l'envoi à l'API
    */
-  formatMenuData(formValue: any, currentUser: any, userRestaurant: any): any {
+  formatMenuData(
+    formValue: any,
+    currentUser: USER,
+    userRestaurant: RESTAURANT | null
+  ): any {
+    // Convertir la date au format ISO (sans l'heure)
+    const dateJour =
+      formValue.dateJour instanceof Date
+        ? formValue.dateJour.toISOString().split('T')[0]
+        : formValue.dateJour;
+
     return {
       nom: formValue.nom?.trim(),
       description: formValue.description?.trim(),
@@ -280,12 +297,14 @@ export class MenuService {
       dateJour: formValue.dateJour,
       image: formValue.image || null,
 
-      restaurantDto: userRestaurant ? {
-        id: userRestaurant.id,
-        nom: userRestaurant.nom,
-        ville: userRestaurant.ville,
-        telephone: userRestaurant.telephone
-      } : null,
+      restaurantDto: userRestaurant
+        ? {
+            id: userRestaurant.id,
+            nom: userRestaurant.nom,
+            ville: userRestaurant.ville,
+            telephone: userRestaurant.telephone,
+          }
+        : null,
 
       creerPar: {
         id: currentUser.id,
@@ -293,12 +312,13 @@ export class MenuService {
         nom: currentUser.nom,
         prenom: currentUser.prenom,
         email: currentUser.email,
-        role: currentUser.role
+        role: currentUser.role,
       },
+      creerParId: currentUser.id,
 
       creationDate: new Date().toISOString(),
       modifiedDate: new Date().toISOString(),
-      isDeleted: false
+      isDeleted: false,
     };
   }
 

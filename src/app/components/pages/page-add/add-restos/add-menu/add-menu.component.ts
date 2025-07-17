@@ -84,12 +84,18 @@ export class AddMenuComponent implements OnInit {
       ],
       image: [''],
       isDisponible: [true],
-      dateJour: ['', Validators.required],
+      dateJour: ['', [Validators.required, this.dateValidator]],
       creationDate: [new Date()],
       modifiedDate: [new Date()],
       isDeleted: [false],
     });
   }
+
+  private dateValidator(control: any): { [key: string]: boolean } | null {
+    const date = new Date(control.value);
+    return !isNaN(date.getTime()) ? null : { invalidDate: true };
+  }
+
 
   private loadCurrentUserAndRestaurant(): void {
     this.isLoading = true;
@@ -269,12 +275,18 @@ export class AddMenuComponent implements OnInit {
     this.isLoading = true;
     const formValue = this.menuForm.value;
 
+    // Debug: Afficher les données avant envoi
+    console.log('Données du formulaire:', formValue);
+
     // Préparer les données du menu
     const menuData = this.menuService.formatMenuData(
       formValue,
       this.currentUser,
       this.userRestaurant
     );
+
+    // Debug: Afficher les données formatées
+    console.log("Données formatées pour l'API:", menuData);
 
     // Valider les données avant envoi
     const validationErrors = this.menuService.validateMenuData(menuData);
@@ -288,14 +300,19 @@ export class AddMenuComponent implements OnInit {
       ? this.updateMenu(menuData)
       : this.createMenu(menuData);
 
-    operation.subscribe({
-      next: (response) => {
-        this.handleSaveSuccess(response, addNewAfter);
-      },
-      error: (error) => {
-        this.handleError(error, 'Erreur lors de la sauvegarde du menu');
-      },
-    });
+    operation
+      .pipe(
+        catchError((error) => {
+          this.isLoading = false;
+          this.handleError(error, 'Erreur lors de la sauvegarde');
+          return of(null);
+        })
+      )
+      .subscribe((response) => {
+        if (response) {
+          this.handleSaveSuccess(response, addNewAfter);
+        }
+      });
   }
 
   private createMenu(menuData: any): Observable<any> {

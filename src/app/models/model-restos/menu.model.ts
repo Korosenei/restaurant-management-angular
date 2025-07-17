@@ -181,7 +181,7 @@ export class MENU {
     }
 
     if (!this.description || this.description.trim().length < 4) {
-      errors.push('La description doit contenir au moins 4 caractères');
+      errors.push('La description doit contenir au moins 10 caractères');
     }
 
     if (!this.quantite || this.quantite < 1) {

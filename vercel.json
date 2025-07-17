@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "builds": [
+    {
+      "src": "dist/coreui-free-angular-admin-template/**/*",
+      "use": "@vercel/static"
+    }
+  ]
+}
