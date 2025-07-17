@@ -139,21 +139,3 @@ button:hover {
 }
 
 
-
-
-
-
-::ng-deep .toast-top-right {
-  top: 50px;
-  right: 50px;
-}
-
-::ng-deep .toast-success {
-  background-color: #28a745 !important;
-  color: white !important;
-}
-
-::ng-deep .toast-error {
-  background-color: #dc3545 !important;
-  color: white !important;
-}
