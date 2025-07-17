@@ -1,92 +1,278 @@
-<div class="modal-dialog modal-xl">
-  <div class="modal-content">
+<div class="modal-header bg-primary text-white">
+  <h4 class="modal-title">
+    <i class="fas fa-utensils me-2"></i>
+    {{ isEditMode ? 'Modifier le menu' : 'Ajouter un menu' }}
+  </h4>
+  <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="onClose()"></button>
+</div>
+
+<div class="modal-body">
+  <!-- Loader pendant le chargement des données -->
+  <div *ngIf="isLoading && !isDataLoaded" class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-2 text-muted">Chargement des données...</p>
+  </div>
+
+  <!-- Contenu principal -->
+  <div *ngIf="isDataLoaded">
+    <!-- En-tête avec numéro de semaine -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="week-info">
+          <span class="badge bg-secondary fs-6">Semaine n°{{ weekNumber }}</span>
+        </div>
+      </div>
+      <div class="col-md-6 text-end">
+        <div class="year-info">
+          <span class="badge bg-info fs-6">Année {{ year }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informations utilisateur et restaurant -->
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <div class="user-info">
+          <small class="text-muted">
+            <i class="fas fa-user me-1"></i>
+            Créé par: {{ currentUser?.prenom }} {{ currentUser?.nom }}
+          </small>
+        </div>
+      </div>
+      <div class="col-md-6 text-end">
+        <div class="restaurant-info" *ngIf="userRestaurant">
+          <small class="text-muted">
+            <i class="fas fa-store me-1"></i>
+            Restaurant: {{ userRestaurant.nom }}
+          </small>
+        </div>
+      </div>
+    </div>
+
     <form [formGroup]="menuForm" novalidate>
-      <div class="modal-header">
-        <h4 class="modal-title">Création ou Modification d'un menu</h4>
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          (click)="Close()"
-        ></button>
+      <!-- Sélection de date -->
+      <div class="mb-4">
+        <label class="form-label fw-bold">
+          <i class="fas fa-calendar-alt me-2"></i>
+          Date du menu <span class="text-danger">*</span>
+        </label>
+        <select class="form-select" formControlName="dateJour"
+                [class.is-invalid]="getFieldError('dateJour')">
+          <option value="">Sélectionner une date</option>
+          <option *ngFor="let dateInfo of weekDates"
+                  [value]="dateInfo.date.toISOString().split('T')[0]"
+                  [disabled]="dateInfo.disabled">
+            {{ dateInfo.day }} {{ dateInfo.date.toLocaleDateString('fr-FR') }}
+            <span *ngIf="dateInfo.disabled"> (Indisponible)</span>
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="getFieldError('dateJour')">
+          {{ getFieldError('dateJour') }}
+        </div>
+        <div *ngIf="getSelectedDayName()" class="text-muted mt-1">
+          <i class="fas fa-info-circle me-1"></i>
+          Menu pour {{ getSelectedDayName() }}
+        </div>
       </div>
-      <div class="modal-body">
-        <!-- Nom et Description du menu sur la même ligne -->
-        <div class="row mb-3">
-          <!-- Nom du menu -->
-          <div class="col-md-6">
-            <div class="form-floating w-100">
-              <input
-                type="text"
-                class="form-control"
-                id="floatingNom"
-                placeholder="Nom"
-                formControlName="nom"
-              />
-              <label for="floatingNom">Nom du menu</label>
-            </div>
-          </div>
 
-          <!-- Description du menu -->
-          <div class="col-md-6">
-            <div class="form-floating w-100">
-              <textarea
-                class="form-control"
-                id="floatingDescription"
-                placeholder="Description"
-                formControlName="description"
-              ></textarea>
-              <label for="floatingDescription">Description du menu</label>
+      <div class="row">
+        <!-- Image -->
+        <div class="col-md-4">
+          <div class="mb-3">
+            <label class="form-label fw-bold">
+              <i class="fas fa-image me-2"></i>
+              Image du plat
+            </label>
+            <input type="file" class="form-control"
+                   accept="image/*"
+                   (change)="onFileSelected($event)">
+            <div class="mt-2">
+              <div *ngIf="imagePreview" class="image-preview-container">
+                <img [src]="imagePreview" alt="Aperçu" class="img-preview">
+                <div class="image-overlay">
+                  <small class="text-white">Aperçu</small>
+                </div>
+              </div>
+              <div *ngIf="!imagePreview" class="image-placeholder">
+                <i class="fas fa-camera fa-2x text-muted"></i>
+                <p class="text-muted mb-0">Aucune image</p>
+              </div>
             </div>
+            <small class="text-muted">
+              Formats acceptés: JPG, PNG, GIF (max 5MB)
+            </small>
           </div>
         </div>
 
-        <!-- Image et Restaurant sur la même ligne -->
-        <div class="row mb-3">
-          <!-- Image du menu -->
-          <div class="col-md-6">
-            <div class="form-floating w-100">
-              <input
-                type="file"
-                class="form-control"
-                id="floatingImage"
-                (change)="onImageSelected($event)"
-              />
-              <label for="floatingImage">Image du menu</label>
-            </div>
-          </div>
-
-          <!-- Restaurant associé -->
-          <div class="col-md-6">
-            <div class="form-floating w-100">
-              <select
-                class="form-control"
-                id="floatingRestaurant"
-                formControlName="restaurantId"
-              >
-                <option value="" disabled>Choisissez un restaurant</option>
-                <option
-                  *ngFor="let restaurant of listRestaurants"
-                  [value]="restaurant.id"
-                >
-                  {{ restaurant.nom }} ({{ restaurant.ville }})
-                </option>
-              </select>
-              <label for="floatingRestaurant">Restaurant associé</label>
+        <!-- Nom du plat -->
+        <div class="col-md-8">
+          <div class="mb-3">
+            <label class="form-label fw-bold">
+              <i class="fas fa-utensils me-2"></i>
+              Nom du plat <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control"
+                   formControlName="nom"
+                   placeholder="Ex: Poulet aux légumes"
+                   [class.is-invalid]="getFieldError('nom')">
+            <div class="invalid-feedback" *ngIf="getFieldError('nom')">
+              {{ getFieldError('nom') }}
             </div>
           </div>
         </div>
-
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-danger" (click)="Close()">
-          Annuler
-        </button>
-        <button type="button" class="btn btn-outline-success" (click)="Save()">
-          Enregistrer
-        </button>
+      <div class="row">
+        <!-- Description -->
+        <div class="col-md-8">
+          <div class="mb-3">
+            <label class="form-label fw-bold">
+              <i class="fas fa-align-left me-2"></i>
+              Description <span class="text-danger">*</span>
+            </label>
+            <textarea class="form-control" rows="3"
+                      formControlName="description"
+                      placeholder="Décrivez le plat, ses ingrédients principaux..."
+                      [class.is-invalid]="getFieldError('description')"></textarea>
+            <div class="invalid-feedback" *ngIf="getFieldError('description')">
+              {{ getFieldError('description') }}
+            </div>
+            <small class="text-muted">
+              Caractères saisis: {{ menuForm.get('description')?.value?.length || 0 }}
+            </small>
+          </div>
+        </div>
+
+        <!-- Quantité -->
+        <div class="col-md-4">
+          <div class="mb-3">
+            <label class="form-label fw-bold">
+              <i class="fas fa-sort-numeric-up me-2"></i>
+              Quantité <span class="text-danger">*</span>
+            </label>
+            <input type="number" class="form-control"
+                   formControlName="quantite"
+                   min="1"
+                   max="1000"
+                   placeholder="1"
+                   [class.is-invalid]="getFieldError('quantite')">
+            <div class="invalid-feedback" *ngIf="getFieldError('quantite')">
+              {{ getFieldError('quantite') }}
+            </div>
+            <small class="text-muted">
+              Nombre de portions disponibles
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disponibilité -->
+      <div class="mb-4">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox"
+                 formControlName="isDisponible"
+                 id="disponibilite">
+          <label class="form-check-label fw-bold" for="disponibilite">
+            <i class="fas fa-check-circle me-2"></i>
+            Plat disponible
+          </label>
+        </div>
+        <small class="text-muted">
+          Décochez si le plat n'est temporairement pas disponible
+        </small>
+      </div>
+
+      <!-- Informations supplémentaires en mode édition -->
+      <div *ngIf="isEditMode && menuItem" class="mb-3">
+        <div class="card bg-light">
+          <div class="card-body">
+            <h6 class="card-title">
+              <i class="fas fa-info-circle me-2"></i>
+              Informations supplémentaires
+            </h6>
+            <div class="row">
+              <div class="col-md-6">
+                <small class="text-muted">
+                  <strong>Créé le:</strong> {{ menuItem.creationDateFormatted }}
+                </small>
+              </div>
+              <div class="col-md-6">
+                <small class="text-muted">
+                  <strong>Modifié le:</strong> {{ menuItem.modifiedDateFormatted }}
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Résumé du formulaire -->
+      <div class="card bg-light">
+        <div class="card-body">
+          <h6 class="card-title">
+            <i class="fas fa-eye me-2"></i>
+            Aperçu du menu
+          </h6>
+          <div class="row">
+            <div class="col-md-8">
+              <p class="mb-1">
+                <strong>{{ menuForm.get('nom')?.value || 'Nom du plat' }}</strong>
+              </p>
+              <p class="text-muted mb-1">
+                {{ menuForm.get('description')?.value || 'Description du plat' }}
+              </p>
+              <p class="mb-0">
+                <span class="badge bg-primary">
+                  {{ menuForm.get('quantite')?.value || 0 }} portion(s)
+                </span>
+                <span class="badge ms-2"
+                      [class.bg-success]="menuForm.get('isDisponible')?.value"
+                      [class.bg-secondary]="!menuForm.get('isDisponible')?.value">
+                  {{ menuForm.get('isDisponible')?.value ? 'Disponible' : 'Indisponible' }}
+                </span>
+              </p>
+            </div>
+            <div class="col-md-4 text-end">
+              <small class="text-muted">
+                {{ getSelectedDayName() }}
+              </small>
+            </div>
+          </div>
+        </div>
       </div>
     </form>
   </div>
+</div>
+
+<div class="modal-footer bg-light">
+  <button type="button" class="btn btn-secondary" (click)="onClose()">
+    <i class="fas fa-times me-2"></i>
+    Fermer
+  </button>
+
+  <button type="button"
+          class="btn btn-success"
+          (click)="onSaveAndAddNew()"
+          [disabled]="menuForm.invalid || isLoading || !isDataLoaded">
+    <i class="fas fa-save me-2"></i>
+    <span *ngIf="!isLoading">Enregistrer et ajouter</span>
+    <span *ngIf="isLoading">
+      <i class="fas fa-spinner fa-spin me-1"></i>
+      Enregistrement...
+    </span>
+  </button>
+
+  <button type="button"
+          class="btn btn-primary"
+          (click)="onSave()"
+          [disabled]="menuForm.invalid || isLoading || !isDataLoaded">
+    <i class="fas fa-check me-2"></i>
+    <span *ngIf="!isLoading">{{ isEditMode ? 'Modifier' : 'Enregistrer' }}</span>
+    <span *ngIf="isLoading">
+      <i class="fas fa-spinner fa-spin me-1"></i>
+      {{ isEditMode ? 'Modification...' : 'Enregistrement...' }}
+    </span>
+  </button>
 </div>

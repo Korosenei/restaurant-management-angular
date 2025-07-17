@@ -21,3 +21,19 @@ td {
   text-align: center; /* Centrage du contenu */
   vertical-align: middle; /* Alignement vertical */
 }
+
+
+.qr-code-canvas {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  display: block;
+  border: 1px solid #dee2e6;
+  padding: 10px;
+  background: white;
+}
+
+.modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}

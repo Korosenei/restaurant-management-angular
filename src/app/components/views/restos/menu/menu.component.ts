@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ButtonActionComponent } from '../../../pages/buttons/button-action/button-action.component';
-import { AddMenuComponent } from '../../../pages/page-add/add-restos/add-menu/add-menu.component';
-import { PaginationComponent } from '../../../pages/pagination/pagination.component';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { SearchComponent } from '../../../pages/search/search.component';
-import { MENU } from '../../../../models/model-restos/menu.model';
+import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AddMenuComponent } from '../../../pages/page-add/add-restos/add-menu/add-menu.component';
+import { ButtonActionComponent } from '../../../pages/buttons/button-action/button-action.component';
+import { PaginationComponent } from '../../../pages/pagination/pagination.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { MENU } from '../../../../models/model-restos/menu.model';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -16,11 +16,11 @@ import 'jspdf-autotable';
   selector: 'app-menu',
   standalone: true,
   imports: [
-    HttpClientModule,
     CommonModule,
+    ReactiveFormsModule,
+    AddMenuComponent,
     ButtonActionComponent,
     PaginationComponent,
-    SearchComponent,
   ],
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.scss',
@@ -36,10 +36,10 @@ export class MenuComponent implements OnInit {
   pageSize = 5;
   totalItems = 0;
 
-  searchTerm: string = '';
-  selectedDate: string = '';
-  selectedStartDate: string = '';
-  selectedEndDate: string = '';
+  menuItems: MENU[] = [];
+  currentWeek: number = 29;
+  currentYear: number = 2025;
+  weekDays: { date: Date, day: string, dayShort: string }[] = [];
 
   constructor(
     private http: HttpClient,
@@ -47,25 +47,65 @@ export class MenuComponent implements OnInit {
     private modalService: NgbModal
   ) {}
 
-  ngOnInit(): void {
-    this.getMenus();
-  }
-
   openModal() {
-    this.modalService.open(AddMenuComponent, {
+    const modalRef = this.modalService.open(AddMenuComponent, {
       size: 'lg',
       backdrop: 'static',
-      keyboard: false,
+      keyboard: false
+    });
+
+    modalRef.componentInstance.weekNumber = this.currentWeek;
+    modalRef.componentInstance.year = this.currentYear;
+
+    modalRef.result.then((result) => {
+      if (result) {
+        this.handleModalResult(result);
+      }
+    }).catch(() => {
+      // Modal fermée sans action
     });
   }
 
-  getMenus() {
+  ngOnInit() {
+    this.generateWeekDays();
+    this.loadMenuItems();
+  }
+
+  generateWeekDays() {
+    const year = this.currentYear;
+    const weekNum = this.currentWeek;
+
+    // Calculer le premier jour de la semaine
+    const firstDayOfYear = new Date(year, 0, 1);
+    const daysOffset = (weekNum - 1) * 7;
+    const firstDayOfWeek = new Date(firstDayOfYear.getTime() + daysOffset * 24 * 60 * 60 * 1000);
+
+    // Ajuster pour avoir le lundi comme premier jour
+    const monday = new Date(firstDayOfWeek);
+    monday.setDate(monday.getDate() - monday.getDay() + 1);
+
+    this.weekDays = [];
+    const dayNames = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+    const dayShort = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'];
+
+    for (let i = 0; i < 5; i++) {
+      const currentDate = new Date(monday);
+      currentDate.setDate(monday.getDate() + i);
+
+      this.weekDays.push({
+        date: currentDate,
+        day: dayNames[i],
+        dayShort: dayShort[i]
+      });
+    }
+  }
+
+  loadMenuItems() {
     this.http.get<MENU[]>('http://localhost:2026/menus/all').subscribe({
       next: (res) => {
         this.listMenus = res;
         this.filteredMenus = [...res];
         this.totalItems = res.length;
-        this.applyFilters();
       },
       error: (err) => {
         console.error('Erreur lors de la récupération des menus', err);
@@ -73,104 +113,80 @@ export class MenuComponent implements OnInit {
     });
   }
 
-  applyFilters() {
-    let filtered = [...this.listMenus];
-
-    // Filtrer par texte (reference, nom, prenom, nbrTicket)
-    if (this.searchTerm) {
-      const searchLower = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (menu) =>
-          menu.nom.toLowerCase().includes(searchLower) ||
-        menu.description.toLowerCase().includes(searchLower) 
-      );
-    }
-
-    // Filtrer par date (Assurez-vous que `creationDate` est bien formaté en `YYYY-MM-DD`)
-    // Filtrage par plage de dates (creationDate et modifiedDate)
-    if (this.selectedStartDate && this.selectedEndDate) {
-      const startDate = new Date(this.selectedStartDate);
-      const endDate = new Date(this.selectedEndDate);
-
-      filtered = filtered.filter((menu) => {
-        const createdDate = new Date(menu.creationDate);
-        const modifiedDate = new Date(menu.modifiedDate);
-
-        // Vérifier si la menu a été créée ou modifiée dans la plage
-        return (
-          (createdDate >= startDate && createdDate <= endDate) ||
-          (modifiedDate >= startDate && modifiedDate <= endDate)
-        );
-      });
-    }
-
-    // Mettre à jour la liste filtrée et la pagination
-    this.filteredMenus = filtered;
-    this.totalItems = filtered.length;
-    this.updateDisplayedRoles();
-  }
-
-  updateDisplayedRoles() {
-    const startIndex = (this.page - 1) * this.pageSize;
-    this.displayedMenus = this.filteredMenus.slice(
-      startIndex,
-      startIndex + this.pageSize
-    );
-  }
-
-  onPageChange(pageNumber: number) {
-    this.page = pageNumber;
-    this.updateDisplayedRoles();
-  }
-
-  onSearch(searchTerm: string) {
-    this.searchTerm = searchTerm;
-    this.applyFilters();
-  }
-
-  onDateFilter(dateRange: { startDate: string; endDate: string }): void {
-    this.selectedStartDate = dateRange.startDate;
-    this.selectedEndDate = dateRange.endDate;
-    this.page = 1;
-    this.applyFilters();
-  }
-
-  onEdite(data: MENU) {
+  openEditMenuModal(menuItem: MENU) {
     const modalRef = this.modalService.open(AddMenuComponent, {
       size: 'lg',
       backdrop: 'static',
-      keyboard: false,
+      keyboard: false
     });
-    modalRef.componentInstance.menuObj = { ...data };
-    modalRef.componentInstance.listMenus = this.listMenus;
 
-    modalRef.result.then(
-      (result) => {
-        if (result === 'updated') {
-          this.getMenus();
-        }
-      },
-      (reason) => {
-        console.log('Modal dismissed: ' + reason);
+    modalRef.componentInstance.menuItem = { ...menuItem };
+    modalRef.componentInstance.weekNumber = this.currentWeek;
+    modalRef.componentInstance.year = this.currentYear;
+
+    modalRef.result.then((result) => {
+      if (result) {
       }
-    );
+    }).catch(() => {
+      // Modal fermée sans action
+    });
   }
 
+  handleModalResult(result: any, editId?: string) {
+    const { action, data } = result;
 
-  onDelete(id: number) {
-    if (confirm('Voulez-vous vraiment supprimer ce menu ?')) {
-      this.http.delete(`http://localhost:2026/agences/delete/${id}`).subscribe({
-        next: () => {
-          alert('Menu supprimé avec succès !');
-          this.getMenus();
-        },
-        error: (err) => {
-          console.error('Erreur lors de la suppression d menu', err);
-          alert('Impossible de supprimer ce menu.');
-        },
-      });
+    if (action === 'save') {
+      this.saveMenuItem(data, editId);
+    } else if (action === 'save-and-new') {
+      this.saveMenuItem(data, editId);
+      // Rouvrir le modal pour ajouter un nouveau plat
+      setTimeout(() => {
+        this.openModal();
+      }, 100);
     }
   }
+
+  saveMenuItem(data: any, editId?: string) {
+    if (editId) {
+      // Modification
+      const index = this.menuItems.findIndex(item => item.id);
+      if (index !== -1) {
+        this.menuItems[index] = { ...this.menuItems[index], ...data };
+      }
+    } else {
+      // Création
+      const newItem: MENU = {
+        id: this.generateId(),
+        ...data
+      };
+      this.menuItems.push(newItem);
+    }
+
+    console.log('Menu sauvegardé:', data);
+  }
+
+  deleteMenuItem(id: number) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce plat ?')) {
+      this.menuItems = this.menuItems.filter(item => item.id);
+    }
+  }
+
+  getMenuItemsForDate(date: Date): MENU[] {
+    const dateStr = date.toISOString().split('T')[0];
+    return this.menuItems.filter(item => item.dateJour === dateStr);
+  }
+
+  private generateId(): string {
+    return Math.random().toString(36).substr(2, 9);
+  }
+
+  toggleAvailability(item: MENU) {
+    item.isDisponible = !item.isDisponible;
+    console.log('Disponibilité changée:', item);
+  }
+
+
+
 
   // Méthode pour choisir l'option d'exportation
   chooseExportOption(): 'all' | 'page' | 'cancel' {
@@ -195,7 +211,6 @@ export class MenuComponent implements OnInit {
     const year = d.getFullYear();
     return `${day}/${month}/${year}`;
   }
-
 
   // Méthode pour l'export PDF
   exportToPDF() {
@@ -251,7 +266,7 @@ export class MenuComponent implements OnInit {
       menu.image,
       menu.nom,
       menu.description,
-      `${menu.restaurant?.nom || 'Non défini'}`,
+      `${menu.restaurantDto?.nom || 'Non défini'}`,
     ]);
 
     // Ajout du tableau

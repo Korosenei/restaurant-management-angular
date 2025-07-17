@@ -8,7 +8,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { FormModule } from '@coreui/angular';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { USER } from '../../../../../models/model-users/user.model';
 import { RESTAURANT } from '../../../../../models/model-restos/restaurant.model';
@@ -46,8 +45,7 @@ export class AddRestaurantComponent implements OnInit {
       nom: [this.restaurantObj.nom || '', Validators.required],
       ville: [this.restaurantObj.ville || '', Validators.required],
       telephone: [this.restaurantObj.telephone || 0, Validators.required,],
-      menuDtos: [this.restaurantObj.menuDtos || '', Validators.required],
-      manager: [this.restaurantObj.manager || null, Validators.required],
+      manager: [this.restaurantObj.manager || null],
       creationDate: [this.restaurantObj.creationDate || new Date()],
       modifiedDate: [this.restaurantObj.modifiedDate || new Date()],
       deleted: [this.restaurantObj.deleted || false],

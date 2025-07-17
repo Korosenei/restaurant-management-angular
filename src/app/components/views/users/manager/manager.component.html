@@ -8,7 +8,7 @@
       <!-- Composant des boutons -->
       <div class="col-md-4 d-flex justify-content-end">
         <app-button-action
-          [isNouveauVisible]="false"
+          (addClicked)="openModal()"
           (exportClicked)="exportToExcel()"
           (importClicked)="exportToPDF()"
         >

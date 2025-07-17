@@ -1,0 +1,236 @@
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">Création ou Modification d'un manager</h4>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+        (click)="Close()"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="managerForm" novalidate>
+        <div class="row">
+          <!-- Matricule (généré automatiquement et non modifiable) -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingMatricule"
+                placeholder="Matricule"
+                formControlName="matricule"
+                readonly
+                style="background-color: #f8f9fa; cursor: not-allowed;"
+              />
+              <label for="floatingMatricule">Matricule (généré automatiquement)</label>
+            </div>
+          </div>
+
+          <!-- Type de Pièce -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <select
+                class="form-select form-select-lg"
+                id="floatingPiece"
+                formControlName="piece"
+                (change)="onPieceTypeChange($event)"
+              >
+                <option value="" disabled>Sélectionnez la pièce</option>
+                <option *ngFor="let piece of pieces" [value]="piece.value">
+                  {{ piece.label }}
+                </option>
+              </select>
+              <label for="floatingPiece">Type de Pièce</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Numéro CNIB (Affiché si CNIB est sélectionné) -->
+          <div class="col-md-6 mb-3" *ngIf="selectedPieceType === 'CNIB'">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingNumPiece"
+                placeholder="Numéro CNIB"
+                formControlName="numPiece"
+              />
+              <label for="floatingNumPiece">Numéro CNIB</label>
+            </div>
+          </div>
+
+          <!-- NIP CNIB (Affiché si CNIB est sélectionné) -->
+          <div class="col-md-6 mb-3" *ngIf="selectedPieceType === 'CNIB'">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingNip"
+                placeholder="NIP CNIB"
+                formControlName="nip"
+              />
+              <label for="floatingNip">NIP CNIB</label>
+            </div>
+          </div>
+
+          <!-- Numéro Passeport (Affiché si Passport est sélectionné) -->
+          <div class="col-md-6 mb-3" *ngIf="selectedPieceType === 'PASSPORT'">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingNumPiece"
+                placeholder="Numéro Passeport"
+                formControlName="numPiece"
+              />
+              <label for="floatingNumPiece">Numéro Passeport</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Nom -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingNom"
+                placeholder="Nom"
+                formControlName="nom"
+              />
+              <label for="floatingNom">Nom</label>
+            </div>
+          </div>
+
+          <!-- Prénom -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingPrenom"
+                placeholder="Prénom"
+                formControlName="prenom"
+              />
+              <label for="floatingPrenom">Prénom</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Civilité -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <select
+                class="form-select form-select-lg"
+                id="floatingCivilite"
+                formControlName="civilite"
+              >
+                <option value="" disabled>Sélectionnez la civilité</option>
+                <option
+                  *ngFor="let civilite of civilites"
+                  [value]="civilite.value"
+                >
+                  {{ civilite.label }}
+                </option>
+              </select>
+              <label for="floatingCivilite">Civilité</label>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="email"
+                class="form-control form-control-lg"
+                id="floatingEmail"
+                placeholder="Email"
+                formControlName="email"
+              />
+              <label for="floatingEmail">Email</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Téléphone -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="tel"
+                class="form-control form-control-lg"
+                id="floatingTelephone"
+                placeholder="Téléphone"
+                formControlName="telephone"
+              />
+              <label for="floatingTelephone">Téléphone</label>
+            </div>
+          </div>
+
+          <!-- Restaurant -->
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <select
+                class="form-select form-select-lg"
+                id="floatingResto"
+                formControlName="restoId"
+                (change)="onRestaurantChange($event)"
+              >
+                <option value="" disabled>Choisissez un restaurant</option>
+                <option
+                  *ngFor="let resto of listRestaurants"
+                  [value]="resto.id"
+                >
+                  {{ resto.nom }}
+                </option>
+              </select>
+              <label for="floatingResto">Restaurant</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rôle (affiché en lecture seule) -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="floatingRole"
+                placeholder="Rôle"
+                formControlName="role"
+                readonly
+                style="background-color: #f8f9fa; cursor: not-allowed;"
+              />
+              <label for="floatingRole">Rôle (assigné automatiquement)</label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-outline-danger"
+        data-bs-dismiss="modal"
+        (click)="Close()"
+      >
+        Fermer
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-success"
+        (click)="Save()"
+        [disabled]="managerForm.invalid"
+      >
+        Enregistrer
+      </button>
+    </div>
+  </div>
+</div>

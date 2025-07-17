@@ -3,13 +3,15 @@ import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../../services/auth-service/auth.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
   const router = inject(Router);
+  const authService = inject(AuthService);
 
-  if (authService.isAuthenticated()) {
-    return true; // ✅ Accès autorisé
-  } else {
-    router.navigate(['/404']); // ❌ Redirection vers 404
+  // Vérifier si l'utilisateur est authentifié
+  if (!authService.isAuthenticated()) {
+    // Rediriger vers 404 au lieu de login
+    router.navigate(['/404']);
     return false;
   }
+
+  return true;
 };

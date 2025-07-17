@@ -7,7 +7,6 @@ export class RESTAURANT {
   ville: string = '';
   telephone: number = 0;
   manager : USER | null = null
-  menuDtos: string = '';
   creationDate: Date = new Date();
   modifiedDate: Date = new Date();
   deleted: boolean = false;

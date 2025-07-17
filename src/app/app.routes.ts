@@ -61,13 +61,7 @@ export const routes: Routes = [
       title: 'Activation'
     }
   },
-  {
-    path: 'login',
-    loadComponent: () => import('./components/shared/connexion/login/login.component').then(m => m.LoginComponent),
-    data: {
-      title: 'Login Page'
-    }
-  },
+  // Suppression de la route login dupliquée
   {
     path: 'recover',
     loadComponent: () => import('./components/shared/connexion/pwd-forgeted/pwd-forgeted.component').then(m => m.PwdForgetedComponent),
@@ -92,6 +86,3 @@ export const routes: Routes = [
   },
   { path: '**', redirectTo: '404' }
 ];
-
-
-

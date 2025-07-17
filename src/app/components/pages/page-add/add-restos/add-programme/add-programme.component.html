@@ -1,0 +1,100 @@
+<div class="modal-dialog modal-xl">
+  <div class="modal-content">
+    <form [formGroup]="programmeForm" novalidate>
+      <div class="modal-header">
+        <h4 class="modal-title">Création ou Modification d'un programme</h4>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="Close()"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="date"
+                class="form-control"
+                id="startDate"
+                placeholder="Date de début"
+                formControlName="startDate"
+              />
+              <label for="startDate">Date de début</label>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <input
+                type="date"
+                class="form-control"
+                id="endDate"
+                placeholder="Date de fin"
+                formControlName="endDate"
+              />
+              <label for="endDate">Date de fin</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <select
+                class="form-control"
+                id="floatingAgence"
+                formControlName="agence"
+                (change)="onAgenceChange($event)"
+              >
+                <option value="" disabled>Choisissez une agence</option>
+                <option *ngFor="let agence of listAgences" [value]="agence.id">
+                  {{ agence.sigle }} ({{ agence.nom }})
+                </option>
+              </select>
+              <label for="floatingAgence">Agence</label>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating w-100">
+              <select
+                class="form-control"
+                id="floatingResto"
+                formControlName="resto"
+                (change)="onRestaurantChange($event)"
+              >
+                <option value="" disabled>Choisissez un restaurant</option>
+                <option *ngFor="let resto of listRestaurants" [value]="resto.id">
+                  {{ resto.nom }}
+                </option>
+              </select>
+              <label for="floatingResto">Restaurant</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-check form-switch mb-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="actif"
+            formControlName="actif"
+          />
+          <label class="form-check-label" for="actif">Actif</label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" (click)="Close()">
+          Annuler
+        </button>
+        <button type="button" class="btn btn-outline-success" (click)="Save()">
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

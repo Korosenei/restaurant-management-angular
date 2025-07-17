@@ -4,13 +4,16 @@ import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonActionComponent } from '../../../pages/buttons/button-action/button-action.component';
 import { PaginationComponent } from '../../../pages/pagination/pagination.component';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpClientModule,
+  HttpHeaders,
+} from '@angular/common/http';
 import { SearchComponent } from '../../../pages/search/search.component';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { TICKET, Status } from '../../../../models/model-elements/ticket.model';
-import { TRANSACTION } from '../../../../models/model-elements/transaction.model';
 import { USER } from '../../../../models/model-users/user.model';
 
 import { QRCodeModule } from 'angularx-qrcode';
@@ -18,6 +21,8 @@ import * as crypto from 'crypto-js';
 import * as QRCode from 'qrcode';
 import { QRCODE } from '../../../../models/model-restos/qrcode.model';
 import { FormsModule } from '@angular/forms';
+
+import { AuthService } from '../../../../services/auth-service/auth.service';
 
 @Component({
   selector: 'app-ticket',
@@ -36,9 +41,20 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './ticket.component.scss',
 })
 export class TicketComponent {
-  ticketObj: TICKET = new TICKET();
-  generatedQrCode: QRCODE | null = null;
+  // Properties
+  @ViewChild('clientIdModal') clientIdModal: any;
+  @ViewChild('qrCodeModal') qrCodeModal: any;
+  @ViewChild('qrcodeCanvas') qrCodeCanvas: any;
 
+  generatedQrCode: QRCODE | null = null;
+  qrCodeData: string | null = null;
+  clientIdForQrCode: number | null = null;
+  showClientIdForm: boolean = false;
+  modalTitle: string = '';
+  userRole: string = '';
+  userMap: { [key: string]: USER } = {};
+
+  ticketObj: TICKET = new TICKET();
   listTickets: TICKET[] = [];
   filteredTickets: TICKET[] = [];
   displayedTickets: TICKET[] = [];
@@ -47,97 +63,151 @@ export class TicketComponent {
   pageSize = 5;
   totalItems = 0;
 
-  selectedStatus: string = 'ALL'; // Par défaut, afficher tous
-  sortOrder: string = 'recent'; // Par défaut, tri du plus récent
+  selectedStatus: string = 'ALL';
+  sortOrder: string = 'recent';
   searchTerm: string = '';
   selectedDate: string = '';
   selectedStartDate: string = '';
   selectedEndDate: string = '';
 
-  qrCodeData: string | null = null;
-  currentTicket: TICKET | null = null; // Ajouter une propriété pour le ticket actuel
-
-  userMap: { [key: string]: USER } = {}; // Pour stocker les informations utilisateur par userId
-
-  @ViewChild('qrcodeCanvas', { static: false }) qrCodeCanvas: any; // Utilisation de ViewChild pour récupérer le canvas
-
   constructor(
     private http: HttpClient,
+    private authService: AuthService,
     private router: Router,
     private modalService: NgbModal
   ) {}
 
   ngOnInit(): void {
+    this.userRole = this.authService.getUserRole();
     this.getTickets();
   }
 
   ngAfterViewInit(): void {}
 
-  // Appeler le backend pour générer un QR code
-  generateQrCodeFromBackend(clientId: number, modalTemplate: any): void {
+  // QR Code Generation Flow
+  initiateQrCodeGeneration(): void {
+    if (this.userRole === 'CLIENT') {
+      this.generateClientQrCode();
+    } else {
+      this.openClientIdModal();
+    }
+  }
+
+  private generateClientQrCode(): void {
+    const clientId = this.authService.getCurrentUserId();
+    if (clientId) {
+      this.fetchQrCode(clientId, this.qrCodeModal);
+    }
+  }
+
+  private openClientIdModal(): void {
+    this.modalTitle = "Saisir l'ID client";
+    this.clientIdForQrCode = null;
+    const modalRef = this.modalService.open(this.clientIdModal);
+
+    modalRef.result.then(
+      () => this.onClientIdConfirmed(),
+      () => this.onModalDismissed()
+    );
+  }
+
+  onClientIdConfirmed(): void {
+    if (this.clientIdForQrCode) {
+      this.fetchQrCode(this.clientIdForQrCode, this.qrCodeModal);
+    }
+  }
+
+  onModalDismissed(): void {
+    console.log('Modal dismissed');
+  }
+
+  private fetchQrCode(clientId: number, modalTemplate: any): void {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+
     this.http
-      .get<QRCODE>(`http://localhost:2030/qrcodes/generate/${clientId}`)
+      .get<QRCODE>(`http://localhost:2030/qrcodes/generate/${clientId}`, {
+        headers,
+      })
       .subscribe({
-        next: (response: QRCODE) => {
-          this.generatedQrCode = response;
-          this.qrCodeData = response.qrCodeData;
-
-          this.modalService.open(modalTemplate);
-
-          setTimeout(() => {
-            this.generateQRCodeCanvas();
-          }, 300);
-        },
-        error: (err) => {
-          console.error('Erreur lors de la génération du QR Code :', err);
-          alert('Impossible de générer un QR code pour ce client.');
-        },
+        next: (response) => this.handleQrCodeSuccess(response, modalTemplate),
+        error: (err) => this.handleQrCodeError(err),
       });
   }
 
-  // Générer et afficher le QR Code dans le canvas
-  generateQRCodeCanvas(): void {
+  private handleQrCodeSuccess(response: QRCODE, modalTemplate: any): void {
+    this.generatedQrCode = response;
+    this.qrCodeData = response.qrCodeData;
+    this.modalTitle = `QR Code - ${response.client?.prenom} ${response.client?.nom}`;
+
+    const modalRef = this.modalService.open(modalTemplate);
+
+    setTimeout(() => {
+      this.renderQrCodeCanvas();
+    }, 100);
+  }
+
+  private handleQrCodeError(error: any): void {
+    console.error('QR Code Error:', error);
+    let errorMessage = 'Erreur lors de la génération du QR Code';
+
+    if (error.status === 0) {
+      errorMessage = 'Impossible de se connecter au serveur';
+    } else if (error.status === 404) {
+      errorMessage = 'Client non trouvé';
+    } else if (error.status === 400) {
+      errorMessage = 'Données invalides';
+    }
+
+    alert(errorMessage);
+  }
+
+  private renderQrCodeCanvas(): void {
     if (this.qrCodeCanvas && this.qrCodeData) {
       QRCode.toCanvas(
         this.qrCodeCanvas.nativeElement,
         this.qrCodeData,
-        (error) => {
-          if (error) {
-            console.error('Erreur de génération du canvas QR Code', error);
-          }
+        { width: 200 },
+        (err) => {
+          if (err) console.error('QR Canvas Error:', err);
         }
       );
     }
   }
 
-  downloadQRCode(): void {
-    const qrCanvas = this.qrCodeCanvas.nativeElement;
+  downloadQrCode(): void {
+    if (!this.qrCodeCanvas?.nativeElement) return;
 
-    if (qrCanvas) {
-      const dataUrl = qrCanvas.toDataURL('image/png');
-
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = `QRCode_${this.currentTicket?.numero}.png`;
-      link.click();
-    } else {
-      console.error('Canvas non trouvé');
-    }
+    const canvas = this.qrCodeCanvas.nativeElement;
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = `QRCode_${
+      this.generatedQrCode?.ticket?.numero || Date.now()
+    }.png`;
+    link.click();
   }
 
   getTickets(): void {
     this.http.get<TICKET[]>('http://localhost:2027/tickets/all').subscribe({
-      next: (res) => {
-        this.listTickets = res;
-        this.filteredTickets = [...res];
-        this.totalItems = res.length;
+      next: (tickets: TICKET[]) => {
+        const currentUserId = localStorage.getItem('userId');
 
-        res.forEach((ticket) => {
-          const userId = ticket.transactionDto?.userId;
-          if (userId && !this.userMap[userId]) {
-            this.getUserById(userId);
-          }
-        });
+        // Filtrage selon le rôle utilisateur
+        if (this.userRole === 'CLIENT') {
+          this.listTickets = tickets.filter(
+            (ticket) => ticket.client?.id?.toString() === currentUserId
+          );
+        } else {
+          this.listTickets = tickets;
+        }
+
+        this.filteredTickets = [...this.listTickets];
+        this.totalItems = this.filteredTickets.length;
+
+        // 📥 Chargement des utilisateurs impliqués
+        this.preloadUsersFromTickets(this.listTickets);
 
         this.applyFilters();
       },
@@ -145,6 +215,19 @@ export class TicketComponent {
         console.error('Erreur lors de la récupération des tickets', err);
       },
     });
+  }
+
+  preloadUsersFromTickets(tickets: TICKET[]): void {
+    const userIds = new Set<number>();
+
+    tickets.forEach((ticket) => {
+      const userId = ticket.transactionDto?.userId;
+      if (userId && !this.userMap[userId]) {
+        userIds.add(userId);
+      }
+    });
+
+    userIds.forEach((userId) => this.getUserById(userId));
   }
 
   getUserById(userId: number): void {
@@ -168,13 +251,18 @@ export class TicketComponent {
 
     // 🔍 Filtre par recherche
     if (this.searchTerm) {
-      filtered = filtered.filter((ticket) =>
-        ticket.numero.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        ticket.transactionDto?.reference
-          .toLowerCase()
-          .includes(this.searchTerm.toLowerCase()) ||
-        ticket.client?.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        ticket.client?.prenom.toLowerCase().includes(this.searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (ticket) =>
+          ticket.numero.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          ticket.transactionDto?.reference
+            .toLowerCase()
+            .includes(this.searchTerm.toLowerCase()) ||
+          ticket.client?.nom
+            .toLowerCase()
+            .includes(this.searchTerm.toLowerCase()) ||
+          ticket.client?.prenom
+            .toLowerCase()
+            .includes(this.searchTerm.toLowerCase())
       );
     }
 

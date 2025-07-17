@@ -24,36 +24,73 @@
   >
   </app-search>
 
-
   <div
     class="body"
     *ngIf="listTickets && listTickets.length > 0; else noTickets"
   >
     <div class="row">
-      <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap">
+      <div
+        class="mb-3 d-flex justify-content-between align-items-center flex-wrap"
+      >
         <!-- Radios pour filtrer par statut -->
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="statusFilter" id="all" value="ALL" [(ngModel)]="selectedStatus" (change)="applyFilters()" />
+          <input
+            class="form-check-input"
+            type="radio"
+            name="statusFilter"
+            id="all"
+            value="ALL"
+            [(ngModel)]="selectedStatus"
+            (change)="applyFilters()"
+          />
           <label class="form-check-label" for="all">Tous</label>
         </div>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="statusFilter" id="valide" value="VALIDE" [(ngModel)]="selectedStatus" (change)="applyFilters()" />
+          <input
+            class="form-check-input"
+            type="radio"
+            name="statusFilter"
+            id="valide"
+            value="VALIDE"
+            [(ngModel)]="selectedStatus"
+            (change)="applyFilters()"
+          />
           <label class="form-check-label" for="valide">Valide</label>
         </div>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="statusFilter" id="consomme" value="CONSOMME" [(ngModel)]="selectedStatus" (change)="applyFilters()" />
+          <input
+            class="form-check-input"
+            type="radio"
+            name="statusFilter"
+            id="consomme"
+            value="CONSOMME"
+            [(ngModel)]="selectedStatus"
+            (change)="applyFilters()"
+          />
           <label class="form-check-label" for="consomme">Consommé</label>
+        </div>
+
+        <div>
+          <!-- Bouton de génération (simplifié) -->
+          <button class="btn btn-outline-secondary me-2"
+          type="button"
+          (click)="initiateQrCodeGeneration()">
+    <i class="fa-solid fa-qrcode"></i>
+  </button>
         </div>
 
         <!-- Tri par date -->
         <div>
-          <select class="form-select form-select-sm" [(ngModel)]="sortOrder" (change)="applyFilters()">
+          <select
+            class="form-select form-select-sm"
+            [(ngModel)]="sortOrder"
+            (change)="applyFilters()"
+          >
             <option value="recent">Du plus récent au plus ancien</option>
             <option value="ancien">Du plus ancien au plus récent</option>
           </select>
         </div>
       </div>
-
 
       <div class="col-sm-12">
         <div class="table-container">
@@ -68,7 +105,6 @@
                 <th scope="col">STATUT</th>
                 <th scope="col">DATE CONSOMMATION</th>
                 <th scope="col">CAISSE</th>
-                <th scope="col">ACTION</th>
               </tr>
             </thead>
 
@@ -76,7 +112,10 @@
               <tr *ngFor="let item of displayedTickets; let i = index">
                 <th scope="row">{{ (page - 1) * pageSize + i + 1 }}</th>
                 <td>
-                  {{ item.transactionDto?.creationDate | date: 'dd/MM/yyyy HH:mm' }}
+                  {{
+                    item.transactionDto?.creationDate
+                      | date : "dd/MM/yyyy HH:mm"
+                  }}
                 </td>
                 <td>{{ item.transactionDto?.reference }}</td>
                 <td>{{ item.numero }}</td>
@@ -86,27 +125,13 @@
                 </td>
                 <td>{{ item.status }}</td>
                 <td>
-                  {{ item.status === 'CONSOMME' ? (item.modifiedDate | date: 'dd/MM/yyyy HH:mm') : 'Non cosommé' }}
+                  {{
+                    item.status === "CONSOMME"
+                      ? (item.modifiedDate | date : "dd/MM/yyyy HH:mm")
+                      : "Non cosommé"
+                  }}
                 </td>
                 <td>{{ getUserName(item.transactionDto?.userId ?? 0) }}</td>
-                <td>
-                  <button
-                    class="btn btn-outline-warning me-2"
-                    type="button"
-                    (click)="onDetail(item)"
-                  >
-                    <i class="fa-solid fa-circle-info"></i>
-                  </button>
-                  <button
-                    class="btn btn-outline-secondary me-2"
-                    type="button"
-                    (click)="
-                      generateQrCodeFromBackend(item.clientId!, qrCodeModal)
-                    "
-                  >
-                    <i class="fa-solid fa-qrcode"></i>
-                  </button>
-                </td>
               </tr>
             </tbody>
           </table>
@@ -128,26 +153,55 @@
   </ng-template>
 </div>
 
-<!-- Modale avec le QR Code -->
-<ng-template #qrCodeModal let-modal>
+
+<!-- Client ID Modal -->
+<ng-template #clientIdModal let-modal>
   <div class="modal-header">
-    <h4 class="modal-title">QR Code du Ticket</h4>
+    <h4 class="modal-title">{{ modalTitle }}</h4>
     <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
   </div>
-  <div class="modal-body d-flex justify-content-center align-items-center">
-    <!-- Utilisation de ViewChild pour accéder au canvas -->
-    <canvas #qrcodeCanvas id="qrcode" class="qr-code-canvas"></canvas>
-    <!-- Le QR Code sera affiché ici -->
+  <div class="modal-body">
+    <div class="mb-3">
+      <label for="clientIdInput" class="form-label">ID du client</label>
+      <input type="number" class="form-control" id="clientIdInput"
+             [(ngModel)]="clientIdForQrCode"
+             placeholder="Entrez l'ID du client">
+    </div>
   </div>
   <div class="modal-footer">
-    <button
-      type="button"
-      class="btn btn-outline-success"
-      (click)="downloadQRCode()"
-    >
+    <button type="button" class="btn btn-primary"
+            (click)="modal.close()"
+            [disabled]="!clientIdForQrCode">
+      Générer QR Code
+    </button>
+    <button type="button" class="btn btn-secondary"
+            (click)="modal.dismiss()">
+      Annuler
+    </button>
+  </div>
+</ng-template>
+
+<!-- QR Code Display Modal -->
+<ng-template #qrCodeModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ modalTitle }}</h4>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body text-center">
+    <div *ngIf="generatedQrCode" class="mb-3 text-start">
+      <p><strong>Ticket:</strong> {{ generatedQrCode.ticket?.numero }}</p>
+      <p><strong>Expiration:</strong> {{ generatedQrCode.expirationDate | date:'dd/MM/yyyy HH:mm' }}</p>
+      <p><strong>Code:</strong> {{ generatedQrCode.qrCodeData }}</p>
+    </div>
+    <canvas #qrcodeCanvas class="qr-code-canvas"></canvas>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-success"
+            (click)="downloadQrCode()">
       Télécharger
     </button>
-    <button type="button" class="btn btn-danger" (click)="modal.dismiss()">
+    <button type="button" class="btn btn-danger"
+            (click)="modal.dismiss()">
       Fermer
     </button>
   </div>

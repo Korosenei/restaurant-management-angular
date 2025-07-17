@@ -39,6 +39,13 @@ export const routes: Routes = [
         data: {
           title: 'Consommations'
         }
+      },
+      {
+        path: 'programmations',
+        loadComponent: () => import('./programmation/programmation.component').then(m => m.ProgrammationComponent),
+        data: {
+          title: 'Programmations'
+        }
       }
     ]
   }

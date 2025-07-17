@@ -12,6 +12,7 @@ import { USER } from '../../../../models/model-users/user.model';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { AddManagerComponent } from '../../../pages/page-add/add-users/add-manager/add-manager.component';
 
 @Component({
   selector: 'app-manager',
@@ -50,6 +51,14 @@ export class ManagerComponent implements OnInit {
 
   ngOnInit(): void {
     this.getManagers();
+  }
+
+  openModal() {
+    this.modalService.open(AddManagerComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+    });
   }
 
   getManagers() {

@@ -12,6 +12,8 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { TRANSACTION } from '../../../../models/model-elements/transaction.model';
 
+import { AuthService } from '../../../../services/auth-service/auth.service';
+
 @Component({
   selector: 'app-transaction',
   standalone: true,
@@ -33,7 +35,7 @@ export class TransactionComponent {
   displayedTransactions: TRANSACTION[] = [];
 
   page = 1;
-  pageSize = 1;
+  pageSize = 10;
   totalItems = 0;
 
   searchTerm: string = '';
@@ -41,13 +43,17 @@ export class TransactionComponent {
   selectedStartDate: string = '';
   selectedEndDate: string = '';
 
+  userRole: string = '';
+
   constructor(
     private http: HttpClient,
+    private authService: AuthService,
     private router: Router,
     private modalService: NgbModal
   ) {}
 
   ngOnInit(): void {
+    this.userRole = this.authService.getUserRole();
     this.getTransactions();
   }
 
@@ -63,10 +69,20 @@ export class TransactionComponent {
     this.http
       .get<TRANSACTION[]>('http://localhost:2027/transactions/all')
       .subscribe({
-        next: (res) => {
-          this.listTransactions = res;
-          this.filteredTransactions = [...res];
-          this.totalItems = res.length;
+        next: (transactions: TRANSACTION[]) => {
+          const currentUserId = Number(localStorage.getItem('userId'));
+
+          // Filtrage selon le rôle utilisateur
+          if (this.userRole === 'CLIENT') {
+            this.listTransactions = transactions.filter(
+              (item) => item.clientId === currentUserId
+            );
+          } else {
+            this.listTransactions = transactions;
+          }
+
+          this.filteredTransactions = [...this.listTransactions];
+          this.totalItems = this.filteredTransactions.length;
           this.applyFilters();
         },
         error: (err) => {
@@ -78,20 +94,22 @@ export class TransactionComponent {
   applyFilters() {
     let filtered = [...this.listTransactions];
 
-    // Filtrer par texte (reference, nom, prenom, nbrTicket)
+    // 🔍 Filtre par recherche
     if (this.searchTerm) {
       const searchLower = this.searchTerm.toLowerCase();
       filtered = filtered.filter(
         (transaction) =>
-          transaction.reference.toLowerCase().includes(searchLower) ||
-          transaction.nom.toLowerCase().includes(searchLower) ||
-          transaction.prenom.toLowerCase().includes(searchLower) ||
-          transaction.nbrTicket
+          (typeof transaction.reference === 'string' &&
+            transaction.reference.toLowerCase().includes(searchLower)) ||
+          (typeof transaction.nom === 'string' &&
+            transaction.nom.toLowerCase().includes(searchLower)) ||
+          (typeof transaction.prenom === 'string' &&
+            transaction.prenom.toLowerCase().includes(searchLower)) ||
+          transaction.nbrTicket.toString().includes(searchLower)
       );
     }
 
-    // Filtrer par date (Assurez-vous que `creationDate` est bien formaté en `YYYY-MM-DD`)
-    // Filtrage par plage de dates (creationDate et modifiedDate)
+    // 📅 Filtrage par plage de dates
     if (this.selectedStartDate && this.selectedEndDate) {
       const startDate = new Date(this.selectedStartDate);
       const endDate = new Date(this.selectedEndDate);
@@ -100,7 +118,6 @@ export class TransactionComponent {
         const createdDate = new Date(transaction.creationDate);
         const modifiedDate = new Date(transaction.modifiedDate);
 
-        // Vérifier si la transaction a été créée ou modifiée dans la plage
         return (
           (createdDate >= startDate && createdDate <= endDate) ||
           (modifiedDate >= startDate && modifiedDate <= endDate)
@@ -108,7 +125,7 @@ export class TransactionComponent {
       });
     }
 
-    // Mettre à jour la liste filtrée et la pagination
+    // ✅ Mise à jour des résultats
     this.filteredTransactions = filtered;
     this.totalItems = filtered.length;
     this.updateDisplayedRoles();
@@ -231,13 +248,13 @@ export class TransactionComponent {
     });
 
     // Titre du document
-  const title = 'Liste des Transactions';
-  const titleWidth = doc.getTextWidth(title); // Calculer la largeur du texte
-  const pageWidth = doc.internal.pageSize.width; // Largeur de la page
-  const xPosition = (pageWidth - titleWidth) / 2; // Calculer la position X pour centrer le titre
+    const title = 'Liste des Transactions';
+    const titleWidth = doc.getTextWidth(title); // Calculer la largeur du texte
+    const pageWidth = doc.internal.pageSize.width; // Largeur de la page
+    const xPosition = (pageWidth - titleWidth) / 2; // Calculer la position X pour centrer le titre
 
-  doc.setFontSize(14);
-  doc.text(title, xPosition, 15); // Centrer le titre
+    doc.setFontSize(14);
+    doc.text(title, xPosition, 15); // Centrer le titre
 
     // Préparation des données pour le tableau
     const headers = [

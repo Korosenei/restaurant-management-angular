@@ -1,11 +1,17 @@
-<div class="container">
-  <div class="row my-3">
-    <div class="col-md-8">
-      <h3>Gestion des Menus</h3>
-    </div>
 
-    <!-- Composant des boutons -->
-    <div class="col-md-4 d-flex justify-content-end">
+<div class="container-fluid py-4">
+  <!-- En-tête -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h2 class="mb-0">
+        <i class="fas fa-utensils me-2 text-primary"></i>
+        Gestion des Menus
+      </h2>
+      <p class="text-muted mb-0">
+        Semaine n°{{ currentWeek }} - {{ currentYear }}
+      </p>
+    </div>
+    <div class="col-md-4 text-end">
       <app-button-action
         (addClicked)="openModal()"
         (exportClicked)="exportToExcel()"
@@ -15,79 +21,203 @@
     </div>
   </div>
 
-  <!-- Composant de recherche -->
-  <app-search
-    searchPlaceholder="Menu..."
-    [showDateFilters]="true"
-    (search)="onSearch($event)"
-    (filterByDate)="onDateFilter($event)"
-  >
-  </app-search>
-
-  <div class="body" *ngIf="listMenus && listMenus.length > 0; else noMenus">
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="table-container">
-          <table class="table table-bordered table-hover">
-            <thead class="thead-light">
-              <tr>
-                <th scope="col">ID</th>
-                <th scope="col">IMAGE</th>
-                <th scope="col">NOM</th>
-                <th scope="col">DESCRIPTION</th>
-                <!-- <th scope="col">RESTAURANT</th> -->
-                <th scope="col">ACTION</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr *ngFor="let item of displayedMenus; let i = index">
-                <th scope="row">{{ i + 1 }}</th>
-                <td>
-                  <img
-                    [src]="item.image"
-                    alt="Image du plat"
-                    width="80"
-                    height="80"
-                    style="object-fit: cover;"
-                  />
-                </td>
-                <td>{{ item.nom }}</td>
-                <td>{{ item.description }}</td>
-                <!-- <td>{{ item.restaurant?.nom }}</td> -->
-                <td>
-                  <button
-                    class="btn btn-outline-warning me-2"
-                    type="button"
-                    (click)="onEdite(item)"
-                  >
-                    <i class="fa-solid fa-pen"></i>
-                  </button>
-                  <button
-                    class="btn btn-outline-danger"
-                    type="button"
-                    (click)="onDelete(item.id)"
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+  <!-- Tableau des menus par jour -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <i class="fas fa-calendar-week me-2"></i>
+            Menus de la semaine
+          </h5>
         </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-primary">
+                <tr>
+                  <th scope="col" class="text-center">Jour</th>
+                  <th scope="col" class="text-center">Date</th>
+                  <th scope="col">Plat</th>
+                  <th scope="col">Description</th>
+                  <th scope="col" class="text-center">Quantité</th>
+                  <th scope="col" class="text-center">Status</th>
+                  <th scope="col" class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let dayInfo of weekDays">
+                  <ng-container *ngIf="getMenuItemsForDate(dayInfo.date).length > 0; else noMenuRow">
+                    <tr *ngFor="let menuItem of getMenuItemsForDate(dayInfo.date); let first = first"
+                        [class.table-success]="menuItem.isDisponible"
+                        [class.table-warning]="!menuItem.isDisponible">
 
-        <!-- Pagination Component -->
-        <app-pagination
-          [collectionSize]="totalItems"
-          [pageSize]="pageSize"
-          [page]="page"
-          (pageChange)="onPageChange($event)"
-        ></app-pagination>
+                      <!-- Jour et Date (fusionnés pour le premier élément) -->
+                      <td *ngIf="first"
+                          [attr.rowspan]="getMenuItemsForDate(dayInfo.date).length"
+                          class="text-center fw-bold align-middle day-cell">
+                        <div class="day-name">{{ dayInfo.day }}</div>
+                        <div class="day-short">{{ dayInfo.dayShort }}</div>
+                      </td>
+
+                      <td *ngIf="first"
+                          [attr.rowspan]="getMenuItemsForDate(dayInfo.date).length"
+                          class="text-center align-middle">
+                        <div class="date-display">
+                          {{ dayInfo.date.toLocaleDateString('fr-FR') }}
+                        </div>
+                      </td>
+
+                      <!-- Détails du plat -->
+                      <td class="align-middle">
+                        <div class="d-flex align-items-center">
+                          <img *ngIf="menuItem.image"
+                               [src]="menuItem.image"
+                               [alt]="menuItem.nom"
+                               class="menu-image me-3">
+                          <div class="menu-info">
+                            <h6 class="mb-0 fw-bold">{{ menuItem.nom }}</h6>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td class="align-middle">
+                        <p class="mb-0 text-muted small">{{ menuItem.description }}</p>
+                      </td>
+
+                      <td class="text-center align-middle">
+                        <span class="badge bg-info fs-6">{{ menuItem.quantite }}</span>
+                      </td>
+
+                      <td class="text-center align-middle">
+                        <div class="form-check form-switch d-flex justify-content-center">
+                          <input class="form-check-input"
+                                 type="checkbox"
+                                 [checked]="menuItem.isDisponible"
+                                 (change)="toggleAvailability(menuItem)"
+                                 [id]="'disponible-' + menuItem.id">
+                          <label class="form-check-label visually-hidden" [for]="'disponible-' + menuItem.id">
+                            Disponible
+                          </label>
+                        </div>
+                        <small class="text-muted d-block mt-1">
+                          {{ menuItem.isDisponible ? 'Disponible' : 'Indisponible' }}
+                        </small>
+                      </td>
+
+                      <td class="text-center align-middle">
+                        <div class="btn-group" role="group">
+                          <button class="btn btn-outline-primary btn-sm"
+                                  (click)="openEditMenuModal(menuItem)"
+                                  title="Modifier">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="btn btn-outline-danger btn-sm"
+                                  (click)="deleteMenuItem(menuItem.id)"
+                                  title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </ng-container>
+
+                  <!-- Ligne vide si aucun menu pour ce jour -->
+                  <ng-template #noMenuRow>
+                    <tr class="table-light">
+                      <td class="text-center fw-bold align-middle day-cell">
+                        <div class="day-name">{{ dayInfo.day }}</div>
+                        <div class="day-short">{{ dayInfo.dayShort }}</div>
+                      </td>
+                      <td class="text-center align-middle">
+                        <div class="date-display">
+                          {{ dayInfo.date.toLocaleDateString('fr-FR') }}
+                        </div>
+                      </td>
+                      <td colspan="5" class="text-center text-muted align-middle py-4">
+                        <i class="fas fa-utensils-slash me-2"></i>
+                        Aucun menu programmé
+                        <br>
+                        <button class="btn btn-sm btn-outline-primary mt-2" (click)="openModal()">
+                          <i class="fas fa-plus me-1"></i>
+                          Ajouter un menu
+                        </button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <ng-template #noMenus>
-    <p>Aucun menu trouvé.</p>
-  </ng-template>
+  <!-- Statistiques rapides -->
+  <div class="row mt-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="card-title">Total Menus</h6>
+              <h3 class="mb-0">totalMenus </h3>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-utensils fa-2x opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="card-title">Disponibles</h6>
+              <h3 class="mb-0">vailableMenus</h3>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-check-circle fa-2x opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card bg-warning text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="card-title">Indisponibles</h6>
+              <h3 class="mb-0">unavailableMenus </h3>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-times-circle fa-2x opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card bg-info text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="card-title">Quantité Totale</h6>
+              <h3 class="mb-0">totalQuantity</h3>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-sort-numeric-up fa-2x opacity-75"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -1,23 +1,313 @@
-.body {
-  text-align: center;
-  font-size: 0.8rem; /* Réduction de la taille de police */
+// Variables
+$primary-color: #0d6efd;
+$success-color: #198754;
+$warning-color: #ffc107;
+$danger-color: #dc3545;
+$light-gray: #f8f9fa;
+$border-radius: 0.375rem;
+
+// Styles généraux
+.container-fluid {
+  max-width: 1400px;
 }
 
-.table-container {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  max-width: 100%;
+// En-tête
+h2 {
+  color: #2c3e50;
+  font-weight: 600;
 }
 
-table {
-  width: 100%;
-  white-space: nowrap; /* Empêche le contenu de se plier à la ligne */
-  font-size: 0.8rem; /* Appliqué aussi ici par précaution */
+// Tableau des menus
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+
+  th {
+    background-color: $primary-color !important;
+    color: white !important;
+    font-weight: 600;
+    border: none;
+    padding: 1rem 0.75rem;
+
+    &:first-child {
+      border-top-left-radius: $border-radius;
+    }
+
+    &:last-child {
+      border-top-right-radius: $border-radius;
+    }
+  }
+
+  td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+
+    &:first-child {
+      border-left: 1px solid #dee2e6;
+    }
+
+    &:last-child {
+      border-right: 1px solid #dee2e6;
+    }
+  }
+
+  tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+  }
 }
 
-th,
-td {
-  white-space: nowrap; /* Garde tout sur une ligne */
-  text-align: center; /* Centrage du contenu */
-  vertical-align: middle; /* Alignement vertical */
+// Cellules de jour
+.day-cell {
+  background-color: $light-gray;
+  border-left: 4px solid $primary-color;
+  min-width: 100px;
+
+  .day-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .day-short {
+    font-size: 0.8rem;
+    color: #6c757d;
+    text-transform: uppercase;
+  }
+}
+
+// Affichage des dates
+.date-display {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #495057;
+  background-color: rgba(13, 110, 253, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: $border-radius;
+  display: inline-block;
+}
+
+// Images des plats
+.menu-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: $border-radius;
+  border: 2px solid #e9ecef;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// Informations du menu
+.menu-info {
+  h6 {
+    color: #2c3e50;
+    font-size: 1rem;
+  }
+}
+
+// Badges
+.badge {
+  font-size: 0.875rem !important;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+}
+
+// Boutons d'action
+.btn-group {
+  .btn {
+    border-radius: $border-radius;
+
+    &:first-child {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    &:last-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+}
+
+// Switch de disponibilité
+.form-check-input {
+  &:checked {
+    background-color: $success-color;
+    border-color: $success-color;
+  }
+
+  &:focus {
+    border-color: rgba($success-color, 0.25);
+    box-shadow: 0 0 0 0.25rem rgba($success-color, 0.25);
+  }
+}
+
+// Ligne sans menu
+.table-light {
+  td {
+    background-color: #f8f9fa;
+  }
+}
+
+// Cartes de statistiques
+.card {
+  border: none;
+  border-radius: $border-radius;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  transition: box-shadow 0.15s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+  }
+
+  h3 {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+}
+
+// Bouton principal
+.btn-primary {
+  background-color: $primary-color;
+  border-color: $primary-color;
+  font-weight: 600;
+
+  &:hover {
+    background-color: darken($primary-color, 10%);
+    border-color: darken($primary-color, 10%);
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.table tbody tr {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+
+  .menu-image {
+    width: 50px;
+    height: 50px;
+  }
+
+  .day-cell {
+    min-width: 80px;
+  }
+
+  .btn-group {
+    .btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+// Styles pour le modal (add-menu.component.scss)
+.modal-header {
+  border-bottom: none;
+
+  .modal-title {
+    font-weight: 600;
+  }
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.modal-footer {
+  border-top: 1px solid #dee2e6;
+  padding: 1rem 2rem;
+}
+
+// Badges d'information
+.week-info, .year-info {
+  .badge {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+  }
+}
+
+// Champs de formulaire
+.form-label {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+
+  i {
+    color: $primary-color;
+  }
+}
+
+.form-control, .form-select {
+  border-radius: $border-radius;
+  border: 1px solid #ced4da;
+
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 0.25rem rgba($primary-color, 0.25);
+  }
+
+  &.is-invalid {
+    border-color: $danger-color;
+  }
+}
+
+// Aperçu d'image
+.img-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: $border-radius;
+  border: 2px solid #e9ecef;
+}
+
+// Switch de disponibilité dans le formulaire
+.form-check-switch {
+  .form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+    background-color: #6c757d;
+
+    &:checked {
+      background-color: $success-color;
+    }
+  }
+
+  .form-check-label {
+    color: #2c3e50;
+    margin-left: 0.5rem;
+  }
+}
+
+// Message d'erreur
+.invalid-feedback {
+  display: block;
+  color: $danger-color;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
 }

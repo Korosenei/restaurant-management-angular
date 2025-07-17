@@ -7,6 +7,7 @@
     <!-- Composant des boutons -->
     <div class="col-md-4 d-flex justify-content-end">
       <app-button-action
+        [isNouveauVisible]="userRole === 'ADMIN' || userRole === 'CAISSIER'"
         (addClicked)="openModal()"
         (exportClicked)="exportToExcel()"
         (importClicked)="exportToPDF()"
@@ -41,7 +42,7 @@
                 <th scope="col">NBRS TICKET</th>
                 <th scope="col">MONTANT</th>
                 <th scope="col">CAISSE</th>
-                <th scope="col">ACTION</th>
+                <th scope="col" *ngIf="userRole !== 'CLIENT'">ACTION</th>
               </tr>
             </thead>
 
@@ -60,7 +61,7 @@
                       : "Non assigné"
                   }}
                 </td>
-                <td>
+                <td *ngIf="userRole !== 'CLIENT'">
                   <button
                     class="btn btn-outline-warning me-2"
                     type="button"
